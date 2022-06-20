@@ -1,4 +1,5 @@
 ﻿using ParsecCore.Either;
+using ParsecCore.Input;
 
 namespace ParsecCore
 {

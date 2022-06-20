@@ -1,5 +1,6 @@
 ﻿using ParsecCore.Help;
 using ParsecCore.Either;
+using ParsecCore.Input;
 
 namespace ParsecCore
 {
@@ -12,7 +13,7 @@ namespace ParsecCore
                 return new Result<ParseError, None>(new None());
             }
 
-            return new Error<ParseError, None>(new ParseError("Unexpected char encountered, expected EOF", input.LineNumber));
+            return new Error<ParseError, None>(new ParseError("Unexpected char encountered, expected EOF", input.Position));
         }
     }
 }

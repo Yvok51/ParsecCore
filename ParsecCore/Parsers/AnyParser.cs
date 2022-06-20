@@ -1,4 +1,5 @@
 ﻿using ParsecCore.Either;
+using ParsecCore.Input;
 
 namespace ParsecCore
 {
@@ -12,7 +13,7 @@ namespace ParsecCore
         {
             if (input.EndOfInput)
             {
-                return new Error<ParseError, char>(new ParseError("Unexpected end of file encountered", input.LineNumber));
+                return new Error<ParseError, char>(new ParseError("Unexpected end of file encountered", input.Position));
             }
 
             char matched = input.Read();

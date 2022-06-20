@@ -1,4 +1,4 @@
-﻿using System;
+﻿using ParsecCore.Input;
 
 namespace ParsecCore
 {

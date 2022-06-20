@@ -1,21 +1,22 @@
-﻿
+﻿using ParsecCore.Input;
+
 namespace ParsecCore
 {
     struct ParseError
     {
-        public ParseError(string error, int lineNumber)
+        public ParseError(string error, Position position)
         {
-            LineNumber = lineNumber;
+            Position = position;
             Error = error;
         }
 
-        public int LineNumber { get; init; }
+        public Position Position { get; init; }
 
         public string Error { get; init; }
 
         public override string ToString()
         {
-            return $"line {LineNumber}: {Error}";
+            return $"line {Position} - {Error}";
         }
     }
 }

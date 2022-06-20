@@ -1,5 +1,5 @@
 ﻿
-namespace ParsecCore
+namespace ParsecCore.Input
 {
     interface IParserInput
     {
@@ -10,6 +10,6 @@ namespace ParsecCore
         /// </summary>
         public bool EndOfInput { get; }
 
-        public int LineNumber { get; }
+        public Position Position { get; }
     }
 }
