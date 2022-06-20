@@ -46,5 +46,18 @@ namespace ParsecCore
                    from restParses in parser.Many()
                    select new T[] { firstParse }.Concat(restParses);
         }
+
+        public static IParser<string> Many(this IParser<char> parser)
+        {
+            return new ManyParser(parser);
+        }
+
+        public static IParser<string> Many1(this IParser<char> parser)
+        {
+            return from firstParse in parser
+                   from restParses in parser.Many()
+                   select firstParse.ToString() + restParses;
+        }
+
     }
 }
