@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ParsecCore
 {
@@ -33,5 +35,16 @@ namespace ParsecCore
             return new ChoiceParser<T>(firstParser, secondParser);
         }
 
+        public static IParser<IEnumerable<T>> Many<T>(this IParser<T> parser)
+        {
+            return new ManyParser<T>(parser);   
+        }
+
+        public static IParser<IEnumerable<T>> Many1<T>(this IParser<T> parser)
+        {
+            return from firstParse in parser
+                   from restParses in parser.Many()
+                   select new T[] { firstParse }.Concat(restParses);
+        }
     }
 }
