@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32002.261
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParsecCore", "ParsecCore\ParsecCore.csproj", "{F96E0082-4CED-4EDB-8641-3FBAF8C8ED11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParsecCoreTests", "ParsecCoreTests\ParsecCoreTests.csproj", "{E6C5C66F-B8C4-45F9-BDDA-8248EEA4BCFA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F96E0082-4CED-4EDB-8641-3FBAF8C8ED11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F96E0082-4CED-4EDB-8641-3FBAF8C8ED11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F96E0082-4CED-4EDB-8641-3FBAF8C8ED11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F96E0082-4CED-4EDB-8641-3FBAF8C8ED11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6C5C66F-B8C4-45F9-BDDA-8248EEA4BCFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6C5C66F-B8C4-45F9-BDDA-8248EEA4BCFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6C5C66F-B8C4-45F9-BDDA-8248EEA4BCFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6C5C66F-B8C4-45F9-BDDA-8248EEA4BCFA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {18ED41C1-FC45-47F7-94B6-0D058C26AAF4}
+	EndGlobalSection
+EndGlobal
