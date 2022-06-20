@@ -5,6 +5,8 @@ namespace ParsecCore.Input
     {
         public char Read();
 
+        public void Seek(Position position);
+
         /// <summary>
         /// Answers whether the input has ended
         /// </summary>
