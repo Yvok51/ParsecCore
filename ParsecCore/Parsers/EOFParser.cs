@@ -4,6 +4,10 @@ using ParsecCore.Input;
 
 namespace ParsecCore
 {
+    /// <summary>
+    /// Parser which parses the end of the file.
+    /// Fails if any character is present
+    /// </summary>
     class EOFParser : IParser<None>
     {
         public IEither<ParseError, None> Parse(IParserInput input)

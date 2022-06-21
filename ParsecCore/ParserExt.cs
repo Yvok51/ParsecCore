@@ -9,11 +9,28 @@ namespace ParsecCore
         public static IParser<char> Whitespace = new SatisfyParser(char.IsWhiteSpace, "whitespace");
         public static IParser<char> Digit = new SatisfyParser(char.IsDigit, "digit");
 
+        /// <summary>
+        /// Return a parser which does not consume any input and only returns the value given
+        /// </summary>
+        /// <typeparam name="T"> The type of the value the parser returns </typeparam>
+        /// <param name="value"> The value for the parser to return </param>
+        /// <returns> Parser which returns the given value </returns>
         public static IParser<T> Return<T>(T value)
         {
             return new ReturnParser<T>(value);
         }
 
+        /// <summary>
+        /// Extension method enabling us to use the LINQ syntax for the parsers.
+        /// The LINQ syntax imitates 'do' notation found in haskell.
+        /// `for x in xs` is equivalent to `x <- xs` and `select x` is equivalent to `return x`
+        /// This method is similar to map
+        /// </summary>
+        /// <typeparam name="TSource"> > The type of the source parser </typeparam>
+        /// <typeparam name="TResult"> The type of the resulting parser </typeparam>
+        /// <param name="parser"> The source parser </param>
+        /// <param name="projection"> The funtion to map the result of the source parser with </param>
+        /// <returns> Parser which maps the result of the source parser to a new value </returns>
         public static IParser<TResult> Select<TSource, TResult>(
             this IParser<TSource> parser,
             Func<TSource, TResult> projection
@@ -22,6 +39,19 @@ namespace ParsecCore
             return new MapParser<TSource, TResult>(parser, projection);
         }
 
+        /// <summary>
+        /// Extension method enabling us to use the LINQ syntax for the parsers.
+        /// The LINQ syntax imitates 'do' notation found in haskell.
+        /// `for x in xs` is equivalent to `x <- xs` and `select x` is equivalent to `return x`
+        /// This method is therefore similar to 'bind' (>>=)
+        /// </summary>
+        /// <typeparam name="TFirst"> The type of the source parser </typeparam>
+        /// <typeparam name="TSecond"> The type of the parser returned by the chained method </typeparam>
+        /// <typeparam name="TResult"> The type of the resulting parser </typeparam>
+        /// <param name="first"> The source parser </param>
+        /// <param name="getSecond"> The function to chain to the result of the source parser </param>
+        /// <param name="getResult"> Callback which combines the two results together </param>
+        /// <returns> Parser which performs the source parser and afterwards the chained method in that order </returns>
         public static IParser<TResult> SelectMany<TFirst, TSecond, TResult>(
             this IParser<TFirst> first,
             Func<TFirst, IParser<TSecond>> getSecond,
@@ -30,16 +60,38 @@ namespace ParsecCore
             return new BindParser<TFirst, TSecond, TResult>(first, getSecond, getResult);
         }
 
+        /// <summary>
+        /// Returns a parser which tries to first apply the first parser and if it succeeds returns the result.
+        /// If it fails then the second parser is applied on the same input as the first and the parser returns its result
+        /// </summary>
+        /// <typeparam name="T"> The type of the parsers </typeparam>
+        /// <param name="firstParser"> The first parser to try </param>
+        /// <param name="secondParser"> The second parser to try </param>
+        /// <returns> Parser which sequentally tries to apply the given parsers until one succeeds </returns>
         public static IParser<T> Choice<T>(IParser<T> firstParser, IParser<T> secondParser)
         {
             return new ChoiceParser<T>(firstParser, secondParser);
         }
 
+        /// <summary>
+        /// Returns a parser which tries to parse according to the given parser as many times as possible.
+        /// Can parse even zero times.
+        /// </summary>
+        /// <typeparam name="T"> The type of the parser </typeparam>
+        /// <param name="parser"> The parser to apply </param>
+        /// <returns> Parser which applies the given parser as many times as possible </returns>
         public static IParser<IEnumerable<T>> Many<T>(this IParser<T> parser)
         {
             return new ManyParser<T>(parser);   
         }
 
+        /// <summary>
+        /// Returns a parser which tries to parse according to the given parser as many times as possible.
+        /// Must be sucessful at least once otherwise an error is returned.
+        /// </summary>
+        /// <typeparam name="T"> The type of the parser </typeparam>
+        /// <param name="parser"> The parser to apply </param>
+        /// <returns> Parser which applies the given parser as many times as possible </returns>
         public static IParser<IEnumerable<T>> Many1<T>(this IParser<T> parser)
         {
             return from firstParse in parser
@@ -47,17 +99,26 @@ namespace ParsecCore
                    select new T[] { firstParse }.Concat(restParses);
         }
 
+        /// <summary>
+        /// Specialization of the Many method for chars and strings
+        /// </summary>
+        /// <param name="parser"> The parser to apply as many times as possible </param>
+        /// <returns> Parser which applies the given char parser as many times as possible </returns>
         public static IParser<string> Many(this IParser<char> parser)
         {
             return new ManyParser(parser);
         }
 
+        /// <summary>
+        /// Specialization of the Many1 method for chars and strings
+        /// </summary>
+        /// <param name="parser"> The parser to apply as many times as possible </param>
+        /// <returns> Parser which applies the given char parser as many times as possible </returns>
         public static IParser<string> Many1(this IParser<char> parser)
         {
             return from firstParse in parser
                    from restParses in parser.Many()
                    select firstParse.ToString() + restParses;
         }
-
     }
 }

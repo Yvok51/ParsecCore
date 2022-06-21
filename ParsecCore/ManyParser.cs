@@ -6,6 +6,11 @@ using ParsecCore.Either;
 
 namespace ParsecCore
 {
+    /// <summary>
+    /// Parser which takes a parser and attempts to apply it as many times as possible 
+    /// Used in the implementation of the Many method
+    /// </summary>
+    /// <typeparam name="T"> The type of parser return value </typeparam>
     class ManyParser<T> : IParser<IEnumerable<T>>
     {
         public ManyParser(IParser<T> parser)
