@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using ParsecCore.Maybe;
+
 namespace ParsecCore
 {
     static class ParserExt
@@ -122,7 +124,7 @@ namespace ParsecCore
         }
 
         /// <summary>
-        /// Return a parser which parses a value in between two other values
+        /// Returns a parser which parses a value in between two other values
         /// Usefull for quoted strings, arrays, ...
         /// </summary>
         /// <typeparam name="TLeft"> The result type of the parser of the left value </typeparam>
@@ -145,6 +147,17 @@ namespace ParsecCore
                    from between in betweenParser
                    from r in rightParser
                    select between;
+        }
+
+        /// <summary>
+        /// Returns a parser which either parses its value or returns Nothing and does not consume any input
+        /// </summary>
+        /// <typeparam name="T"> The result type of the parser </typeparam>
+        /// <param name="parser"> The parser to optionally apply </param>
+        /// <returns> Parser which optionally applies the given parser </returns>
+        public static IParser<IMaybe<T>> Optional<T>(this IParser<T> parser)
+        {
+            return new OptionalParser<T>(parser);
         }
     }
 }
