@@ -120,5 +120,31 @@ namespace ParsecCore
                    from restParses in parser.Many()
                    select firstParse.ToString() + restParses;
         }
+
+        /// <summary>
+        /// Return a parser which parses a value in between two other values
+        /// Usefull for quoted strings, arrays, ...
+        /// </summary>
+        /// <typeparam name="TLeft"> The result type of the parser of the left value </typeparam>
+        /// <typeparam name="TBetween"> The result type of the parser of the inbetween value </typeparam>
+        /// <typeparam name="TRight"> The result type of the parser of the left value </typeparam>
+        /// <param name="leftParser"> The parser for the value on the left </param>
+        /// <param name="betweenParser"> The parser for the value inbetween </param>
+        /// <param name="rightParser"> The parser for the value on the right </param>
+        /// <returns> 
+        /// Parser which parses the entire sequence of leftParse- betweenParser-rightParser but only
+        /// returns the value parsed by the betweenParser
+        /// </returns>
+        public static IParser<TBetween> Between<TLeft, TBetween, TRight>(
+            IParser<TLeft> leftParser,
+            IParser<TBetween> betweenParser,
+            IParser<TRight> rightParser
+        )
+        {
+            return from l in leftParser
+                   from between in betweenParser
+                   from r in rightParser
+                   select between;
+        }
     }
 }
