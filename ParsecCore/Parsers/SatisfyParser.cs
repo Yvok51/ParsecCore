@@ -8,7 +8,7 @@ namespace ParsecCore
     /// <summary>
     /// Parser which consumes a single character and succeeds if the character passes a predicate
     /// </summary>
-    class SatisfyParser : IParser<char>
+    public class SatisfyParser : IParser<char>
     {
         public SatisfyParser(Predicate<char> predicate, string predicateDescription)
         {

@@ -5,7 +5,7 @@ using ParsecCore.Parsers;
 
 namespace ParsecCore
 {
-    class Parse
+    public class Parse
     {
         public static IParser<char> Whitespace = new SatisfyParser(char.IsWhiteSpace, "whitespace");
         public static IParser<char> Digit = new SatisfyParser(char.IsDigit, "digit");
@@ -41,10 +41,36 @@ namespace ParsecCore
         /// </summary>
         /// <typeparam name="T"> The type of the parsers </typeparam>
         /// <param name="parsers"> Parsers to apply </param>
-        /// <returns> Parser which sequentally tries to apply the given parsers until one succeeds or all fails </returns>
+        /// <returns> Parser which sequentially tries to apply the given parsers until one succeeds or all fails </returns>
         public static IParser<T> Choice<T>(IEnumerable<IParser<T>> parsers)
         {
             return new ChoiceParser<T>(parsers);
+        }
+
+        /// <summary>
+        /// Returns a parser which tries to parse all of the given parsers in a sequence.
+        /// If it succeeds it returns an IEnumerable of the parsed results.
+        /// If it fails it returns the first encountered parse error
+        /// </summary>
+        /// <typeparam name="T"> The type of parsers </typeparam>
+        /// <param name="parsers"> Parsers to sequentially apply </param>
+        /// <returns> Parser which sequentially aplies all of the given parsers </returns>
+        public static IParser<IEnumerable<T>> All<T>(params IParser<T>[] parsers)
+        {
+            return new AllParser<T>(parsers);
+        }
+
+        /// <summary>
+        /// Returns a parser which tries to parse all of the given parsers in a sequence.
+        /// If it succeeds it returns an IEnumerable of the parsed results.
+        /// If it fails it returns the first encountered parse error
+        /// </summary>
+        /// <typeparam name="T"> The type of parsers </typeparam>
+        /// <param name="parsers"> Parsers to sequentially apply </param>
+        /// <returns> Parser which sequentially aplies all of the given parsers </returns>
+        public static IParser<IEnumerable<T>> All<T>(IEnumerable<IParser<T>> parsers)
+        {
+            return new AllParser<T>(parsers);
         }
 
         /// <summary>

@@ -7,7 +7,7 @@ namespace ParsecCore
     /// Parser any character
     /// Fails if we are at the end of the input
     /// </summary>
-    class AnyParser : IParser<char>
+    public class AnyParser : IParser<char>
     {
         public IEither<ParseError, char> Parse(IParserInput input)
         {

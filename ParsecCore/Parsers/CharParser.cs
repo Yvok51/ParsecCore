@@ -2,7 +2,7 @@
 
 namespace ParsecCore.Parsers
 {
-    class CharParser : IParser<char>
+    public class CharParser : IParser<char>
     {
         public CharParser(char c)
         {

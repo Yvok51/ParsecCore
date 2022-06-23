@@ -6,7 +6,7 @@ using ParsecCore.Maybe;
 
 namespace ParsecCore
 {
-    static class ParserExt
+    public static class ParserExt
     {
         /// <summary>
         /// Extension method enabling us to use the LINQ syntax for the parsers.

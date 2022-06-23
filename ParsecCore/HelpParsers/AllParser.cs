@@ -11,6 +11,11 @@ namespace ParsecCore
     /// <typeparam name="T"></typeparam>
     class AllParser<T> : IParser<IEnumerable<T>>
     {
+        public AllParser(params IParser<T>[] parsers)
+        {
+            _parsers = parsers;    
+        }
+
         public AllParser(IEnumerable<IParser<T>> parsers)
         {
             _parsers = parsers;

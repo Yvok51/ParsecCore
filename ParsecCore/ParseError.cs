@@ -2,7 +2,7 @@
 
 namespace ParsecCore
 {
-    struct ParseError
+    public struct ParseError
     {
         public ParseError(string error, Position position)
         {

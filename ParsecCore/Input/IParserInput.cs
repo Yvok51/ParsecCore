@@ -1,6 +1,6 @@
 ﻿namespace ParsecCore.Input
 {
-    interface IParserInput
+    public interface IParserInput
     {
         public char Read();
 

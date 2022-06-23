@@ -2,7 +2,7 @@
 
 namespace ParsecCore.Maybe
 {
-    static class MaybeExt
+    public static class MaybeExt
     {
         public static IMaybe<T> FromValue<T>(this T value)
         {

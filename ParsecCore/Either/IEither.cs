@@ -2,7 +2,7 @@
 
 namespace ParsecCore
 {
-    interface IEither<TLeft, TRight>
+    public interface IEither<TLeft, TRight>
     {
         /// <summary>
         /// Takes the IEither objects and maps its value according to the given function

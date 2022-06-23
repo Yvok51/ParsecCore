@@ -2,7 +2,7 @@
 
 namespace ParsecCore.Either
 {
-    static class EitherExt
+    public static class EitherExt
     {
         public static IEither<TLeft, TRight> Result<TLeft, TRight>(TRight value) 
         {

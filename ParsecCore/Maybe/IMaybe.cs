@@ -2,7 +2,7 @@
 
 namespace ParsecCore.Maybe
 {
-    interface IMaybe<T>
+    public interface IMaybe<T>
     {
         bool IsEmpty { get; }
 

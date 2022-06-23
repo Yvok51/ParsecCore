@@ -1,6 +1,6 @@
 ﻿namespace ParsecCore.Input
 {
-    struct Position
+    public struct Position
     {
         public static Position Start = new Position(line: 1, column: 1, offset: 0);
         
