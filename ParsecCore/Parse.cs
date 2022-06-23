@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 
 using ParsecCore.Parsers;
+using ParsecCore.HelpParsers;
 
 namespace ParsecCore
 {
     public static class Parser
     {
         public static IParser<char> Whitespace = new SatisfyParser(char.IsWhiteSpace, "whitespace");
+        public static IParser<string> Spaces = Whitespace.Many();
         public static IParser<char> Digit = new SatisfyParser(char.IsDigit, "digit");
 
         /// <summary>
@@ -74,7 +76,7 @@ namespace ParsecCore
         }
 
         /// <summary>
-        /// Returns a parser which parser exactly the string given
+        /// Returns a parser which parses exactly the string given
         /// </summary>
         /// <param name="stringToParse"> The string for the parser to parse </param>
         /// <returns> Parser which parses exactly the given string </returns>
@@ -92,6 +94,18 @@ namespace ParsecCore
 
             return from chars in new AllParser<char>(stringToCharParsers(stringToParse))
                    select string.Concat(chars);
+        }
+
+        /// <summary>
+        /// Returns a parser which parses exactly the given string and any whitespace afterwards
+        /// </summary>
+        /// <param name="stringToParse"> The string for the parser to parse </param>
+        /// <returns> Parser which parses exactly the given string and any whitespace afterwards </returns>
+        public static IParser<string> Symbol(string stringToParse)
+        {
+            return from str in String(stringToParse)
+                   from space in Spaces
+                   select str;
         }
 
         /// <summary>
@@ -138,6 +152,41 @@ namespace ParsecCore
         )
         {
             return Between(outsideParser, betweenParser, outsideParser);
+        }
+
+        /// <summary>
+        /// Parse seperated values. Parses a list of values each of which is seperated from the other.
+        /// Usefull in parsing lists (values would be for example integers and the seperator a string ",")
+        /// </summary>
+        /// <typeparam name="TValue"> The type of the parsed values </typeparam>
+        /// <typeparam name="TSeparator"> The type of the seperator </typeparam>
+        /// <param name="valueParser"> Parser for the values </param>
+        /// <param name="separatorParser"> Parser for the seperators </param>
+        /// <returns> Parser which returns a list of parsed values </returns>
+        public static IParser<IEnumerable<TValue>> SepBy<TValue, TSeparator>(
+            IParser<TValue> valueParser,
+            IParser<TSeparator> separatorParser
+        )
+        {
+            return Choice(SepBy1(valueParser, separatorParser), Return<IEnumerable<TValue>>(Array.Empty<TValue>()));
+        }
+
+        /// <summary>
+        /// Parse seperated values. Parses a list of values each of which is seperated from the other.
+        /// Usefull in parsing lists (values would be for example integers and the seperator a string ",")
+        /// Always parses at least one value.
+        /// </summary>
+        /// <typeparam name="TValue"> The type of the parsed values </typeparam>
+        /// <typeparam name="TSeparator"> The type of the seperator </typeparam>
+        /// <param name="valueParser"> Parser for the values </param>
+        /// <param name="separatorParser"> Parser for the seperators </param>
+        /// <returns> Parser which returns a list of parsed values </returns>
+        public static IParser<IEnumerable<TValue>> SepBy1<TValue, TSeparator>(
+            IParser<TValue> valueParser,
+            IParser<TSeparator> separatorParser
+)
+        {
+            return new HelpParsers.SepBy1Parser<TValue, TSeparator>(valueParser, separatorParser);
         }
     }
 }
