@@ -1,5 +1,4 @@
-﻿
-namespace ParsecCore.Help
+﻿namespace ParsecCore.Help
 {
     /// <summary>
     /// Helper struct that represents an empty value

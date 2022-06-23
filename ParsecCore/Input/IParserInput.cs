@@ -1,5 +1,4 @@
-﻿
-namespace ParsecCore.Input
+﻿namespace ParsecCore.Input
 {
     interface IParserInput
     {

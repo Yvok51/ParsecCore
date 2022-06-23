@@ -1,5 +1,6 @@
-﻿using ParsecCore.Input;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+
+using ParsecCore.Input;
 using ParsecCore.Either;
 
 namespace ParsecCore
