@@ -108,7 +108,8 @@ namespace ParsecCore
         /// <returns> Parser which applies the given char parser as many times as possible </returns>
         public static IParser<string> Many(this IParser<char> parser)
         {
-            return new ManyParser(parser);
+            return from chars in parser.Many<char>()  // added explicit char to avoid recursion
+                   select string.Concat(chars);
         }
 
         /// <summary>

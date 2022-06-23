@@ -37,31 +37,4 @@ namespace ParsecCore
 
         private readonly IParser<T> _parser;
     }
-
-    class ManyParser : IParser<string>
-    {
-        public ManyParser(IParser<char> parser)
-        {
-            _parser = parser;
-        }
-
-        public IEither<ParseError, string> Parse(IParserInput input)
-        {
-            StringBuilder result = new StringBuilder();
-
-            var previousPosition = input.Position;
-            var parseResult = _parser.Parse(input);
-            while (parseResult.HasRight)
-            {
-                result.Append(parseResult.Right);
-                previousPosition = input.Position;
-                parseResult = _parser.Parse(input);
-            }
-
-            input.Seek(previousPosition);
-            return EitherExt.Result<ParseError, string>(result.ToString());
-        }
-
-        private readonly IParser<char> _parser;
-    }
 }
