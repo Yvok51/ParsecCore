@@ -8,7 +8,7 @@ namespace ParsecCore.MaybeNS
 
         public T Value => throw new InvalidOperationException();
 
-        public IMaybe<TNew> Bind<TNew>(Func<T, TNew> map)
+        public IMaybe<TNew> Map<TNew>(Func<T, TNew> map)
         {
             return new Nothing<TNew>();
         }

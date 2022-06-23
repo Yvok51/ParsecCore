@@ -13,7 +13,7 @@ namespace ParsecCore.MaybeNS
 
         public T Value => _value;
 
-        public IMaybe<TNew> Bind<TNew>(Func<T, TNew> map)
+        public IMaybe<TNew> Map<TNew>(Func<T, TNew> map)
         {
             return new Just<TNew>(map(_value));
         }
