@@ -1,7 +1,7 @@
 ﻿using ParsecCore.EitherNS;
 using ParsecCore.Input;
 
-namespace ParsecCore
+namespace ParsecCore.Parsers
 {
     /// <summary>
     /// Parser any character

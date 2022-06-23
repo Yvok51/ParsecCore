@@ -3,7 +3,7 @@
 using ParsecCore.Input;
 using ParsecCore.EitherNS;
 
-namespace ParsecCore
+namespace ParsecCore.HelpParsers
 {
     class ChoiceParser<T> : IParser<T>
     {

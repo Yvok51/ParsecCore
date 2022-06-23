@@ -2,7 +2,7 @@
 using ParsecCore.MaybeNS;
 using ParsecCore.EitherNS;
 
-namespace ParsecCore
+namespace ParsecCore.HelpParsers
 {
     class OptionalParser<T> : IParser<IMaybe<T>>
     {

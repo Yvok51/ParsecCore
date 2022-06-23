@@ -3,7 +3,7 @@
 using ParsecCore.EitherNS;
 using ParsecCore.Input;
 
-namespace ParsecCore
+namespace ParsecCore.HelpParsers
 {
     /// <summary>
     /// Class used in the Select extension method to enable "do" notation 

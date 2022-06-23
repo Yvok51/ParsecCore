@@ -3,7 +3,7 @@
 using ParsecCore.EitherNS;
 using ParsecCore.Input;
 
-namespace ParsecCore
+namespace ParsecCore.Parsers
 {
     /// <summary>
     /// Parser which consumes a single character and succeeds if the character passes a predicate

@@ -2,7 +2,7 @@
 using ParsecCore.EitherNS;
 using ParsecCore.Input;
 
-namespace ParsecCore
+namespace ParsecCore.Parsers
 {
     /// <summary>
     /// Parser which parses the end of the file.

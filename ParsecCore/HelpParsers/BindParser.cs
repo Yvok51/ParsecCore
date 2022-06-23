@@ -3,7 +3,7 @@
 using ParsecCore.EitherNS;
 using ParsecCore.Input;
 
-namespace ParsecCore
+namespace ParsecCore.HelpParsers
 {
     class BindParser<TFirst, TSecond, TResult> : IParser<TResult>
     {

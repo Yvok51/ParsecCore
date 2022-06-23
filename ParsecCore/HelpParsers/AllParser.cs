@@ -3,7 +3,7 @@
 using ParsecCore.Input;
 using ParsecCore.EitherNS;
 
-namespace ParsecCore
+namespace ParsecCore.HelpParsers
 {
     /// <summary>
     /// Parser tries to parse all of the given parsers in a sequence

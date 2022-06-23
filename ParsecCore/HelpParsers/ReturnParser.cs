@@ -1,7 +1,7 @@
 ﻿using ParsecCore.EitherNS;
 using ParsecCore.Input;
 
-namespace ParsecCore
+namespace ParsecCore.HelpParsers
 {
     /// <summary>
     /// Simple parser that takes no input and only returns the value given to it at creation
