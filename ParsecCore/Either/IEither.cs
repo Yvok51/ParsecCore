@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ParsecCore
+namespace ParsecCore.EitherNS
 {
     public interface IEither<TLeft, TRight>
     {

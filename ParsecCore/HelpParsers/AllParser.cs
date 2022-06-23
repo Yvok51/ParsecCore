@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 using ParsecCore.Input;
-using ParsecCore.Either;
+using ParsecCore.EitherNS;
 
 namespace ParsecCore
 {
@@ -32,13 +32,13 @@ namespace ParsecCore
                 if (parsedResult.HasLeft)
                 {
                     input.Seek(initialPosition);
-                    return EitherExt.Error<ParseError, IEnumerable<T>>(parsedResult.Left);
+                    return Either.Error<ParseError, IEnumerable<T>>(parsedResult.Left);
                 }
 
                 result.Add(parsedResult.Right);
             }
 
-            return EitherExt.Result<ParseError, IEnumerable<T>>(result);
+            return Either.Result<ParseError, IEnumerable<T>>(result);
         }
 
         private readonly IEnumerable<IParser<T>> _parsers; 

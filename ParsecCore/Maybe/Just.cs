@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ParsecCore.Maybe
+namespace ParsecCore.MaybeNS
 {
     struct Just<T> : IMaybe<T>
     {

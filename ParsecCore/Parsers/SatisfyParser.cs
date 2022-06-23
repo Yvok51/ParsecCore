@@ -1,6 +1,6 @@
 ﻿using System;
 
-using ParsecCore.Either;
+using ParsecCore.EitherNS;
 using ParsecCore.Input;
 
 namespace ParsecCore
@@ -20,16 +20,16 @@ namespace ParsecCore
         {
             if (input.EndOfInput)
             {
-                return EitherExt.Error<ParseError, char>(new ParseError("Unexpected end of file, character expected", input.Position));
+                return Either.Error<ParseError, char>(new ParseError("Unexpected end of file, character expected", input.Position));
             }
 
             char c = input.Read();
             if (!_predicate(c)) 
             {
-                return EitherExt.Error<ParseError, char>(new ParseError($"character '{c}' does not conform, {_description} exprected", input.Position));
+                return Either.Error<ParseError, char>(new ParseError($"character '{c}' does not conform, {_description} exprected", input.Position));
             }
 
-            return EitherExt.Result<ParseError, char>(c);
+            return Either.Result<ParseError, char>(c);
         }
 
         private readonly Predicate<char> _predicate;

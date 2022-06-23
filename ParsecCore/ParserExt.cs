@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using ParsecCore.Maybe;
+using ParsecCore.MaybeNS;
 
 namespace ParsecCore
 {

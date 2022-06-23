@@ -1,19 +1,9 @@
 ﻿using System;
 
-namespace ParsecCore.Either
+namespace ParsecCore.EitherNS
 {
     public static class EitherExt
     {
-        public static IEither<TLeft, TRight> Result<TLeft, TRight>(TRight value) 
-        {
-            return new Result<TLeft, TRight>(value);
-        }
-
-        public static IEither<TLeft, TRight> Error<TLeft, TRight>(TLeft value)
-        {
-            return new Error<TLeft, TRight>(value);
-        }
-
         /// <summary>
         /// Select is an exptension method used in LINQ expressions for a single `from ... in ...` statement
         /// In context of IEither we use it to simulate the do notation of Haskell
@@ -57,11 +47,11 @@ namespace ParsecCore.Either
                 firstResult => {
                     var second = getSecond(firstResult);
                     return second.Match(
-                        secondResult => Result<TLeft, TResult>(getResult(firstResult, secondResult)),
-                        () => Error<TLeft, TResult>(second.Left)
+                        secondResult => Either.Result<TLeft, TResult>(getResult(firstResult, secondResult)),
+                        () => Either.Error<TLeft, TResult>(second.Left)
                     );
                 },
-                () => Error<TLeft, TResult>(first.Left)
+                () => Either.Error<TLeft, TResult>(first.Left)
             );
         }
 

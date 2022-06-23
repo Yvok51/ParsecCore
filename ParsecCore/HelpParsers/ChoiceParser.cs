@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 using ParsecCore.Input;
-using ParsecCore.Either;
+using ParsecCore.EitherNS;
 
 namespace ParsecCore
 {
@@ -20,7 +20,7 @@ namespace ParsecCore
         public IEither<ParseError, T> Parse(IParserInput input)
         {
             Position initialPosition = input.Position;
-            IEither<ParseError, T> parseResult = EitherExt.Error<ParseError, T>(new ParseError("No match found", initialPosition));
+            IEither<ParseError, T> parseResult = Either.Error<ParseError, T>(new ParseError("No match found", initialPosition));
             foreach (var parser in _parsers)
             {
                 parseResult = parser.Parse(input);

@@ -1,6 +1,6 @@
 ﻿using System;
 
-using ParsecCore.Either;
+using ParsecCore.EitherNS;
 using ParsecCore.Input;
 
 namespace ParsecCore

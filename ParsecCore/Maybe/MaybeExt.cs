@@ -1,22 +1,20 @@
 ﻿using System;
 
-namespace ParsecCore.Maybe
+namespace ParsecCore.MaybeNS
 {
     public static class MaybeExt
     {
-        public static IMaybe<T> FromValue<T>(this T value)
-        {
-            return new Just<T>(value);
-        }
-
-        public static IMaybe<T> Nothing<T>()
-        {
-            return new Nothing<T>();
-        }
-
         public static T Else<T>(this IMaybe<T> maybe, T defaultValue)
         {
             return maybe.IsEmpty ? defaultValue : maybe.Value;
+        }
+
+        public static IMaybe<TResult> Select<TSource, TResult>(
+            this IMaybe<TSource> source,
+            Func<TSource, TResult> projection
+        )
+        {
+            return source.Bind(projection);
         }
 
         public static IMaybe<TResult> SelectMany<TFirst, TSecond, TResult>(
@@ -28,11 +26,11 @@ namespace ParsecCore.Maybe
                 firstResult => {
                     var second = getSecond(firstResult);
                     return second.Match(
-                        secondResult => FromValue(getResult(firstResult, secondResult)),
-                        () => Nothing<TResult>()
+                        secondResult => Maybe.FromValue(getResult(firstResult, secondResult)),
+                        () => Maybe.Nothing<TResult>()
                     );
                 },
-                () => Nothing<TResult>()
+                () => Maybe.Nothing<TResult>()
             );
         }
     }

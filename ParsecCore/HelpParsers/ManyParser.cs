@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 using ParsecCore.Input;
-using ParsecCore.Either;
+using ParsecCore.EitherNS;
 
 namespace ParsecCore
 {
@@ -31,7 +31,7 @@ namespace ParsecCore
             }
 
             input.Seek(previousPosition);
-            return EitherExt.Result<ParseError, IEnumerable<T>>(result);
+            return Either.Result<ParseError, IEnumerable<T>>(result);
         }
 
         private readonly IParser<T> _parser;

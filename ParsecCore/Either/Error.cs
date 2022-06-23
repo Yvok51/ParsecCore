@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ParsecCore.Either
+namespace ParsecCore.EitherNS
 {
     struct Error<TError, TResult> : IEither<TError, TResult>
     {

@@ -1,6 +1,6 @@
 ﻿using ParsecCore.Input;
-using ParsecCore.Maybe;
-using ParsecCore.Either;
+using ParsecCore.MaybeNS;
+using ParsecCore.EitherNS;
 
 namespace ParsecCore
 {
@@ -17,11 +17,11 @@ namespace ParsecCore
             var result = _parser.Parse(input);
             if (result.HasRight)
             {
-                return EitherExt.Result<ParseError, IMaybe<T>>(MaybeExt.FromValue(result.Right));
+                return Either.Result<ParseError, IMaybe<T>>(Maybe.FromValue(result.Right));
             }
 
             input.Seek(initialPosition);
-            return EitherExt.Result<ParseError, IMaybe<T>>(MaybeExt.Nothing<T>());
+            return Either.Result<ParseError, IMaybe<T>>(Maybe.Nothing<T>());
         }
 
         private readonly IParser<T> _parser;
