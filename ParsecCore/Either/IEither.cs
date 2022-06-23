@@ -18,10 +18,24 @@ namespace ParsecCore.EitherNS
 
         T Match<T>(Func<TRight, T> right, Func<T> left);
 
+        /// <summary>
+        /// Whether this IEither is holding the LEFT value
+        /// </summary>
         public bool HasLeft { get; }
+        /// <summary>
+        /// Whether this IEither is holding the RIGHT value
+        /// </summary>
         public bool HasRight { get; }
 
+        /// <summary>
+        /// Returns the left value if the IEither is holding it.
+        /// Otherwise throws InvalidOperationException
+        /// </summary>
         public TLeft Left { get; }
+        /// <summary>
+        /// Returns the right value if the IEither is holding it.
+        /// Otherwise throws InvalidOperationException
+        /// </summary>
         public TRight Right { get; }
     }
 }
