@@ -65,15 +65,28 @@ namespace ParsecCore
 
         /// <summary>
         /// Returns a parser which tries to first apply the first parser and if it succeeds returns the result.
-        /// If it fails then the second parser is applied on the same input as the first and the parser returns its result
+        /// If it fails then the second parser is applied on the same input as the first and so on.
+        /// If all parsers fail then returns the ParseError of tha last parser
         /// </summary>
         /// <typeparam name="T"> The type of the parsers </typeparam>
-        /// <param name="firstParser"> The first parser to try </param>
-        /// <param name="secondParser"> The second parser to try </param>
-        /// <returns> Parser which sequentally tries to apply the given parsers until one succeeds </returns>
-        public static IParser<T> Choice<T>(IParser<T> firstParser, IParser<T> secondParser)
+        /// <param name="parsers"> Parsers to apply </param>
+        /// <returns> Parser which sequentally tries to apply the given parsers until one succeeds or all fails </returns>
+        public static IParser<T> Choice<T>(params IParser<T>[] parsers)
         {
-            return new ChoiceParser<T>(firstParser, secondParser);
+            return new ChoiceParser<T>(parsers);
+        }
+
+        /// <summary>
+        /// Returns a parser which tries to first apply the first parser and if it succeeds returns the result.
+        /// If it fails then the second parser is applied on the same input as the first and so on.
+        /// If all parsers fail then returns the ParseError of tha last parser
+        /// </summary>
+        /// <typeparam name="T"> The type of the parsers </typeparam>
+        /// <param name="parsers"> Parsers to apply </param>
+        /// <returns> Parser which sequentally tries to apply the given parsers until one succeeds or all fails </returns>
+        public static IParser<T> Choice<T>(IEnumerable<IParser<T>> parsers)
+        {
+            return new ChoiceParser<T>(parsers);
         }
 
         /// <summary>
