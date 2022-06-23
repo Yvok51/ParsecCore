@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.32002.261
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParsecCore", "ParsecCore\ParsecCore.csproj", "{F96E0082-4CED-4EDB-8641-3FBAF8C8ED11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParsecCore", "ParsecCore\ParsecCore.csproj", "{F96E0082-4CED-4EDB-8641-3FBAF8C8ED11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParsecCoreTests", "ParsecCoreTests\ParsecCoreTests.csproj", "{E6C5C66F-B8C4-45F9-BDDA-8248EEA4BCFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParsecCoreTests", "ParsecCoreTests\ParsecCoreTests.csproj", "{E6C5C66F-B8C4-45F9-BDDA-8248EEA4BCFA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSONParser", "JSONParser\JSONParser.csproj", "{BB1DE261-DDF9-4348-BAD1-65F88D10F467}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{E6C5C66F-B8C4-45F9-BDDA-8248EEA4BCFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6C5C66F-B8C4-45F9-BDDA-8248EEA4BCFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6C5C66F-B8C4-45F9-BDDA-8248EEA4BCFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB1DE261-DDF9-4348-BAD1-65F88D10F467}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB1DE261-DDF9-4348-BAD1-65F88D10F467}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB1DE261-DDF9-4348-BAD1-65F88D10F467}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB1DE261-DDF9-4348-BAD1-65F88D10F467}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
