@@ -5,7 +5,7 @@ using ParsecCore.Parsers;
 
 namespace ParsecCore
 {
-    public class Parse
+    public static class Parser
     {
         public static IParser<char> Whitespace = new SatisfyParser(char.IsWhiteSpace, "whitespace");
         public static IParser<char> Digit = new SatisfyParser(char.IsDigit, "digit");
@@ -105,7 +105,7 @@ namespace ParsecCore
         /// <param name="betweenParser"> The parser for the value inbetween </param>
         /// <param name="rightParser"> The parser for the value on the right </param>
         /// <returns> 
-        /// Parser which parses the entire sequence of leftParse- betweenParser-rightParser but only
+        /// Parser which parses the entire sequence of leftParse-betweenParser-rightParser but only
         /// returns the value parsed by the betweenParser
         /// </returns>
         public static IParser<TBetween> Between<TLeft, TBetween, TRight>(
@@ -118,6 +118,26 @@ namespace ParsecCore
                    from between in betweenParser
                    from r in rightParser
                    select between;
+        }
+
+        /// <summary>
+        /// Returns a parser which parses a value in between two other values
+        /// Usefull for quoted strings, arrays, ...
+        /// </summary>
+        /// <typeparam name="TOutside"> The result type of the parser of the outside values </typeparam>
+        /// <typeparam name="TBetween"> The result type of the parser of the inbetween value </typeparam>
+        /// <param name="outsideParser"> The parser for the outside values </param>
+        /// <param name="betweenParser"> The parser for the value inbetween </param>
+        /// <returns>
+        /// Parser which parses the entire sequence of outsideParser-betweenParser-outsideParser but only
+        /// returns the value parsed by the betweenParser
+        /// </returns>
+        public static IParser<TBetween> Between<TOutside, TBetween>(
+            IParser<TOutside> outsideParser,
+            IParser<TBetween> betweenParser
+        )
+        {
+            return Between(outsideParser, betweenParser, outsideParser);
         }
     }
 }
