@@ -2,6 +2,7 @@
 
 using ParsecCore.Input;
 using ParsecCore.EitherNS;
+using ParsecCore.MaybeNS;
 
 namespace ParsecCore
 {
@@ -14,26 +15,23 @@ namespace ParsecCore
     {
         public ManyParser(IParser<T> parser)
         {
-            _parser = parser;
+            _parser = parser.Optional();
         }
 
         public IEither<ParseError, IEnumerable<T>> Parse(IParserInput input)
         {
             List<T> result = new List<T>();
 
-            var previousPosition = input.Position;
             var parseResult = _parser.Parse(input);
-            while (parseResult.HasRight)
+            while (parseResult.HasRight && !parseResult.Right.IsEmpty)
             {
-                result.Add(parseResult.Right);
-                previousPosition = input.Position;
+                result.Add(parseResult.Right.Value);
                 parseResult = _parser.Parse(input);
             }
 
-            input.Seek(previousPosition);
             return Either.Result<ParseError, IEnumerable<T>>(result);
         }
 
-        private readonly IParser<T> _parser;
+        private readonly IParser<IMaybe<T>> _parser;
     }
 }
