@@ -2,6 +2,9 @@
 
 namespace ParsecCore
 {
+    /// <summary>
+    /// Represents an error which occured during parsing
+    /// </summary>
     public struct ParseError
     {
         public ParseError(string error, Position position)
@@ -16,7 +19,7 @@ namespace ParsecCore
 
         public override string ToString()
         {
-            return $"line {Position} - {Error}";
+            return $"{Position} - {Error}";
         }
     }
 }

@@ -23,9 +23,4 @@
     <ProjectReference Include="..\ParsecCore\ParsecCore.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Either\" />
-    <Folder Include="Maybe\" />
-  </ItemGroup>
-
 </Project>

@@ -8,9 +8,22 @@ namespace ParsecCore
 {
     public static class Parser
     {
+        /// <summary>
+        /// Parses a single whitespace
+        /// </summary>
         public static IParser<char> Whitespace = new SatisfyParser(char.IsWhiteSpace, "whitespace");
+        /// <summary>
+        /// Parses as much whitespace as possible
+        /// </summary>
         public static IParser<string> Spaces = Whitespace.Many();
+        /// <summary>
+        /// Parses a single digit
+        /// </summary>
         public static IParser<char> Digit = new SatisfyParser(char.IsDigit, "digit");
+        /// <summary>
+        /// Parses as many digits as possible, but at least one
+        /// </summary>
+        public static IParser<string> Digits = Digit.Many1();
 
         /// <summary>
         /// Return a parser which does not consume any input and only returns the value given
