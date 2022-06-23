@@ -72,8 +72,16 @@ namespace JSONParser.Parsers
             select Double.Parse(minus.Else("") + integer + frac.Else("") + exp.Else(""));
 
         ////////// STRING //////////
+        /*
+        private static IParser<char> hexadecimalDigit = new SatisfyParser(
+            c => Char.IsDigit(c) || c == 'A' || c == 'B' || c == 'C' || c == 'D' || c == 'E' || c == 'F',
+            "hexadecimal digit"
+        );
+        */
         private static IParser<char> quote = new CharParser('\"');
         private static IParser<char> escape = new CharParser('\\');
+
+        private static IParser<char> nonQouteChar = new SatisfyParser(c => c != '"', "non-quote character");
 
         private static Dictionary<char, char> toEscaped = new Dictionary<char, char> 
         {
@@ -85,7 +93,7 @@ namespace JSONParser.Parsers
             { 'r', '\r' },
             { 't', '\t' },
         };
-        static Func<IEnumerable<char>, IEnumerable<IParser<char>>> charsToParsers = (IEnumerable<char> chars) =>
+        private static IEnumerable<IParser<char>> charsToParsers(IEnumerable<char> chars)
         {
             List<IParser<char>> parsers = new List<IParser<char>>();
             foreach (var c in chars)
@@ -93,12 +101,15 @@ namespace JSONParser.Parsers
                 parsers.Add(new CharParser(c));
             }
             return parsers;
-        };
+        }
+
         private static IParser<char> charToEscape = Parser.Choice(charsToParsers(toEscaped.Keys));
         private static IParser<char> escapedChar =
             from esc in escape
             from escapedChar in charToEscape
             select toEscaped[escapedChar];
 
+        private static IParser<char> stringChar = Parser.Choice(escapedChar, nonQouteChar);
+        public static IParser<string> StringParser = Parser.Between(quote, stringChar.Many());
     }
 }
