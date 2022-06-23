@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using ParsecCore.Maybe;
+using ParsecCore.Parsers;
 
 namespace ParsecCore
 {
@@ -122,6 +123,27 @@ namespace ParsecCore
             return from firstParse in parser
                    from restParses in parser.Many()
                    select firstParse.ToString() + restParses;
+        }
+
+        /// <summary>
+        /// Returns a parser which parser exactly the string given
+        /// </summary>
+        /// <param name="stringToParse"> The string for the parser to parse </param>
+        /// <returns> Parser which parses exactly the given string </returns>
+        public static IParser<string> String(string stringToParse)
+        {
+            Func<string, IEnumerable<IParser<char>>> stringToCharParsers = (string str) =>
+            {
+                IParser<char>[] parsers = new IParser<char>[str.Length];
+                for (int i = 0; i < str.Length; ++i)
+                {
+                    parsers[i] = new CharParser(str[i]);
+                }
+                return parsers;
+            };
+
+            return from chars in new AllParser<char>(stringToCharParsers(stringToParse))
+                   select string.Concat(chars);
         }
 
         /// <summary>
