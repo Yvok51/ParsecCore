@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Globalization;
 
 using ParsecCore;
 using ParsecCore.Parsers;
@@ -64,12 +65,13 @@ namespace JSONParser
             from digits in Parser.Digits
             select  symbol + sign.Else("") + digits;
 
+        private static CultureInfo USCulture = new CultureInfo("en-US");
         public static IParser<double> Number =
             from minus in minus.Optional()
             from integer in integer
             from frac in fractionalPart.Optional()
             from exp in exponent.Optional()
-            select Double.Parse(minus.Else("") + integer + frac.Else("") + exp.Else(""));
+            select Double.Parse(minus.Else("") + integer + frac.Else("") + exp.Else(""), USCulture);
 
         ////////// STRING //////////
         private static IParser<char> hexadecimalDigit = Parser.Satisfy(
