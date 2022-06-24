@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using ParsecCore.MaybeNS;
-using ParsecCore.HelpParsers;
+using ParsecCore.Parsers;
 
 namespace ParsecCore
 {
