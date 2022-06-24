@@ -18,15 +18,16 @@ namespace ParsecCore.Parsers
 
         public IEither<ParseError, char> Parse(IParserInput input)
         {
+            var readPosition = input.Position;
             if (input.EndOfInput)
             {
-                return Either.Error<ParseError, char>(new ParseError("Unexpected end of file, character expected", input.Position));
+                return Either.Error<ParseError, char>(new ParseError("Unexpected end of file, character expected", readPosition));
             }
 
             char c = input.Read();
             if (!_predicate(c)) 
             {
-                return Either.Error<ParseError, char>(new ParseError($"character '{c}' does not conform, {_description} exprected", input.Position));
+                return Either.Error<ParseError, char>(new ParseError($"character '{c}' does not conform, {_description} exprected", readPosition));
             }
 
             return Either.Result<ParseError, char>(c);
