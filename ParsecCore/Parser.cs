@@ -26,7 +26,7 @@ namespace ParsecCore
         /// <param name="c"> The character to parse </param>
         /// <returns> Parser which parses only the given character </returns>
         public static IParser<char> Char(char c) =>
-            new CharParser(c);
+            new SatisfyParser(i => i == c, $"character {c}");
 
         /// <summary>
         /// Returns a parser which parses a char given it fulfills a predicate
