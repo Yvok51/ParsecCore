@@ -72,12 +72,21 @@ namespace JSONParser.Parsers
             select Double.Parse(minus.Else("") + integer + frac.Else("") + exp.Else(""));
 
         ////////// STRING //////////
-        /*
         private static IParser<char> hexadecimalDigit = new SatisfyParser(
             c => Char.IsDigit(c) || c == 'A' || c == 'B' || c == 'C' || c == 'D' || c == 'E' || c == 'F',
             "hexadecimal digit"
         );
-        */
+        private static IParser<char> hexEncoded =
+            from _ in new CharParser('u')
+            from first in hexadecimalDigit
+            from second in hexadecimalDigit
+            from third in hexadecimalDigit
+            from fourth in hexadecimalDigit
+            select (char) Int32.Parse(
+                new string(new char[] { first, second, third, fourth }),
+                System.Globalization.NumberStyles.AllowHexSpecifier
+            );
+
         private static IParser<char> quote = new CharParser('\"');
         private static IParser<char> escape = new CharParser('\\');
 
@@ -109,7 +118,9 @@ namespace JSONParser.Parsers
             from escapedChar in charToEscape
             select toEscaped[escapedChar];
 
-        private static IParser<char> stringChar = Parser.Choice(escapedChar, nonQouteChar);
+        private static IParser<char> escaped = Parser.Choice(hexEncoded, escapedChar);
+
+        private static IParser<char> stringChar = Parser.Choice(escaped, nonQouteChar);
         public static IParser<string> StringParser = Parser.Between(quote, stringChar.Many());
     }
 }
