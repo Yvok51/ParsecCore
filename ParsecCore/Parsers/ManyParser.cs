@@ -4,7 +4,7 @@ using ParsecCore.Input;
 using ParsecCore.EitherNS;
 using ParsecCore.MaybeNS;
 
-namespace ParsecCore.HelpParsers
+namespace ParsecCore.Parsers
 {
     /// <summary>
     /// Parser which takes a parser and attempts to apply it as many times as possible 

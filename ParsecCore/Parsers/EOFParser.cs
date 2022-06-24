@@ -8,7 +8,7 @@ namespace ParsecCore.Parsers
     /// Parser which parses the end of the file.
     /// Fails if any character is present
     /// </summary>
-    public class EOFParser : IParser<None>
+    class EOFParser : IParser<None>
     {
         public IEither<ParseError, None> Parse(IParserInput input)
         {

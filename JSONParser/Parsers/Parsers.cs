@@ -6,12 +6,12 @@ using ParsecCore;
 using ParsecCore.Parsers;
 using ParsecCore.MaybeNS;
 
-namespace JSONParser.Parsers
+namespace JSONParser
 {
     static class Parsers
     {
         private static IParser<string> whitespace =
-            new SatisfyParser(c => c == ' ' || c == '\n' || c == '\t' || c == '\r', "whitespace").Many();
+            Parser.Satisfy(c => c == ' ' || c == '\n' || c == '\t' || c == '\r', "whitespace").Many();
 
         private static IParser<string> valueSeparator = Parser.Symbol(",");
 
@@ -22,7 +22,7 @@ namespace JSONParser.Parsers
         private static IParser<bool> falseParser = 
             from _ in Parser.Symbol("false")
             select false;
-        public static IParser<bool> BoolParser = Parser.Choice(trueParser, falseParser);
+        public static IParser<bool> Boolean = Parser.Choice(trueParser, falseParser);
 
         ////////// ARRAY //////////
         private static IParser<T> betweenBrackets<T>(IParser<T> betweenParser) =>
@@ -41,7 +41,7 @@ namespace JSONParser.Parsers
         ////////// NUMBER //////////
         private static IParser<string> zero = Parser.String("0");
         private static IParser<string> nonZeroInteger =
-            from firstDigit in new SatisfyParser(c => Char.IsDigit(c) && c != '0', "non-zero digit")
+            from firstDigit in Parser.Satisfy(c => Char.IsDigit(c) && c != '0', "non-zero digit")
             from nextDigits in Parser.Digit.Many()
             select firstDigit.ToString() + nextDigits;
         private static IParser<string> integer = Parser.Choice(zero, nonZeroInteger);
@@ -64,7 +64,7 @@ namespace JSONParser.Parsers
             from digits in Parser.Digits
             select  symbol + sign.Else("") + digits;
 
-        public static IParser<double> number =
+        public static IParser<double> Number =
             from minus in minus.Optional()
             from integer in integer
             from frac in fractionalPart.Optional()
@@ -72,12 +72,12 @@ namespace JSONParser.Parsers
             select Double.Parse(minus.Else("") + integer + frac.Else("") + exp.Else(""));
 
         ////////// STRING //////////
-        private static IParser<char> hexadecimalDigit = new SatisfyParser(
+        private static IParser<char> hexadecimalDigit = Parser.Satisfy(
             c => Char.IsDigit(c) || c == 'A' || c == 'B' || c == 'C' || c == 'D' || c == 'E' || c == 'F',
             "hexadecimal digit"
         );
         private static IParser<char> hexEncoded =
-            from _ in new CharParser('u')
+            from _ in Parser.Char('u')
             from first in hexadecimalDigit
             from second in hexadecimalDigit
             from third in hexadecimalDigit
@@ -87,10 +87,10 @@ namespace JSONParser.Parsers
                 System.Globalization.NumberStyles.AllowHexSpecifier
             );
 
-        private static IParser<char> quote = new CharParser('\"');
-        private static IParser<char> escape = new CharParser('\\');
+        private static IParser<char> quote = Parser.Char('\"');
+        private static IParser<char> escape = Parser.Char('\\');
 
-        private static IParser<char> nonQouteChar = new SatisfyParser(c => c != '"', "non-quote character");
+        private static IParser<char> nonQouteChar = Parser.Satisfy(c => c != '"', "non-quote character");
 
         private static Dictionary<char, char> toEscaped = new Dictionary<char, char> 
         {
@@ -107,7 +107,7 @@ namespace JSONParser.Parsers
             List<IParser<char>> parsers = new List<IParser<char>>();
             foreach (var c in chars)
             {
-                parsers.Add(new CharParser(c));
+                parsers.Add(Parser.Char(c));
             }
             return parsers;
         }
@@ -121,6 +121,6 @@ namespace JSONParser.Parsers
         private static IParser<char> escaped = Parser.Choice(hexEncoded, escapedChar);
 
         private static IParser<char> stringChar = Parser.Choice(escaped, nonQouteChar);
-        public static IParser<string> StringParser = Parser.Between(quote, stringChar.Many());
+        public static IParser<string> String = Parser.Between(quote, stringChar.Many());
     }
 }

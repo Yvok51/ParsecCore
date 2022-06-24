@@ -3,15 +3,44 @@ using System.Collections.Generic;
 
 using ParsecCore.Parsers;
 using ParsecCore.HelpParsers;
+using ParsecCore.Help;
 
 namespace ParsecCore
 {
     public static class Parser
     {
         /// <summary>
+        /// Parser which parses an end of file - end of input
+        /// None is a helper struct which is empty - it only serves the type system
+        /// </summary>
+        public static IParser<None> EOF = new EOFParser();
+
+        /// <summary>
+        /// Parser which parses any character
+        /// </summary>
+        public static IParser<char> AnyChar = new AnyParser();
+
+        /// <summary>
+        /// Returns a parser which parses only the given character
+        /// </summary>
+        /// <param name="c"> The character to parse </param>
+        /// <returns> Parser which parses only the given character </returns>
+        public static IParser<char> Char(char c) =>
+            new CharParser(c);
+
+        /// <summary>
+        /// Returns a parser which parses a char given it fulfills a predicate
+        /// </summary>
+        /// <param name="predicate"> The predicate the character must fulfill </param>
+        /// <param name="description"> Description of the expected character for error messages </param>
+        /// <returns> Parser which parses a character given it fulfills a predicate </returns>
+        public static IParser<char> Satisfy(Predicate<char> predicate, string description) =>
+            new SatisfyParser(predicate, description);
+
+        /// <summary>
         /// Parses a single whitespace
         /// </summary>
-        public static IParser<char> Whitespace = new SatisfyParser(char.IsWhiteSpace, "whitespace");
+        public static IParser<char> Whitespace = Satisfy(char.IsWhiteSpace, "whitespace");
         /// <summary>
         /// Parses as much whitespace as possible
         /// </summary>
@@ -19,7 +48,7 @@ namespace ParsecCore
         /// <summary>
         /// Parses a single digit
         /// </summary>
-        public static IParser<char> Digit = new SatisfyParser(char.IsDigit, "digit");
+        public static IParser<char> Digit = Satisfy(char.IsDigit, "digit");
         /// <summary>
         /// Parses as many digits as possible, but at least one
         /// </summary>
@@ -31,10 +60,8 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of the value the parser returns </typeparam>
         /// <param name="value"> The value for the parser to return </param>
         /// <returns> Parser which returns the given value </returns>
-        public static IParser<T> Return<T>(T value)
-        {
-            return new ReturnParser<T>(value);
-        }
+        public static IParser<T> Return<T>(T value) =>
+            new ReturnParser<T>(value);
 
         /// <summary>
         /// Returns a parser which tries to first apply the first parser and if it succeeds returns the result.
@@ -44,10 +71,8 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of the parsers </typeparam>
         /// <param name="parsers"> Parsers to apply </param>
         /// <returns> Parser which sequentally tries to apply the given parsers until one succeeds or all fails </returns>
-        public static IParser<T> Choice<T>(params IParser<T>[] parsers)
-        {
-            return new ChoiceParser<T>(parsers);
-        }
+        public static IParser<T> Choice<T>(params IParser<T>[] parsers) =>
+            new ChoiceParser<T>(parsers);
 
         /// <summary>
         /// Returns a parser which tries to first apply the first parser and if it succeeds returns the result.
@@ -57,10 +82,8 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of the parsers </typeparam>
         /// <param name="parsers"> Parsers to apply </param>
         /// <returns> Parser which sequentially tries to apply the given parsers until one succeeds or all fails </returns>
-        public static IParser<T> Choice<T>(IEnumerable<IParser<T>> parsers)
-        {
-            return new ChoiceParser<T>(parsers);
-        }
+        public static IParser<T> Choice<T>(IEnumerable<IParser<T>> parsers) =>
+            new ChoiceParser<T>(parsers);
 
         /// <summary>
         /// Returns a parser which tries to parse all of the given parsers in a sequence.
@@ -70,10 +93,8 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of parsers </typeparam>
         /// <param name="parsers"> Parsers to sequentially apply </param>
         /// <returns> Parser which sequentially aplies all of the given parsers </returns>
-        public static IParser<IEnumerable<T>> All<T>(params IParser<T>[] parsers)
-        {
-            return new AllParser<T>(parsers);
-        }
+        public static IParser<IEnumerable<T>> All<T>(params IParser<T>[] parsers) =>
+            new AllParser<T>(parsers);
 
         /// <summary>
         /// Returns a parser which tries to parse all of the given parsers in a sequence.
@@ -83,10 +104,8 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of parsers </typeparam>
         /// <param name="parsers"> Parsers to sequentially apply </param>
         /// <returns> Parser which sequentially aplies all of the given parsers </returns>
-        public static IParser<IEnumerable<T>> All<T>(IEnumerable<IParser<T>> parsers)
-        {
-            return new AllParser<T>(parsers);
-        }
+        public static IParser<IEnumerable<T>> All<T>(IEnumerable<IParser<T>> parsers) =>
+            new AllParser<T>(parsers);
 
         /// <summary>
         /// Returns a parser which parses exactly the string given
@@ -100,7 +119,7 @@ namespace ParsecCore
                 IParser<char>[] parsers = new IParser<char>[str.Length];
                 for (int i = 0; i < str.Length; ++i)
                 {
-                    parsers[i] = new CharParser(str[i]);
+                    parsers[i] = Char(str[i]);
                 }
                 return parsers;
             };
