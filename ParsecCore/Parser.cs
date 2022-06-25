@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 
 using ParsecCore.Parsers;
-using ParsecCore.HelpParsers;
 using ParsecCore.Help;
 
 namespace ParsecCore
