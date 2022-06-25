@@ -71,12 +71,16 @@ namespace JSONParser
             select new NumberValue(n);
 
         ////////// STRING //////////
+        private static IParser<char> quote = Parser.Char('\"');
+        private static IParser<char> escape = Parser.Char('\\');
+
         private static IParser<char> hexadecimalDigit = Parser.Satisfy(
             c => Char.IsDigit(c) || c == 'A' || c == 'B' || c == 'C' || c == 'D' || c == 'E' || c == 'F',
             "hexadecimal digit"
         );
         private static IParser<char> hexEncoded =
-            from _ in Parser.Char('u')
+            from _ in escape
+            from __ in Parser.Char('u')
             from first in hexadecimalDigit
             from second in hexadecimalDigit
             from third in hexadecimalDigit
@@ -85,9 +89,6 @@ namespace JSONParser
                 new string(new char[] { first, second, third, fourth }),
                 NumberStyles.AllowHexSpecifier
             );
-
-        private static IParser<char> quote = Parser.Char('\"');
-        private static IParser<char> escape = Parser.Char('\\');
 
         private static IParser<char> nonQouteChar = Parser.Satisfy(c => c != '"', "non-quote character");
 
