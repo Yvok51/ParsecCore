@@ -1,0 +1,6 @@
+﻿namespace JSONParser
+{
+    class JsonValue
+    {
+    }
+}
