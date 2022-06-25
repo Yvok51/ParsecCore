@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 
 namespace JSONParser
 {
@@ -13,7 +14,21 @@ namespace JSONParser
 
         public List<JsonValue> Value { get => _values; }
 
-        public override string ToString() => _values.ToString();
+        public override string ToString() 
+        {
+            StringBuilder builder = new StringBuilder();
+            string seperator = ",";
+            builder.Append("[");
+            foreach (var val in _values)
+            {
+                builder.Append(" ");
+                builder.Append(val.ToString());
+                builder.Append(seperator);
+            }
+            builder.Remove(builder.Length - seperator.Length, seperator.Length);
+            builder.Append(" ]");
+            return builder.ToString();
+        }
 
         public override int GetHashCode() => _values.GetHashCode();
 

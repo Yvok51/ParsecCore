@@ -32,6 +32,11 @@ namespace ParsecCore.EitherNS
             return right(_result);
         }
 
+        public override string ToString()
+        {
+            return _result is null ? "null" : _result.ToString();
+        }
+
         private readonly TResult _result;
     }
 }

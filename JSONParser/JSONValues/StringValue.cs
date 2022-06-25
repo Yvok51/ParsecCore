@@ -11,7 +11,7 @@
 
         public string Value { get => _value; }
 
-        public override string ToString() => _value;
+        public override string ToString() => $"\"{_value}\"";
 
         public override int GetHashCode() => _value.GetHashCode();
 
