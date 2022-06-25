@@ -120,7 +120,7 @@ namespace JSONParser
         private static IParser<char> escaped = Parser.Choice(hexEncoded, escapedChar);
 
         private static IParser<char> stringChar = Parser.Choice(escaped, nonQouteChar);
-        public static IParser<string> String = Parser.Between(quote, stringChar.Many());
+        private static IParser<string> String = Parser.Between(quote, stringChar.Many());
 
         public static IParser<StringValue> StringValue =
             from str in String
