@@ -2,7 +2,7 @@
 
 namespace ParsecCore.EitherNS
 {
-    public interface IEither<TLeft, TRight>
+    public interface IEither<out TLeft, out TRight>
     {
         /// <summary>
         /// Takes the IEither objects and maps its value according to the given function
