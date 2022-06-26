@@ -16,7 +16,7 @@ namespace JSONParser
     {
         // We don't use Parser.Spaces since the its definition of whitespace is different
         // to the definition found in the JSON RFC.
-        // Subsequently we also don't use Parser.Token and Parser.Symbol but instead Parser.Between
+        // Subsequently we also don't use Parser.Token and Parser.Symbol but instead Combinator.Between
         private static readonly IParser<string> whitespace =
             Parser.Satisfy(c => c == ' ' || c == '\n' || c == '\t' || c == '\r', "whitespace").Many();
 
@@ -34,7 +34,7 @@ namespace JSONParser
         private static readonly IParser<bool> falseParser =
             from _ in Parser.Symbol("false")
             select false;
-        private static readonly IParser<bool> Boolean = Parser.Choice(trueParser, falseParser);
+        private static readonly IParser<bool> Boolean = Combinator.Choice(trueParser, falseParser);
         public static IParser<BoolValue> BoolValue =
             from b in Boolean
             select new BoolValue(b);
@@ -45,11 +45,11 @@ namespace JSONParser
             from firstDigit in Parser.Satisfy(c => Char.IsDigit(c) && c != '0', "non-zero digit")
             from nextDigits in Parser.Digit.Many()
             select firstDigit.ToString() + nextDigits;
-        private static readonly IParser<string> integer = Parser.Choice(zero, nonZeroInteger);
+        private static readonly IParser<string> integer = Combinator.Choice(zero, nonZeroInteger);
 
         private static readonly IParser<string> minus = Parser.String("-");
         private static readonly IParser<string> plus = Parser.String("+");
-        private static readonly IParser<string> plusOrMinus = Parser.Choice(plus, minus);
+        private static readonly IParser<string> plusOrMinus = Combinator.Choice(plus, minus);
 
         private static readonly IParser<string> decimalPoint = Parser.String(".");
         private static readonly IParser<string> fractionalPart =
@@ -58,7 +58,7 @@ namespace JSONParser
             select point + digits;
 
         private static readonly IParser<string> exponentSymbol =
-            Parser.Choice(Parser.String("e"), Parser.String("E"));
+            Combinator.Choice(Parser.String("e"), Parser.String("E"));
         private static readonly IParser<string> exponent =
             from symbol in exponentSymbol
             from sign in plusOrMinus.Optional()
@@ -119,16 +119,16 @@ namespace JSONParser
             return parsers;
         }
 
-        private static readonly IParser<char> charToEscape = Parser.Choice(charsToParsers(toEscaped.Keys));
+        private static readonly IParser<char> charToEscape = Combinator.Choice(charsToParsers(toEscaped.Keys));
         private static readonly IParser<char> escapedChar =
             from esc in escape
             from escapedChar in charToEscape
             select toEscaped[escapedChar];
 
-        private static readonly IParser<char> escaped = Parser.Choice(hexEncoded, escapedChar);
+        private static readonly IParser<char> escaped = Combinator.Choice(hexEncoded, escapedChar);
 
-        private static readonly IParser<char> stringChar = Parser.Choice(escaped, nonQouteChar);
-        private static readonly IParser<string> String = Parser.Between(quote, stringChar.Many());
+        private static readonly IParser<char> stringChar = Combinator.Choice(escaped, nonQouteChar);
+        private static readonly IParser<string> String = Combinator.Between(quote, stringChar.Many());
 
         public static readonly IParser<StringValue> StringValue =
             from str in String
@@ -136,14 +136,14 @@ namespace JSONParser
 
         ////////// VALUE //////////
         public static readonly IParser<JsonValue> JsonValue =
-            Parser.Between(whitespace, Parser.Choice<JsonValue>(NullValue, BoolValue, NumberValue, StringValue, ArrayValue, ObjectValue));
+            Combinator.Between(whitespace, Combinator.Choice<JsonValue>(NullValue, BoolValue, NumberValue, StringValue, ArrayValue, ObjectValue));
 
         ////////// ARRAY //////////
         private static IParser<T> betweenBrackets<T>(IParser<T> betweenParser) =>
-            Parser.Between(Parser.Symbol("["), betweenParser, Parser.Symbol("]"));
+            Combinator.Between(Parser.Symbol("["), betweenParser, Parser.Symbol("]"));
 
         private static IParser<IEnumerable<T>> ListOfParser<T>(IParser<T> valueParser) =>
-            betweenBrackets(Parser.SepBy(valueParser, valueSeparator));
+            betweenBrackets(Combinator.SepBy(valueParser, valueSeparator));
 
         public static readonly IParser<ArrayValue> ArrayValue =
             from values in ListOfParser(JsonValue)
@@ -151,14 +151,14 @@ namespace JSONParser
 
         ////////// OBJECT //////////
         private static IParser<T> betweenBraces<T>(IParser<T> betweenParser) =>
-            Parser.Between(Parser.Symbol("{"), betweenParser, Parser.Symbol("}"));
+            Combinator.Between(Parser.Symbol("{"), betweenParser, Parser.Symbol("}"));
 
         private static IParser<IEnumerable<T>> ObjectOfParser<T>(IParser<T> valueParser) =>
-            betweenBraces(Parser.SepBy(valueParser, valueSeparator));
+            betweenBraces(Combinator.SepBy(valueParser, valueSeparator));
 
-        private static readonly IParser<string> nameSeperator = Parser.Between(whitespace, Parser.String(":"));
+        private static readonly IParser<string> nameSeperator = Combinator.Between(whitespace, Parser.String(":"));
         private static readonly IParser<ObjectKeyValuePair> member =
-            from key in Parser.Between(whitespace, StringValue)
+            from key in Combinator.Between(whitespace, StringValue)
             from sep in nameSeperator
             from value in JsonValue
             select new ObjectKeyValuePair { Key = key, Value = value };

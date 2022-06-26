@@ -15,7 +15,7 @@ namespace ParsecCoreTests
             IParser<string> firstParser = Parser.String("You underestimate");
             IParser<string> secondParser = Parser.String(" ");
             IParser<string> thirdParser = Parser.String("my power!");
-            IParser<IEnumerable<string>> parser = Parser.All(firstParser, secondParser, thirdParser);
+            IParser<IEnumerable<string>> parser = Combinator.All(firstParser, secondParser, thirdParser);
             IParserInput input = ParserInput.Create("You underestimate my power!");
 
             var result = parser.Parse(input);
@@ -34,7 +34,7 @@ namespace ParsecCoreTests
             IParser<string> firstParser = Parser.String("I ");
             IParser<string> secondParser = Parser.String("love ");
             IParser<string> thirdParser = Parser.String("sand");
-            IParser<IEnumerable<string>> parser = Parser.All(firstParser, secondParser, thirdParser);
+            IParser<IEnumerable<string>> parser = Combinator.All(firstParser, secondParser, thirdParser);
             IParserInput input = ParserInput.Create("I love democracy");
 
             var result = parser.Parse(input);
@@ -48,7 +48,7 @@ namespace ParsecCoreTests
             IParser<string> firstParser = Parser.String("I ");
             IParser<string> secondParser = Parser.String("love ");
             IParser<string> thirdParser = Parser.String("sand");
-            IParser<IEnumerable<string>> parser = Parser.All(firstParser, secondParser, thirdParser);
+            IParser<IEnumerable<string>> parser = Combinator.All(firstParser, secondParser, thirdParser);
             IParserInput input = ParserInput.Create("I love democracy");
 
             var _ = parser.Parse(input);
