@@ -125,5 +125,28 @@ namespace ParsecCore
         /// <returns> Parser which optionally applies the given parser </returns>
         public static Parser<IMaybe<T>> Optional<T>(this Parser<T> parser) =>
             OptionalParser.Parser(parser);
+
+        /// <summary>
+        /// Makes the parser not consume any input if it fails.
+        /// </summary>
+        /// <typeparam name="T"> The type of parser </typeparam>
+        /// <param name="parser"> The parser to modify </param>
+        /// <returns> Parser which does not consume any input on failure </returns>
+        public static Parser<T> Try<T>(this Parser<T> parser) =>
+            (input) =>
+            {
+                var initialPosition = input.Position;
+                var result = parser(input);
+                if (result.HasRight)
+                {
+                    return result;
+                }
+
+                if (input.Position != initialPosition)
+                {
+                    input.Seek(initialPosition);
+                }
+                return result;
+            };
     }
 }
