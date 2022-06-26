@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using ParsecCore.ParsersHelp;
 
@@ -12,7 +9,7 @@ namespace ParsecCore
     {
         /// <summary>
         /// Returns a parser which tries to first apply the first parser and if it succeeds returns the result.
-        /// If it fails *and does not consume any input* then the second parser is applied and so on.
+        /// If it fails <strong>and does not consume any input</strong> then the second parser is applied and so on.
         /// If any parser fails while consuming input, then the parser's error is returned.
         /// If all parsers fail then returns the ParseError of tha last parser.
         /// 
@@ -29,7 +26,7 @@ namespace ParsecCore
 
         /// <summary>
         /// Returns a parser which tries to first apply the first parser and if it succeeds returns the result.
-        /// If it fails *and does not consume any input* then the second parser is applied and so on.
+        /// If it fails <strong>and does not consume any input</strong> then the second parser is applied and so on.
         /// If any parser fails while consuming input, then the parser's error is returned.
         /// If all parsers fail then returns the ParseError of tha last parser.
         /// 
