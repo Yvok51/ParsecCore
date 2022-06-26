@@ -19,7 +19,6 @@ namespace ParsecCore.ParsersHelp
         {
             return (input) =>
             {
-                var initialPosition = input.Position;
                 List<T> result = new List<T>();
 
                 foreach (var parser in parsers)
@@ -27,7 +26,6 @@ namespace ParsecCore.ParsersHelp
                     var parsedResult = parser(input);
                     if (parsedResult.HasLeft)
                     {
-                        input.Seek(initialPosition);
                         return Either.Error<ParseError, IEnumerable<T>>(parsedResult.Left);
                     }
 

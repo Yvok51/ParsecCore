@@ -21,12 +21,10 @@ namespace ParsecCore.ParsersHelp
                 foreach (var parser in parsers)
                 {
                     parseResult = parser(input);
-                    if (parseResult.HasRight)
+                    if (parseResult.HasRight || input.Position != initialPosition)
                     {
                         return parseResult;
                     }
-
-                    input.Seek(initialPosition);
                 }
 
                 return parseResult;

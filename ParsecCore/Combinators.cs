@@ -12,8 +12,14 @@ namespace ParsecCore
     {
         /// <summary>
         /// Returns a parser which tries to first apply the first parser and if it succeeds returns the result.
-        /// If it fails then the second parser is applied on the same input as the first and so on.
-        /// If all parsers fail then returns the ParseError of tha last parser
+        /// If it fails *and does not consume any input* then the second parser is applied and so on.
+        /// If any parser fails while consuming input, then the parser's error is returned.
+        /// If all parsers fail then returns the ParseError of tha last parser.
+        /// 
+        /// Because the parser fails if any parser fails while consuming input the lookahead is 1.
+        /// The parser behaves in such a way because it leads to a more efficient inmplementation.
+        /// If there is need for parsing to not end in the described situation, then consider modifying
+        /// the parsers with the .Try() method.
         /// </summary>
         /// <typeparam name="T"> The type of the parsers </typeparam>
         /// <param name="parsers"> Parsers to apply </param>
@@ -23,8 +29,14 @@ namespace ParsecCore
 
         /// <summary>
         /// Returns a parser which tries to first apply the first parser and if it succeeds returns the result.
-        /// If it fails then the second parser is applied on the same input as the first and so on.
-        /// If all parsers fail then returns the ParseError of tha last parser
+        /// If it fails *and does not consume any input* then the second parser is applied and so on.
+        /// If any parser fails while consuming input, then the parser's error is returned.
+        /// If all parsers fail then returns the ParseError of tha last parser.
+        /// 
+        /// Because the parser fails if any parser fails while consuming input the lookahead is 1.
+        /// The parser behaves in such a way because it leads to a more efficient inmplementation.
+        /// If there is need for parsing to not end in the described situation, then consider modifying
+        /// the parsers with the .Try() method.
         /// </summary>
         /// <typeparam name="T"> The type of the parsers </typeparam>
         /// <param name="parsers"> Parsers to apply </param>
@@ -127,6 +139,6 @@ namespace ParsecCore
             Parser<TValue> valueParser,
             Parser<TSeparator> separatorParser
         ) =>
-            SepBy1Parser.Parser<TValue, TSeparator>(valueParser, separatorParser);
+            SepBy1Parser.Parser(valueParser, separatorParser);
     }
 }
