@@ -72,6 +72,9 @@ namespace ParsecCore
         /// <summary>
         /// Returns a parser which tries to parse according to the given parser as many times as possible.
         /// Can parse even zero times.
+        /// If parsing fails in the middle of one iteration, then the parser does <strong>NOT</strong> fail
+        /// and returns all of the parsed iterations. Only input equivalent to the fully parsed iterations
+        /// is consumed.
         /// </summary>
         /// <typeparam name="T"> The type of the parser </typeparam>
         /// <param name="parser"> The parser to apply </param>
@@ -82,6 +85,9 @@ namespace ParsecCore
         /// <summary>
         /// Returns a parser which tries to parse according to the given parser as many times as possible.
         /// Must be sucessful at least once otherwise an error is returned.
+        /// If parsing fails in the middle of one iteration, then the parser does <strong>NOT</strong> fail
+        /// and returns all of the parsed iterations. Only input equivalent to the fully parsed iterations
+        /// is consumed.
         /// </summary>
         /// <typeparam name="T"> The type of the parser </typeparam>
         /// <param name="parser"> The parser to apply </param>
@@ -143,6 +149,18 @@ namespace ParsecCore
             return from _ in parser.Many1()
                    select new None();
         }
+        
+        /// <summary>
+        /// Aplies the parser a given amount of times.
+        /// If the count is zero or less, then the returned parser is equivalent to
+        /// the <see cref="Parsers.Return{T}(T)">ReturnParser</see>
+        /// </summary>
+        /// <typeparam name="T"> The type of parser to apply </typeparam>
+        /// <param name="parser"> The parser to apply </param>
+        /// <param name="count"> Number of times to apply the parser </param>
+        /// <returns></returns>
+        public static Parser<IEnumerable<T>> Count<T>(this Parser<T> parser, int count) =>
+            CountParser.Parser(parser, count);
 
         /// <summary>
         /// Returns a parser which either parses its value or returns 
