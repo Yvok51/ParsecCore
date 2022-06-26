@@ -16,11 +16,6 @@ namespace ParsecCore
         public static readonly Parser<None> EOF = EOFParser.Parser();
 
         /// <summary>
-        /// Parser which parses any character
-        /// </summary>
-        public static readonly Parser<char> AnyChar = AnyParser.Parser();
-
-        /// <summary>
         /// Returns a parser which parses a char given it fulfills a predicate.
         /// Consumes the read character only if the character passes the predicate.
         /// </summary>
@@ -29,6 +24,11 @@ namespace ParsecCore
         /// <returns> Parser which parses a character given it fulfills a predicate </returns>
         public static Parser<char> Satisfy(Predicate<char> predicate, string description) =>
             SatisfyParser.Parser(predicate, description);
+
+        /// <summary>
+        /// Parser which parses any character
+        /// </summary>
+        public static readonly Parser<char> AnyChar = Satisfy(c => true, "any character");
 
         /// <summary>
         /// Returns a parser which parses only the given character
