@@ -113,7 +113,7 @@ namespace ParsecCore
         /// <returns> Parser which parses exactly the given string </returns>
         public static IParser<string> String(string stringToParse)
         {
-            Func<string, IEnumerable<IParser<char>>> stringToCharParsers = (string str) =>
+            static IEnumerable<IParser<char>> stringToCharParsers(string str)
             {
                 IParser<char>[] parsers = new IParser<char>[str.Length];
                 for (int i = 0; i < str.Length; ++i)
@@ -121,22 +121,10 @@ namespace ParsecCore
                     parsers[i] = Char(str[i]);
                 }
                 return parsers;
-            };
+            }
 
             return from chars in new AllParser<char>(stringToCharParsers(stringToParse))
                    select string.Concat(chars);
-        }
-
-        /// <summary>
-        /// Returns a parser which parses exactly the given string and any whitespace afterwards
-        /// </summary>
-        /// <param name="stringToParse"> The string for the parser to parse </param>
-        /// <returns> Parser which parses exactly the given string and any whitespace afterwards </returns>
-        public static IParser<string> Symbol(string stringToParse)
-        {
-            return from str in String(stringToParse)
-                   from space in Spaces
-                   select str;
         }
 
         /// <summary>
@@ -180,10 +168,25 @@ namespace ParsecCore
         public static IParser<TBetween> Between<TOutside, TBetween>(
             IParser<TOutside> outsideParser,
             IParser<TBetween> betweenParser
-        )
-        {
-            return Between(outsideParser, betweenParser, outsideParser);
-        }
+        ) =>
+            Between(outsideParser, betweenParser, outsideParser);
+
+        /// <summary>
+        /// Returns a parser which ignores any whitespace before or after the parsed value
+        /// </summary>
+        /// <typeparam name="T"> The type of parser </typeparam>
+        /// <param name="parser"> What value to parse between the whitespace </param>
+        /// <returns>
+        /// Parser which parses the same value as the input parser surrounded by an arbitrary amount of whitespace.
+        /// </returns>
+        public static IParser<T> Token<T>(IParser<T> parser) => Between(Spaces, parser);
+
+        /// <summary>
+        /// Returns a parser which parses exactly the given string and any whitespace before or after it
+        /// </summary>
+        /// <param name="stringToParse"> The string for the parser to parse </param>
+        /// <returns> Parser which parses exactly the given string and any whitespace afterwards </returns>
+        public static IParser<string> Symbol(string stringToParse) => Token(String(stringToParse));
 
         /// <summary>
         /// Parse seperated values. Parses a list of values each of which is seperated from the other.
@@ -197,10 +200,8 @@ namespace ParsecCore
         public static IParser<IEnumerable<TValue>> SepBy<TValue, TSeparator>(
             IParser<TValue> valueParser,
             IParser<TSeparator> separatorParser
-        )
-        {
-            return Choice(SepBy1(valueParser, separatorParser), Return<IEnumerable<TValue>>(Array.Empty<TValue>()));
-        }
+        ) => 
+            Choice(SepBy1(valueParser, separatorParser), Return<IEnumerable<TValue>>(Array.Empty<TValue>()));
 
         /// <summary>
         /// Parse seperated values. Parses a list of values each of which is seperated from the other.
@@ -215,9 +216,7 @@ namespace ParsecCore
         public static IParser<IEnumerable<TValue>> SepBy1<TValue, TSeparator>(
             IParser<TValue> valueParser,
             IParser<TSeparator> separatorParser
-)
-        {
-            return new HelpParsers.SepBy1Parser<TValue, TSeparator>(valueParser, separatorParser);
-        }
+        ) =>
+            new HelpParsers.SepBy1Parser<TValue, TSeparator>(valueParser, separatorParser);
     }
 }
