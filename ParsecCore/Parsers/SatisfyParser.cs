@@ -5,7 +5,8 @@ using ParsecCore.EitherNS;
 namespace ParsecCore.ParsersHelp
 {
     /// <summary>
-    /// Parser which consumes a single character and succeeds if the character passes a predicate
+    /// Parser which succeeds if the character passes a predicate.
+    /// It consumes the read character only if the predicate is successfull
     /// </summary>
     class SatisfyParser
     {
@@ -14,18 +15,21 @@ namespace ParsecCore.ParsersHelp
             return (input) =>
             {
                 var readPosition = input.Position;
-                var result = AnyParser.Parser()(input);
-                if (result.HasLeft) 
+                if (input.EndOfInput)
                 {
-                    return result;
+                    return Either.Error<ParseError, char>(new ParseError("Unexpected end of file encountered", input.Position));
                 }
 
-                if (!predicate(result.Right))
+                char read = input.Peek();
+
+                if (!predicate(read))
                 {
-                    return Either.Error<ParseError, char>(new ParseError($"character '{result.Right}' does not conform, {predicateDescription} exprected", readPosition));
+                    return Either.Error<ParseError, char>(new ParseError($"character '{read}' does not conform, {predicateDescription} exprected", readPosition));
                 }
 
-                return result;
+                input.Read();
+
+                return Either.Result<ParseError, char>(read);
             };
         }
     }

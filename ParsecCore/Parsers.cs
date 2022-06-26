@@ -21,7 +21,8 @@ namespace ParsecCore
         public static readonly Parser<char> AnyChar = AnyParser.Parser();
 
         /// <summary>
-        /// Returns a parser which parses a char given it fulfills a predicate
+        /// Returns a parser which parses a char given it fulfills a predicate.
+        /// Consumes the read character only if the character passes the predicate.
         /// </summary>
         /// <param name="predicate"> The predicate the character must fulfill </param>
         /// <param name="description"> Description of the expected character for error messages </param>

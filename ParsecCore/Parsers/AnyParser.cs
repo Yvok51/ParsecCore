@@ -10,16 +10,7 @@ namespace ParsecCore.ParsersHelp
     {
         public static Parser<char> Parser()
         {
-            return (input) =>
-            {
-                if (input.EndOfInput)
-                {
-                    return new Error<ParseError, char>(new ParseError("Unexpected end of file encountered", input.Position));
-                }
-
-                char matched = input.Read();
-                return new Result<ParseError, char>(matched);
-            };
+            return SatisfyParser.Parser((c) => true, "any character");
         }
     }
 }
