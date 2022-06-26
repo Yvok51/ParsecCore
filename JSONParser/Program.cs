@@ -34,7 +34,7 @@ namespace JSONParser
         static void Main(string[] args)
         {
             var input = ParserInput.Create(jsonString);
-            var result = Parsers.JsonValue.Parse(input);
+            var result = JSONParsers.JsonValue(input);
 
             Console.WriteLine(result);
         }

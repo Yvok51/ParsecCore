@@ -3,38 +3,34 @@
 using ParsecCore.Input;
 using ParsecCore.EitherNS;
 
-namespace ParsecCore.Parsers
+namespace ParsecCore.ParsersHelp
 {
-    class ChoiceParser<T> : IParser<T>
+    class ChoiceParser
     {
-        public ChoiceParser(params IParser<T>[] parsers)
+        public static Parser<T> Parser<T>(params Parser<T>[] parsers)
         {
-            _parsers = parsers;
+            return Parser((IEnumerable<Parser<T>>)parsers);
         }
 
-        public ChoiceParser(IEnumerable<IParser<T>> parsers)
+        public static Parser<T> Parser<T>(IEnumerable<Parser<T>> parsers)
         {
-            _parsers = parsers;
-        }
-
-        public IEither<ParseError, T> Parse(IParserInput input)
-        {
-            Position initialPosition = input.Position;
-            IEither<ParseError, T> parseResult = Either.Error<ParseError, T>(new ParseError("No match found", initialPosition));
-            foreach (var parser in _parsers)
+            return (input) =>
             {
-                parseResult = parser.Parse(input);
-                if (parseResult.HasRight)
+                Position initialPosition = input.Position;
+                IEither<ParseError, T> parseResult = Either.Error<ParseError, T>(new ParseError("No match found", initialPosition));
+                foreach (var parser in parsers)
                 {
-                    return parseResult;
+                    parseResult = parser(input);
+                    if (parseResult.HasRight)
+                    {
+                        return parseResult;
+                    }
+
+                    input.Seek(initialPosition);
                 }
 
-                input.Seek(initialPosition);
-            }
-
-            return parseResult;
+                return parseResult;
+            };
         }
-
-        IEnumerable<IParser<T>> _parsers;
     }
 }

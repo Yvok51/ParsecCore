@@ -1,48 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using ParsecCore.EitherNS;
-using ParsecCore.Input;
-using ParsecCore.MaybeNS;
 
-namespace ParsecCore.HelpParsers
+namespace ParsecCore
 {
-    class SepBy1Parser<TValue, TSeperator> : IParser<IEnumerable<TValue>>
+    class SepBy1Parser
     {
-        public SepBy1Parser(IParser<TValue> valueParser, IParser<TSeperator> seperatorParser)
+        public static Parser<IEnumerable<TValue>> Parser<TValue, TSeperator>(
+            Parser<TValue> valueParser,
+            Parser<TSeperator> seperatorParser
+        )
         {
-            _valueParser = valueParser;
-            _sepValueParser = (from sep in seperatorParser
+            var sepValueParser = (from sep in seperatorParser
                               from val in valueParser
                               select val).Optional();
-        }
-
-        public IEither<ParseError, IEnumerable<TValue>> Parse(IParserInput input)
-        {
-            List<TValue> result = new List<TValue>();
-
-            // Not using Optional so that we propagate error upwards
-            var initialPosition = input.Position;
-            var firstParse = _valueParser.Parse(input);
-            if (firstParse.HasLeft) 
+            return (input) =>
             {
-                input.Seek(initialPosition);
-                return Either.Error<ParseError, IEnumerable<TValue>>(firstParse.Left);
-            }
+                List<TValue> result = new List<TValue>();
 
-            result.Add(firstParse.Right);
+                // Not using Optional so that we propagate error upwards
+                var initialPosition = input.Position;
+                var firstParse = valueParser(input);
+                if (firstParse.HasLeft)
+                {
+                    input.Seek(initialPosition);
+                    return Either.Error<ParseError, IEnumerable<TValue>>(firstParse.Left);
+                }
 
-            var additionalParse = _sepValueParser.Parse(input);
-            while (additionalParse.HasRight && !additionalParse.Right.IsEmpty)
-            {
-                result.Add(additionalParse.Right.Value);
-                additionalParse = _sepValueParser.Parse(input);
-            }
+                result.Add(firstParse.Right);
 
-            return Either.Result<ParseError, IEnumerable<TValue>>(result);
+                var additionalParse = sepValueParser(input);
+                while (additionalParse.HasRight && !additionalParse.Right.IsEmpty)
+                {
+                    result.Add(additionalParse.Right.Value);
+                    additionalParse = sepValueParser(input);
+                }
+
+                return Either.Result<ParseError, IEnumerable<TValue>>(result);
+            };
         }
-
-        private readonly IParser<TValue> _valueParser;
-        private readonly IParser<IMaybe<TValue>> _sepValueParser;
     }
 }

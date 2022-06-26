@@ -1,9 +1,8 @@
 ﻿using System;
 
 using ParsecCore.EitherNS;
-using ParsecCore.Input;
 
-namespace ParsecCore.Parsers
+namespace ParsecCore.ParsersHelp
 {
     /// <summary>
     /// Class used in the Select extension method to enable "do" notation 
@@ -12,21 +11,15 @@ namespace ParsecCore.Parsers
     /// </summary>
     /// <typeparam name="TSource"> The result type of the provided parser </typeparam>
     /// <typeparam name="TResult"> The result type of the parser with the result value mapped by the given function </typeparam>
-    class MapParser<TSource, TResult> : IParser<TResult>
+    class MapParser
     {
-        public MapParser(IParser<TSource> sourceParser, Func<TSource, TResult> projection)
+        public static Parser<TResult> Parser<TSource, TResult>(Parser<TSource> sourceParser, Func<TSource, TResult> projection)
         {
-            _sourceParser = sourceParser;
-            _projection = projection;
+            return (input) =>
+            {
+                return from value in sourceParser(input)
+                       select projection(value);
+            };
         }
-
-        public IEither<ParseError, TResult> Parse(IParserInput input)
-        {
-            return from value in _sourceParser.Parse(input)
-                   select _projection(value);
-        }
-
-        private readonly IParser<TSource> _sourceParser;
-        private readonly Func<TSource, TResult> _projection;
     }
 }

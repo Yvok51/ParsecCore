@@ -12,13 +12,13 @@ namespace ParsecCoreTests
         [Fact]
         public void AllParsersApplied()
         {
-            IParser<string> firstParser = Parser.String("You underestimate");
-            IParser<string> secondParser = Parser.String(" ");
-            IParser<string> thirdParser = Parser.String("my power!");
-            IParser<IEnumerable<string>> parser = Combinator.All(firstParser, secondParser, thirdParser);
+            Parser<string> firstParser = Parsers.String("You underestimate");
+            Parser<string> secondParser = Parsers.String(" ");
+            Parser<string> thirdParser = Parsers.String("my power!");
+            Parser<IEnumerable<string>> parser = Combinators.All(firstParser, secondParser, thirdParser);
             IParserInput input = ParserInput.Create("You underestimate my power!");
 
-            var result = parser.Parse(input);
+            var result = parser(input);
 
             Assert.True(result.HasRight);
             var resultList = new List<string>(result.Right);
@@ -31,13 +31,13 @@ namespace ParsecCoreTests
         [Fact]
         public void ParsingFailsIfAnyParserFails()
         {
-            IParser<string> firstParser = Parser.String("I ");
-            IParser<string> secondParser = Parser.String("love ");
-            IParser<string> thirdParser = Parser.String("sand");
-            IParser<IEnumerable<string>> parser = Combinator.All(firstParser, secondParser, thirdParser);
+            Parser<string> firstParser = Parsers.String("I ");
+            Parser<string> secondParser = Parsers.String("love ");
+            Parser<string> thirdParser = Parsers.String("sand");
+            Parser<IEnumerable<string>> parser = Combinators.All(firstParser, secondParser, thirdParser);
             IParserInput input = ParserInput.Create("I love democracy");
 
-            var result = parser.Parse(input);
+            var result = parser(input);
 
             Assert.True(result.HasLeft);
         }
@@ -45,13 +45,13 @@ namespace ParsecCoreTests
         [Fact]
         public void PositionNotChangedWhenParsingFails()
         {
-            IParser<string> firstParser = Parser.String("I ");
-            IParser<string> secondParser = Parser.String("love ");
-            IParser<string> thirdParser = Parser.String("sand");
-            IParser<IEnumerable<string>> parser = Combinator.All(firstParser, secondParser, thirdParser);
+            Parser<string> firstParser = Parsers.String("I ");
+            Parser<string> secondParser = Parsers.String("love ");
+            Parser<string> thirdParser = Parsers.String("sand");
+            Parser<IEnumerable<string>> parser = Combinators.All(firstParser, secondParser, thirdParser);
             IParserInput input = ParserInput.Create("I love democracy");
 
-            var _ = parser.Parse(input);
+            var _ = parser(input);
 
             Assert.Equal(0, input.Position.Offset);
         }

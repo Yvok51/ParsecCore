@@ -10,12 +10,12 @@ namespace ParsecCoreTests
         [Fact]
         public void FirstParserChosen()
         {
-            IParser<string> firstParser = Parser.String("Hold");
-            IParser<string> secondParser = Parser.String("Hold on");
-            IParser<string> parser = Combinator.Choice(firstParser, secondParser);
+            Parser<string> firstParser = Parsers.String("Hold");
+            Parser<string> secondParser = Parsers.String("Hold on");
+            Parser<string> parser = Combinators.Choice(firstParser, secondParser);
             IParserInput input = ParserInput.Create("Hold on. This whole operation was your idea");
 
-            var result = parser.Parse(input);
+            var result = parser(input);
 
             Assert.True(result.HasRight);
             Assert.Equal("Hold", result.Right);
@@ -24,12 +24,12 @@ namespace ParsecCoreTests
         [Fact]
         public void FirstFailsSecondParserChosen()
         {
-            IParser<string> firstParser = Parser.String("Impossible. Prehaps the archives are incomplete");
-            IParser<string> secondParser = Parser.String("Your clones");
-            IParser<string> parser = Combinator.Choice(firstParser, secondParser);
+            Parser<string> firstParser = Parsers.String("Impossible. Prehaps the archives are incomplete");
+            Parser<string> secondParser = Parsers.String("Your clones");
+            Parser<string> parser = Combinators.Choice(firstParser, secondParser);
             IParserInput input = ParserInput.Create("Your clones are very impressive, you must be very proud.");
 
-            var result = parser.Parse(input);
+            var result = parser(input);
 
             Assert.True(result.HasRight);
             Assert.Equal("Your clones", result.Right);
@@ -38,12 +38,12 @@ namespace ParsecCoreTests
         [Fact]
         public void BothParsersFail()
         {
-            IParser<string> firstParser = Parser.String("[Visible confusion]");
-            IParser<string> secondParser = Parser.String("Yep");
-            IParser<string> parser = Combinator.Choice(firstParser, secondParser);
+            Parser<string> firstParser = Parsers.String("[Visible confusion]");
+            Parser<string> secondParser = Parsers.String("Yep");
+            Parser<string> parser = Combinators.Choice(firstParser, secondParser);
             IParserInput input = ParserInput.Create("We will watch your career with great interest");
 
-            var result = parser.Parse(input);
+            var result = parser(input);
 
             Assert.True(result.HasLeft);
         }

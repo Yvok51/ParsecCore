@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using ParsecCore.Parsers;
+using ParsecCore.ParsersHelp;
 
 namespace ParsecCore
 {
-    public static class Combinator
+    public static class Combinators
     {
         /// <summary>
         /// Returns a parser which tries to first apply the first parser and if it succeeds returns the result.
@@ -18,8 +18,8 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of the parsers </typeparam>
         /// <param name="parsers"> Parsers to apply </param>
         /// <returns> Parser which sequentally tries to apply the given parsers until one succeeds or all fails </returns>
-        public static IParser<T> Choice<T>(params IParser<T>[] parsers) =>
-            new ChoiceParser<T>(parsers);
+        public static Parser<T> Choice<T>(params Parser<T>[] parsers) =>
+            ChoiceParser.Parser(parsers);
 
         /// <summary>
         /// Returns a parser which tries to first apply the first parser and if it succeeds returns the result.
@@ -29,8 +29,8 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of the parsers </typeparam>
         /// <param name="parsers"> Parsers to apply </param>
         /// <returns> Parser which sequentially tries to apply the given parsers until one succeeds or all fails </returns>
-        public static IParser<T> Choice<T>(IEnumerable<IParser<T>> parsers) =>
-            new ChoiceParser<T>(parsers);
+        public static Parser<T> Choice<T>(IEnumerable<Parser<T>> parsers) =>
+            ChoiceParser.Parser(parsers);
 
         /// <summary>
         /// Returns a parser which tries to parse all of the given parsers in a sequence.
@@ -40,8 +40,8 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of parsers </typeparam>
         /// <param name="parsers"> Parsers to sequentially apply </param>
         /// <returns> Parser which sequentially aplies all of the given parsers </returns>
-        public static IParser<IEnumerable<T>> All<T>(params IParser<T>[] parsers) =>
-            new AllParser<T>(parsers);
+        public static Parser<IEnumerable<T>> All<T>(params Parser<T>[] parsers) =>
+            AllParser.Parser(parsers);
 
         /// <summary>
         /// Returns a parser which tries to parse all of the given parsers in a sequence.
@@ -51,8 +51,8 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of parsers </typeparam>
         /// <param name="parsers"> Parsers to sequentially apply </param>
         /// <returns> Parser which sequentially aplies all of the given parsers </returns>
-        public static IParser<IEnumerable<T>> All<T>(IEnumerable<IParser<T>> parsers) =>
-            new AllParser<T>(parsers);
+        public static Parser<IEnumerable<T>> All<T>(IEnumerable<Parser<T>> parsers) =>
+            AllParser.Parser(parsers);
 
         /// <summary>
         /// Returns a parser which parses a value in between two other values
@@ -68,10 +68,10 @@ namespace ParsecCore
         /// Parser which parses the entire sequence of leftParse-betweenParser-rightParser but only
         /// returns the value parsed by the betweenParser
         /// </returns>
-        public static IParser<TBetween> Between<TLeft, TBetween, TRight>(
-            IParser<TLeft> leftParser,
-            IParser<TBetween> betweenParser,
-            IParser<TRight> rightParser
+        public static Parser<TBetween> Between<TLeft, TBetween, TRight>(
+            Parser<TLeft> leftParser,
+            Parser<TBetween> betweenParser,
+            Parser<TRight> rightParser
         )
         {
             return from l in leftParser
@@ -92,9 +92,9 @@ namespace ParsecCore
         /// Parser which parses the entire sequence of outsideParser-betweenParser-outsideParser but only
         /// returns the value parsed by the betweenParser
         /// </returns>
-        public static IParser<TBetween> Between<TOutside, TBetween>(
-            IParser<TOutside> outsideParser,
-            IParser<TBetween> betweenParser
+        public static Parser<TBetween> Between<TOutside, TBetween>(
+            Parser<TOutside> outsideParser,
+            Parser<TBetween> betweenParser
         ) =>
             Between(outsideParser, betweenParser, outsideParser);
 
@@ -107,11 +107,11 @@ namespace ParsecCore
         /// <param name="valueParser"> Parser for the values </param>
         /// <param name="separatorParser"> Parser for the seperators </param>
         /// <returns> Parser which returns a list of parsed values </returns>
-        public static IParser<IEnumerable<TValue>> SepBy<TValue, TSeparator>(
-            IParser<TValue> valueParser,
-            IParser<TSeparator> separatorParser
+        public static Parser<IEnumerable<TValue>> SepBy<TValue, TSeparator>(
+            Parser<TValue> valueParser,
+            Parser<TSeparator> separatorParser
         ) =>
-            Choice(SepBy1(valueParser, separatorParser), Parser.Return<IEnumerable<TValue>>(Array.Empty<TValue>()));
+            Choice(SepBy1(valueParser, separatorParser), Parsers.Return<IEnumerable<TValue>>(Array.Empty<TValue>()));
 
         /// <summary>
         /// Parse seperated values. Parses a list of values each of which is seperated from the other.
@@ -123,10 +123,10 @@ namespace ParsecCore
         /// <param name="valueParser"> Parser for the values </param>
         /// <param name="separatorParser"> Parser for the seperators </param>
         /// <returns> Parser which returns a list of parsed values </returns>
-        public static IParser<IEnumerable<TValue>> SepBy1<TValue, TSeparator>(
-            IParser<TValue> valueParser,
-            IParser<TSeparator> separatorParser
+        public static Parser<IEnumerable<TValue>> SepBy1<TValue, TSeparator>(
+            Parser<TValue> valueParser,
+            Parser<TSeparator> separatorParser
         ) =>
-            new HelpParsers.SepBy1Parser<TValue, TSeparator>(valueParser, separatorParser);
+            SepBy1Parser.Parser<TValue, TSeparator>(valueParser, separatorParser);
     }
 }

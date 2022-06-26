@@ -1,31 +1,23 @@
 ﻿using System;
 
 using ParsecCore.EitherNS;
-using ParsecCore.Input;
 
-namespace ParsecCore.Parsers
+namespace ParsecCore.ParsersHelp
 {
-    class BindParser<TFirst, TSecond, TResult> : IParser<TResult>
+    class BindParser
     {
-        public BindParser(
-            IParser<TFirst> first,
-            Func<TFirst, IParser<TSecond>> getSecond,
+        public static Parser<TResult> Parser<TFirst, TSecond, TResult>(
+            Parser<TFirst> first,
+            Func<TFirst, Parser<TSecond>> getSecond,
             Func<TFirst, TSecond, TResult> getResult
         )
         {
-            _first = first;
-            _getSecond = getSecond;
-            _getResult = getResult;
+            return (input) =>
+            {
+                return from firstValue in first(input)
+                       from secondValue in getSecond(firstValue)(input)
+                       select getResult(firstValue, secondValue);
+            };
         }
-        public IEither<ParseError, TResult> Parse(IParserInput input)
-        {
-            return from firstValue in _first.Parse(input)
-                   from secondValue in _getSecond(firstValue).Parse(input)
-                   select _getResult(firstValue, secondValue);
-        }
-
-        private readonly IParser<TFirst> _first;
-        private readonly Func<TFirst, IParser<TSecond>> _getSecond;
-        private readonly Func<TFirst, TSecond, TResult> _getResult;
     }
 }

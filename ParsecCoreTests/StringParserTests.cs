@@ -20,10 +20,10 @@ namespace ParsecCoreTests
         [InlineData("7", "7")]
         public void ParseSingleLetter(string inputString, string toParse)
         {
-            IParser<string> parser = Parser.String(toParse);
+            Parser<string> parser = Parsers.String(toParse);
             IParserInput input = ParserInput.Create(inputString);
 
-            IEither<ParseError, string> result = parser.Parse(input);
+            IEither<ParseError, string> result = parser(input);
 
             Assert.True(result.HasRight);
             Assert.Equal(toParse, result.Right);
@@ -35,10 +35,10 @@ namespace ParsecCoreTests
         [InlineData("71025", "710")]
         public void ParseMltipleLetters(string inputString, string toParse)
         {
-            IParser<string> parser = Parser.String(toParse);
+            Parser<string> parser = Parsers.String(toParse);
             IParserInput input = ParserInput.Create(inputString);
 
-            IEither<ParseError, string> result = parser.Parse(input);
+            IEither<ParseError, string> result = parser(input);
 
             Assert.True(result.HasRight);
             Assert.Equal(toParse, result.Right);
@@ -50,10 +50,10 @@ namespace ParsecCoreTests
         [InlineData("71025", "710")]
         public void CorrectInputSizeAfterParse(string inputString, string toParse)
         {
-            IParser<string> parser = Parser.String(toParse);
+            Parser<string> parser = Parsers.String(toParse);
             IParserInput input = ParserInput.Create(inputString);
 
-            IEither<ParseError, string> result = parser.Parse(input);
+            IEither<ParseError, string> result = parser(input);
 
             Assert.True(result.HasRight);
             Assert.Equal(toParse, result.Right);
@@ -68,10 +68,10 @@ namespace ParsecCoreTests
         [InlineData("71025", "71025")]
         public void InputCorrectlySpentAfterParse(string inputString, string toParse)
         {
-            IParser<string> parser = Parser.String(toParse);
+            Parser<string> parser = Parsers.String(toParse);
             IParserInput input = ParserInput.Create(inputString);
 
-            IEither<ParseError, string> result = parser.Parse(input);
+            IEither<ParseError, string> result = parser(input);
 
             Assert.True(result.HasRight);
             Assert.Equal(toParse, result.Right);
@@ -85,10 +85,10 @@ namespace ParsecCoreTests
         [InlineData("71025", "general")]
         public void ParseCorrectlyFailed(string inputString, string toParse)
         {
-            IParser<string> parser = Parser.String(toParse);
+            Parser<string> parser = Parsers.String(toParse);
             IParserInput input = ParserInput.Create(inputString);
 
-            IEither<ParseError, string> result = parser.Parse(input);
+            IEither<ParseError, string> result = parser(input);
 
             Assert.True(result.HasLeft);
         }
@@ -96,10 +96,10 @@ namespace ParsecCoreTests
         [Fact]
         public void ParsingFailureLocationCorrect()
         {
-            IParser<string> parser = Parser.String("abd");
+            Parser<string> parser = Parsers.String("abd");
             IParserInput input = ParserInput.Create("abcd");
 
-            IEither<ParseError, string> result = parser.Parse(input);
+            IEither<ParseError, string> result = parser(input);
 
             Assert.True(result.HasLeft);
             Assert.Equal(2, result.Left.Position.Offset);

@@ -15,9 +15,9 @@ namespace ParsecCoreTests
         public void ParsesCorrectly(string inputString, char expected)
         {
             IParserInput input = ParserInput.Create(inputString);
-            IParser<char> parser = Parser.AnyChar;
+            Parser<char> parser = Parsers.AnyChar;
 
-            var result = parser.Parse(input);
+            var result = parser(input);
 
             Assert.True(result.HasRight);
             Assert.Equal(expected, result.Right);
@@ -27,9 +27,9 @@ namespace ParsecCoreTests
         public void FailsCorrectly()
         {
             IParserInput input = ParserInput.Create("");
-            IParser<char> parser = Parser.AnyChar;
+            Parser<char> parser = Parsers.AnyChar;
 
-            var result = parser.Parse(input);
+            var result = parser(input);
 
             Assert.True(result.HasLeft);
         }

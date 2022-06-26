@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 
 using ParsecCore.MaybeNS;
-using ParsecCore.Parsers;
+using ParsecCore.ParsersHelp;
 
 namespace ParsecCore
 {
     public static class ParserExt
     {
+        public static Parser<T> FailWith<T>(this Parser<T> parser, string msg)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Extension method enabling us to use the LINQ syntax for the parsers.
         /// The LINQ syntax imitates 'do' notation found in haskell.
@@ -20,13 +25,11 @@ namespace ParsecCore
         /// <param name="parser"> The source parser </param>
         /// <param name="projection"> The funtion to map the result of the source parser with </param>
         /// <returns> Parser which maps the result of the source parser to a new value </returns>
-        public static IParser<TResult> Select<TSource, TResult>(
-            this IParser<TSource> parser,
+        public static Parser<TResult> Select<TSource, TResult>(
+            this Parser<TSource> parser,
             Func<TSource, TResult> projection
-        )
-        {
-            return new MapParser<TSource, TResult>(parser, projection);
-        }
+        ) =>
+            MapParser.Parser(parser, projection);
 
         /// <summary>
         /// Extension method enabling us to use the LINQ syntax for the parsers.
@@ -41,13 +44,12 @@ namespace ParsecCore
         /// <param name="getSecond"> The function to chain to the result of the source parser </param>
         /// <param name="getResult"> Callback which combines the two results together </param>
         /// <returns> Parser which performs the source parser and afterwards the chained method in that order </returns>
-        public static IParser<TResult> SelectMany<TFirst, TSecond, TResult>(
-            this IParser<TFirst> first,
-            Func<TFirst, IParser<TSecond>> getSecond,
-            Func<TFirst, TSecond, TResult> getResult)
-        {
-            return new BindParser<TFirst, TSecond, TResult>(first, getSecond, getResult);
-        }
+        public static Parser<TResult> SelectMany<TFirst, TSecond, TResult>(
+            this Parser<TFirst> first,
+            Func<TFirst, Parser<TSecond>> getSecond,
+            Func<TFirst, TSecond, TResult> getResult
+        ) =>
+            BindParser.Parser(first, getSecond, getResult);
 
         /// <summary>
         /// Returns a parser which tries to parse according to the given parser as many times as possible.
@@ -56,10 +58,8 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of the parser </typeparam>
         /// <param name="parser"> The parser to apply </param>
         /// <returns> Parser which applies the given parser as many times as possible </returns>
-        public static IParser<IEnumerable<T>> Many<T>(this IParser<T> parser)
-        {
-            return new ManyParser<T>(parser);   
-        }
+        public static Parser<IEnumerable<T>> Many<T>(this Parser<T> parser) =>
+            ManyParser.Parser(parser);   
 
         /// <summary>
         /// Returns a parser which tries to parse according to the given parser as many times as possible.
@@ -68,7 +68,7 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of the parser </typeparam>
         /// <param name="parser"> The parser to apply </param>
         /// <returns> Parser which applies the given parser as many times as possible </returns>
-        public static IParser<IEnumerable<T>> Many1<T>(this IParser<T> parser)
+        public static Parser<IEnumerable<T>> Many1<T>(this Parser<T> parser)
         {
             return from firstParse in parser
                    from restParses in parser.Many()
@@ -80,7 +80,7 @@ namespace ParsecCore
         /// </summary>
         /// <param name="parser"> The parser to apply as many times as possible </param>
         /// <returns> Parser which applies the given char parser as many times as possible </returns>
-        public static IParser<string> Many(this IParser<char> parser)
+        public static Parser<string> Many(this Parser<char> parser)
         {
             return from chars in parser.Many<char>()  // added explicit char to avoid recursion
                    select string.Concat(chars);
@@ -91,7 +91,7 @@ namespace ParsecCore
         /// </summary>
         /// <param name="parser"> The parser to apply as many times as possible </param>
         /// <returns> Parser which applies the given char parser as many times as possible </returns>
-        public static IParser<string> Many1(this IParser<char> parser)
+        public static Parser<string> Many1(this Parser<char> parser)
         {
             return from firstParse in parser
                    from restParses in parser.Many()
@@ -104,9 +104,7 @@ namespace ParsecCore
         /// <typeparam name="T"> The result type of the parser </typeparam>
         /// <param name="parser"> The parser to optionally apply </param>
         /// <returns> Parser which optionally applies the given parser </returns>
-        public static IParser<IMaybe<T>> Optional<T>(this IParser<T> parser)
-        {
-            return new OptionalParser<T>(parser);
-        }
+        public static Parser<IMaybe<T>> Optional<T>(this Parser<T> parser) =>
+            OptionalParser.Parser(parser);
     }
 }

@@ -1,23 +1,25 @@
 ﻿using ParsecCore.Help;
 using ParsecCore.EitherNS;
-using ParsecCore.Input;
 
-namespace ParsecCore.Parsers
+namespace ParsecCore.ParsersHelp
 {
     /// <summary>
     /// Parser which parses the end of the file.
     /// Fails if any character is present
     /// </summary>
-    class EOFParser : IParser<None>
+    class EOFParser
     {
-        public IEither<ParseError, None> Parse(IParserInput input)
+        public static Parser<None> Parser()
         {
-            if (input.EndOfInput)
+            return (input) =>
             {
-                return new Result<ParseError, None>(new None());
-            }
+                if (input.EndOfInput)
+                {
+                    return new Result<ParseError, None>(new None());
+                }
 
-            return new Error<ParseError, None>(new ParseError("Unexpected char encountered, expected EOF", input.Position));
+                return new Error<ParseError, None>(new ParseError("Unexpected char encountered, expected EOF", input.Position));
+            };
         }
     }
 }
