@@ -109,7 +109,7 @@ namespace JSONParser
             { 'r', '\r' },
             { 't', '\t' },
         };
-        private static readonly IEnumerable<IParser<char>> charsToParsers(IEnumerable<char> chars)
+        private static IEnumerable<IParser<char>> charsToParsers(IEnumerable<char> chars)
         {
             List<IParser<char>> parsers = new List<IParser<char>>();
             foreach (var c in chars)
