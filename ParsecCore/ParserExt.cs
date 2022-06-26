@@ -116,7 +116,9 @@ namespace ParsecCore
         }
 
         /// <summary>
-        /// Returns a parser which either parses its value or returns Nothing and does not consume any input
+        /// Returns a parser which either parses its value or returns 
+        /// Nothing if the underlying parser does not consume any input or propagates
+        /// the error if any input was consumed
         /// </summary>
         /// <typeparam name="T"> The result type of the parser </typeparam>
         /// <param name="parser"> The parser to optionally apply </param>
