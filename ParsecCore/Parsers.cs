@@ -126,7 +126,17 @@ namespace ParsecCore
         /// <param name="value"> The value for the parser to return </param>
         /// <returns> Parser which returns the given value </returns>
         public static Parser<T> Return<T>(T value) =>
-            (input) => Either.Result<ParseError, T>(value); // new ReturnParser<T>(value);
+            (input) => Either.Result<ParseError, T>(value);
+
+        /// <summary>
+        /// Returns a parser which always fails with the given message.
+        /// Does not consume any input.
+        /// </summary>
+        /// <typeparam name="T"> The type of parser </typeparam>
+        /// <param name="msg"> The message to fail with </param>
+        /// <returns> Parser which always fails with the given message </returns>
+        public static Parser<T> Fail<T>(string msg) =>
+            (input) => Either.Error<ParseError, T>(new ParseError(msg, input.Position));
 
         /// <summary>
         /// Returns a parser which parses exactly the string given
