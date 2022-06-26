@@ -30,6 +30,16 @@ namespace ParsecCore.Input
             _position = position;
         }
 
+        public char Peek()
+        {
+            if (EndOfInput)
+            {
+                throw new InvalidOperationException("Read past the end of the input");
+            }
+
+            return _input[_position.Offset];
+        }
+
         private readonly string _input;
         private Position _position;
     }

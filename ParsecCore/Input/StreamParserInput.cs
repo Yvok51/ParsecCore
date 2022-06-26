@@ -46,6 +46,16 @@ namespace ParsecCore.Input
             _position = position;
         }
 
+        public char Peek()
+        {
+            if (EndOfInput)
+            {
+                throw new InvalidOperationException("Read past the end of the input");
+            }
+
+            return (char)_reader.Peek();
+        }
+
         private StreamReader _reader;
         private Encoding _encoding;
         private Position _position;

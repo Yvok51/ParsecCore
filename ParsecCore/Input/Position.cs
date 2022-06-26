@@ -1,6 +1,8 @@
-﻿namespace ParsecCore.Input
+﻿using System;
+
+namespace ParsecCore.Input
 {
-    public struct Position
+    public struct Position : IEquatable<Position>
     {
         public static Position Start(int offset = 0) => new Position(line: 1, column: 1, offset: offset);
         
@@ -29,5 +31,20 @@
         {
             return $"{Line}:{Column}";
         }
+
+        public override bool Equals(object? obj) =>
+            !(obj is null) && obj is Position other && Equals(other);
+
+        public bool Equals(Position other) =>
+            other.Offset == Offset && other.Line == Line && other.Column == Column;
+
+        public override int GetHashCode() =>
+            HashCode.Combine(Line, Column, Offset);
+
+        public static bool operator ==(Position left, Position right) =>
+            left.Equals(right);
+
+        public static bool operator !=(Position left, Position right) =>
+            !left.Equals(right);
     }
 }

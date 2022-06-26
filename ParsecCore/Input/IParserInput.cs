@@ -4,6 +4,8 @@
     {
         public char Read();
 
+        public char Peek();
+
         public void Seek(Position position);
 
         /// <summary>
