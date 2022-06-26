@@ -41,19 +41,5 @@ namespace ParsecCoreTests
 
             Assert.True(result.HasLeft);
         }
-
-        [Fact]
-        public void PositionNotChangedWhenParsingFails()
-        {
-            Parser<string> firstParser = Parsers.String("I ");
-            Parser<string> secondParser = Parsers.String("love ");
-            Parser<string> thirdParser = Parsers.String("sand");
-            Parser<IEnumerable<string>> parser = Combinators.All(firstParser, secondParser, thirdParser);
-            IParserInput input = ParserInput.Create("I love democracy");
-
-            var _ = parser(input);
-
-            Assert.Equal(0, input.Position.Offset);
-        }
     }
 }
