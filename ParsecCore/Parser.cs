@@ -20,14 +20,6 @@ namespace ParsecCore
         public static readonly IParser<char> AnyChar = new AnyParser();
 
         /// <summary>
-        /// Returns a parser which parses only the given character
-        /// </summary>
-        /// <param name="c"> The character to parse </param>
-        /// <returns> Parser which parses only the given character </returns>
-        public static IParser<char> Char(char c) =>
-            new SatisfyParser(i => i == c, $"character {c}");
-
-        /// <summary>
         /// Returns a parser which parses a char given it fulfills a predicate
         /// </summary>
         /// <param name="predicate"> The predicate the character must fulfill </param>
@@ -37,21 +29,94 @@ namespace ParsecCore
             new SatisfyParser(predicate, description);
 
         /// <summary>
+        /// Returns a parser which parses only the given character
+        /// </summary>
+        /// <param name="c"> The character to parse </param>
+        /// <returns> Parser which parses only the given character </returns>
+        public static IParser<char> Char(char c) =>
+            new SatisfyParser(i => i == c, $"character {c}");
+
+        /// <summary>
         /// Parses a single whitespace
         /// </summary>
-        public static readonly IParser<char> Whitespace = Satisfy(char.IsWhiteSpace, "whitespace");
+        public static readonly IParser<char> Space = Satisfy(char.IsWhiteSpace, "whitespace");
+
         /// <summary>
         /// Parses as much whitespace as possible
         /// </summary>
-        public static readonly IParser<string> Spaces = Whitespace.Many();
+        public static readonly IParser<string> Spaces = Space.Many();
+
+        /// <summary>
+        /// Parses a horizontal tab
+        /// </summary>
+        public static readonly IParser<char> Tab = Satisfy(c => c == '\t', "horizontal tab");
+
+        /// <summary>
+        /// Parses a newline (line feed) character
+        /// </summary>
+        public static readonly IParser<char> NewLine = Satisfy(c => c == '\n', "newline");
+
+        /// <summary>
+        /// Parses carriage return folled by line feed (\r\n), returns only line feed (\n)
+        /// </summary>
+        public static readonly IParser<char> CRLF =
+            from cr in Satisfy(c => c == '\r', "carriage return")
+            from lf in NewLine
+            select '\n';
+
+
         /// <summary>
         /// Parses a single digit
         /// </summary>
-        public static readonly IParser<char> Digit = Satisfy(char.IsDigit, "digit");
+        public static readonly IParser<char> Digit = Satisfy(c => c >= '0' && c <= '9', "digit");
+
         /// <summary>
         /// Parses as many digits as possible, but at least one
         /// </summary>
         public static readonly IParser<string> Digits = Digit.Many1();
+
+        /// <summary>
+        /// Parses an octal digit
+        /// </summary>
+        public static readonly IParser<char> OctDigit = Satisfy(c => c >= '0' && c <= '7', "octal digit");
+
+        /// <summary>
+        /// Parses a hexadecimal digit
+        /// </summary>
+        public static readonly IParser<char> HexDigit = Satisfy(
+            c => (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'),
+            "hexadecimal digit"
+            );
+
+        /// <summary>
+        /// Parses a letter
+        /// </summary>
+        public static readonly IParser<char> Letter = Satisfy(char.IsLetter, "letter");
+
+        /// <summary>
+        /// Parses an alphanumeric character
+        /// </summary>
+        public static readonly IParser<char> AlphaNum = Satisfy(char.IsLetterOrDigit, "alphanumeric character");
+
+        /// <summary>
+        /// Parses an upper-case character
+        /// </summary>
+        public static readonly IParser<char> Upper = Satisfy(char.IsUpper, "upper-case character");
+
+        /// <summary>
+        /// Parses a lower-case character
+        /// </summary>
+        public static readonly IParser<char> Lower = Satisfy(char.IsLower, "lower-case character");
+
+        public static IParser<char> OneOf(char[] chars)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static IParser<char> NoneOf(char[] chars)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Return a parser which does not consume any input and only returns the value given
