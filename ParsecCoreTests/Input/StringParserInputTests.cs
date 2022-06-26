@@ -8,7 +8,7 @@ namespace ParsecCoreTests.Input
     public class StringParserInputTests
     {
         [Fact]
-        public void StringParserInputReadsAllCarachters()
+        public void ReadsAllCharacters()
         {
             var input = "abcdefg";
             var expectedChars = input.ToCharArray();
@@ -25,13 +25,13 @@ namespace ParsecCoreTests.Input
         }
 
         [Fact]
-        public void StringParserSeekIsWorking()
+        public void SeekIsWorking()
         {
             var input = "abcdefg";
             var expectedChars = new char[] { 'a', 'b', 'c', 'd', 'e', 'c', 'd', 'e', 'f', 'g' };
 
             IParserInput reader = ParserInput.Create(input);
-            Position positionToSeek = Position.Start;
+            Position positionToSeek = reader.Position;
 
             int i = 0;
             while (!reader.EndOfInput)
@@ -62,13 +62,13 @@ namespace ParsecCoreTests.Input
         }
 
         [Fact]
-        public void StringParserSeekIsWorkingWithLinebreaks()
+        public void SeekIsWorkingWithLinebreaks()
         {
             var input = "abcd\nefghi";
             var expectedChars = new char[] { 'a', 'b', 'c', 'd', '\n', 'e', 'f', 'c', 'd', '\n', 'e', 'f', 'g', 'h', 'i' };
 
             IParserInput reader = ParserInput.Create(input);
-            Position positionToSeek = Position.Start;
+            Position positionToSeek = reader.Position;
 
             int i = 0;
             while (!reader.EndOfInput)
