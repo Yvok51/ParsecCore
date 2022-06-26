@@ -127,6 +127,28 @@ namespace ParsecCore
             OptionalParser.Parser(parser);
 
         /// <summary>
+        /// Tries to parse according to the given parser. If the parser succeeds, then returns the parser's result.
+        /// If the parser fails <strong>without consuming input</strong> then returns the given default value.
+        /// If the parser fails while consuming input, the failure is propagated upwards.
+        /// </summary>
+        /// <typeparam name="T"> The type of parser </typeparam>
+        /// <param name="parser"> The parser to modify </param>
+        /// <param name="defaultValue"> The default value to return if the parser fails </param>
+        /// <returns> Parser which returns a default value upon failure </returns>
+        public static Parser<T> Option<T>(this Parser<T> parser, T defaultValue) =>
+            (input) =>
+            {
+                var initialPosition = input.Position;
+                var result = parser(input);
+                if (result.HasRight || initialPosition != input.Position)
+                {
+                    return result;
+                }
+
+                return Either.Result<ParseError, T>(defaultValue);
+            };
+
+        /// <summary>
         /// Makes the parser not consume any input if it fails.
         /// </summary>
         /// <typeparam name="T"> The type of parser </typeparam>
