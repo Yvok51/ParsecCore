@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using ParsecCore.EitherNS;
+using ParsecCore.Help;
 using ParsecCore.MaybeNS;
 using ParsecCore.ParsersHelp;
 
@@ -34,8 +35,8 @@ namespace ParsecCore
         /// <summary>
         /// Extension method enabling us to use the LINQ syntax for the parsers.
         /// The LINQ syntax imitates 'do' notation found in haskell.
-        /// `for x in xs` is equivalent to `x <- xs` and `select x` is equivalent to `return x`
-        /// This method is similar to map
+        /// <c>for x in xs</c> is equivalent to <c>x <- xs</c> and <c>select x</c> is equivalent to <c>return x</c>
+        /// This method is therefore similar to <c>bind</c> <c>(>>=)</c>
         /// </summary>
         /// <typeparam name="TSource"> > The type of the source parser </typeparam>
         /// <typeparam name="TResult"> The type of the resulting parser </typeparam>
@@ -51,8 +52,8 @@ namespace ParsecCore
         /// <summary>
         /// Extension method enabling us to use the LINQ syntax for the parsers.
         /// The LINQ syntax imitates 'do' notation found in haskell.
-        /// `for x in xs` is equivalent to `x <- xs` and `select x` is equivalent to `return x`
-        /// This method is therefore similar to 'bind' (>>=)
+        /// <c>for x in xs</c> is equivalent to <c>x <- xs</c> and <c>select x</c> is equivalent to <c>return x</c>
+        /// This method is therefore similar to <c>bind</c> <c>(>>=)</c>
         /// </summary>
         /// <typeparam name="TFirst"> The type of the source parser </typeparam>
         /// <typeparam name="TSecond"> The type of the parser returned by the chained method </typeparam>
@@ -93,7 +94,7 @@ namespace ParsecCore
         }
 
         /// <summary>
-        /// Specialization of the Many method for chars and strings
+        /// Specialization of the <see cref="Many{T}(Parser{T})">Many</see> method for chars and strings
         /// </summary>
         /// <param name="parser"> The parser to apply as many times as possible </param>
         /// <returns> Parser which applies the given char parser as many times as possible </returns>
@@ -104,7 +105,7 @@ namespace ParsecCore
         }
 
         /// <summary>
-        /// Specialization of the Many1 method for chars and strings
+        /// Specialization of the <see cref="Many1{T}(Parser{T})">Many1</see> method for chars and strings
         /// </summary>
         /// <param name="parser"> The parser to apply as many times as possible </param>
         /// <returns> Parser which applies the given char parser as many times as possible </returns>
@@ -113,6 +114,34 @@ namespace ParsecCore
             return from firstParse in parser
                    from restParses in parser.Many()
                    select firstParse.ToString() + restParses;
+        }
+
+        /// <summary>
+        /// Aplies the parser as many times as possible and ignores the result.
+        /// </summary>
+        /// <typeparam name="T"> The type of parser </typeparam>
+        /// <param name="parser"> The parser to apply </param>
+        /// <returns> 
+        /// Parser which applies the given parser as many times as possible and then ignores its result.
+        /// </returns>
+        public static Parser<None> SkipMany<T>(this Parser<T> parser)
+        {
+            return from _ in parser.Many()
+                   select new None();
+        }
+
+        /// <summary>
+        /// Applies the parser as many times as possible (but at least once) and ignores the result.
+        /// </summary>
+        /// <typeparam name="T"> The type of parser </typeparam>
+        /// <param name="parser"> The parser to apply </param>
+        /// <returns> 
+        /// Parser which applies the given parser as many times as possible and then ignores its result.
+        /// </returns>
+        public static Parser<None> SkipMany1<T>(this Parser<T> parser)
+        {
+            return from _ in parser.Many1()
+                   select new None();
         }
 
         /// <summary>
