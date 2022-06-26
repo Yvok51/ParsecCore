@@ -13,6 +13,9 @@ namespace ParsecCore
             Error = error;
         }
 
+        public ParseError NewErrorMessage(string errorMsg) => 
+            new ParseError(errorMsg, Position);
+
         public Position Position { get; init; }
 
         public string Error { get; init; }

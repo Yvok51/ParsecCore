@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using ParsecCore.EitherNS;
 using ParsecCore.MaybeNS;
 using ParsecCore.ParsersHelp;
 
@@ -9,9 +10,25 @@ namespace ParsecCore
 {
     public static class ParserExt
     {
+        /// <summary>
+        /// Changes the error message returned by the parser if it fails
+        /// </summary>
+        /// <typeparam name="T"> The type of parser </typeparam>
+        /// <param name="parser"> The parser whose error message to change </param>
+        /// <param name="msg"> The new message to return in case of an error </param>
+        /// <returns> Parser which upon failure returns ParseError with the specified message </returns>
         public static Parser<T> FailWith<T>(this Parser<T> parser, string msg)
         {
-            throw new NotImplementedException();
+            return (input) =>
+            {
+                var result = parser(input);
+                if (result.HasRight)
+                {
+                    return result;
+                }
+
+                return Either.Error<ParseError, T>(result.Left.NewErrorMessage(msg));
+            };
         }
 
         /// <summary>
