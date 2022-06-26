@@ -14,18 +14,18 @@ namespace ParsecCore.ParsersHelp
             return (input) =>
             {
                 var readPosition = input.Position;
-                if (input.EndOfInput)
+                var result = AnyParser.Parser()(input);
+                if (result.HasLeft) 
                 {
-                    return Either.Error<ParseError, char>(new ParseError("Unexpected end of file, character expected", readPosition));
+                    return result;
                 }
 
-                char c = input.Read();
-                if (!predicate(c))
+                if (!predicate(result.Right))
                 {
-                    return Either.Error<ParseError, char>(new ParseError($"character '{c}' does not conform, {predicateDescription} exprected", readPosition));
+                    return Either.Error<ParseError, char>(new ParseError($"character '{result.Right}' does not conform, {predicateDescription} exprected", readPosition));
                 }
 
-                return Either.Result<ParseError, char>(c);
+                return result;
             };
         }
     }
