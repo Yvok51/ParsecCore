@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using ParsecCore.ParsersHelp;
 using ParsecCore.Help;
@@ -31,7 +32,8 @@ namespace ParsecCore
         public static readonly Parser<char> AnyChar = Satisfy(c => true, "any character");
 
         /// <summary>
-        /// Returns a parser which parses only the given character
+        /// Returns a parser which parses only the given character.
+        /// Does not consume any input upon failure.
         /// </summary>
         /// <param name="c"> The character to parse </param>
         /// <returns> Parser which parses only the given character </returns>
@@ -110,15 +112,44 @@ namespace ParsecCore
         /// </summary>
         public static readonly Parser<char> Lower = Satisfy(char.IsLower, "lower-case character");
 
-        public static Parser<char> OneOf(char[] chars)
-        {
-            throw new NotImplementedException();
-        }
+        private static IEnumerable<Parser<char>> ToCharParsers(IEnumerable<char> chars) =>
+            chars.Select(c => Char(c));
 
-        public static Parser<char> NoneOf(char[] chars)
-        {
-            throw new NotImplementedException();
-        }
+        /// <summary>
+        /// Parses any of the given characters
+        /// </summary>
+        /// <param name="chars"> Possible characters to parse </param>
+        /// <returns> Parser which only parses one of the given characters </returns>
+        public static Parser<char> OneOf(char[] chars) =>
+            Satisfy(c => {
+                foreach (char includedChar in chars)
+                {
+                    if (c == includedChar)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            },
+            $"one of {chars.ToPrettyString()}");
+
+        /// <summary>
+        /// Parses a character if it is not equal to any of the given characters
+        /// </summary>
+        /// <param name="chars"> The list of characters the read character must not be in </param>
+        /// <returns> Parser which parses a character only if it is not included in the given list </returns>
+        public static Parser<char> NoneOf(char[] chars) =>
+            Satisfy(c => {
+                foreach (char excludedChar in chars)
+                {
+                    if (c == excludedChar)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            },
+            $"none of {chars.ToPrettyString()}");
 
         /// <summary>
         /// Return a parser which does not consume any input and only returns the value given
@@ -146,17 +177,7 @@ namespace ParsecCore
         /// <returns> Parser which parses exactly the given string </returns>
         public static Parser<string> String(string stringToParse)
         {
-            static IEnumerable<Parser<char>> stringToCharParsers(string str)
-            {
-                Parser<char>[] parsers = new Parser<char>[str.Length];
-                for (int i = 0; i < str.Length; ++i)
-                {
-                    parsers[i] = Char(str[i]);
-                }
-                return parsers;
-            }
-
-            return from chars in AllParser.Parser(stringToCharParsers(stringToParse))
+            return from chars in AllParser.Parser(ToCharParsers(stringToParse))
                    select string.Concat(chars);
         }
 
