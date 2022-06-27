@@ -151,10 +151,12 @@ namespace ParsecCore
         public static Parser<IEnumerable<TValue>> EndBy<TValue, TSeparator>(
             Parser<TValue> valueParser,
             Parser<TSeparator> separatorParser
-        ) =>
-            (from val in valueParser
-             from sep in separatorParser
-             select val).Many();
+        )
+        {
+            return (from val in valueParser
+                    from sep in separatorParser
+                    select val).Many();
+        }
 
         /// <summary>
         /// Parses seperated values. Parses a list of values separeted by separators
@@ -169,10 +171,41 @@ namespace ParsecCore
         public static Parser<IEnumerable<TValue>> EndBy1<TValue, TSeparator>(
             Parser<TValue> valueParser,
             Parser<TSeparator> separatorParser
+        )
+        {
+            return from firstValue in valueParser
+                   from _ in separatorParser
+                   from values in EndBy(valueParser, separatorParser)
+                   select new TValue[] { firstValue }.Concat(values);
+        }
+
+        /// <summary>
+        /// Parses list of seperated values which optionally end with a separator.
+        /// </summary>
+        /// <typeparam name="TValue"> The type of the value parser </typeparam>
+        /// <typeparam name="TSeparator"> The type of the separator parser </typeparam>
+        /// <param name="valueParser"> The parser for the values </param>
+        /// <param name="separatorParser"> The parser for the separators </param>
+        /// <returns> Parser which returns a list of parsed values </returns>
+        public static Parser<IEnumerable<TValue>> SepEndBy<TValue, TSeparator>(
+            Parser<TValue> valueParser,
+            Parser<TSeparator> separatorParser
         ) =>
-            from firstValue in valueParser
-            from _ in separatorParser
-            from values in EndBy(valueParser, separatorParser)
-            select new TValue[] { firstValue }.Concat(values);
+            Choice(SepBy(valueParser, separatorParser).Try(), EndBy(valueParser, separatorParser).Try()); // TODO: Probably reimplement it more efficiently
+
+        /// <summary>
+        /// Parses list of seperated values which optionally end with a separator.
+        /// Always parses at least one value.
+        /// </summary>
+        /// <typeparam name="TValue"> The type of the value parser </typeparam>
+        /// <typeparam name="TSeparator"> The type of the separator parser </typeparam>
+        /// <param name="valueParser"> The parser for the values </param>
+        /// <param name="separatorParser"> The parser for the separators </param>
+        /// <returns> Parser which returns a list of parsed values </returns>
+        public static Parser<IEnumerable<TValue>> SepEndBy1<TValue, TSeparator>(
+            Parser<TValue> valueParser,
+            Parser<TSeparator> separatorParser
+        ) =>
+            Choice(SepBy1(valueParser, separatorParser).Try(), EndBy1(valueParser, separatorParser).Try()); // TODO: Probably reimplement it more efficiently
     }
 }
