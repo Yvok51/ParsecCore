@@ -7,7 +7,7 @@ Mým cílem je vytvořit parsovací knihovnu, která je inspirována knihovnou P
 ## Cíle
 
 - Vytvořit parsovací knihovnu inspirovanou knihovnou Parsec. Součástí knihovny budou tedy parsery, které jsou zobrazeny [zde](https://hackage.haskell.org/package/parsec-3.1.15.1/docs/Text-Parsec-Char.html) a kombinátory zobrazeny [zde](https://hackage.haskell.org/package/parsec-3.1.15.1/docs/Text-Parsec-Combinator.html)/[zde](https://hackage.haskell.org/package/parsec-3.1.15.1/docs/Text-Parsec.html#g:2)
-- Vytvoření ukázkové CLI aplikace, která bude umět parsovat deserializovat JSON.
+- Vytvoření ukázkové jednoduché CLI aplikace, která bude umět parsovat JSON a přemění ho na XML.
 
 ## Předběžné řešení
 
