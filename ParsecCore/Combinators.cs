@@ -208,6 +208,19 @@ namespace ParsecCore
         ) =>
             Choice(SepBy1(valueParser, separatorParser).Try(), EndBy1(valueParser, separatorParser).Try()); // TODO: Probably reimplement it more efficiently
 
+        /// <summary>
+        /// Parses zero or more occurences of the given values seperated by operators
+        /// Returns a value obtained by <em>left-associative</em> application of the functions returned by op.
+        /// If there are zero occurences, then the <c>defaultValue</c> is returned
+        /// </summary>
+        /// <typeparam name="T"> The return type of the parser </typeparam>
+        /// <param name="value"> The parser for values </param>
+        /// <param name="op"> Parser for the binary operators </param>
+        /// <param name="defaultValue"> The default value to return in case no value is parsed </param>
+        /// <returns> 
+        /// Parser which returns a value obtained by the left-associative application of the functions 
+        /// given by <c>op</c> on values returned by <c>value</c>
+        /// </returns>
         public static Parser<T> ChainL<T>(
             Parser<T> value,
             Parser<Func<T, T, T>> op,
@@ -215,6 +228,19 @@ namespace ParsecCore
         ) =>
             Choice(ChainL1(value, op), Parsers.Return(defaultValue));
 
+        /// <summary>
+        /// Parses one or more occurences of the given values seperated by operators
+        /// Returns a value obtained by <em>left-associative</em> application of the functions returned by op.
+        /// Especially useful for parsing left-recursive grammars, which are often used in numerical expressions 
+        /// </summary>
+        /// <typeparam name="T"> The return type of the parser </typeparam>
+        /// <param name="value"> The parser for values </param>
+        /// <param name="op"> Parser for the binary operators </param>
+        /// <param name="defaultValue"> The default value to return in case no value is parsed </param>
+        /// <returns> 
+        /// Parser which returns a value obtained by the left-associative application of the functions 
+        /// given by <c>op</c> on values returned by <c>value</c>
+        /// </returns>
         public static Parser<T> ChainL1<T>(
             Parser<T> value,
             Parser<Func<T, T, T>> op
