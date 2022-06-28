@@ -5,6 +5,7 @@ using System.Linq;
 using ParsecCore.ParsersHelp;
 using ParsecCore.Help;
 using ParsecCore.EitherNS;
+using ParsecCore.MaybeNS;
 
 namespace ParsecCore
 {
@@ -78,6 +79,14 @@ namespace ParsecCore
         /// Parses as many digits as possible, but at least one
         /// </summary>
         public static readonly Parser<string> Digits = Digit.Many1();
+
+        /// <summary>
+        /// Parses an integer
+        /// </summary>
+        public static readonly Parser<int> DecimalInteger =
+            from op in Combinators.Choice(Symbol("-"), Symbol("+")).Optional()
+            from digits in Digits
+            select Int32.Parse(op.Else("") + digits);
 
         /// <summary>
         /// Parses an octal digit
@@ -182,15 +191,19 @@ namespace ParsecCore
         }
 
         /// <summary>
-        /// Returns a parser which ignores any whitespace before or after the parsed value
+        /// Returns a parser which ignores any whitespace after the parsed value
         /// </summary>
         /// <typeparam name="T"> The type of parser </typeparam>
         /// <param name="parser"> What value to parse between the whitespace </param>
         /// <returns>
         /// Parser which parses the same value as the input parser surrounded by an arbitrary amount of whitespace.
         /// </returns>
-        public static Parser<T> Token<T>(Parser<T> parser) => 
-            Combinators.Between(Spaces, parser);
+        public static Parser<T> Token<T>(Parser<T> parser)
+        {
+            return from x in parser
+                   from _ in Spaces
+                   select x;
+        }
 
         /// <summary>
         /// Returns a parser which parses exactly the given string and any whitespace before or after it
