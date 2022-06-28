@@ -85,7 +85,7 @@ namespace ParsecCore
         /// </summary>
         public static readonly Parser<int> DecimalInteger =
             from op in Combinators.Choice(Symbol("-"), Symbol("+")).Optional()
-            from digits in Digits
+            from digits in Token(Digits)
             select Int32.Parse(op.Else("") + digits);
 
         /// <summary>
