@@ -207,5 +207,18 @@ namespace ParsecCore
             Parser<TSeparator> separatorParser
         ) =>
             Choice(SepBy1(valueParser, separatorParser).Try(), EndBy1(valueParser, separatorParser).Try()); // TODO: Probably reimplement it more efficiently
+
+        public static Parser<T> ChainL<T>(
+            Parser<T> value,
+            Parser<Func<T, T, T>> op,
+            T defaultValue
+        ) =>
+            Choice(ChainL1(value, op), Parsers.Return(defaultValue));
+
+        public static Parser<T> ChainL1<T>(
+            Parser<T> value,
+            Parser<Func<T, T, T>> op
+        ) =>
+            Chainl1Parser.Parser(value, op);
     }
 }
