@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using ParsecCore.ParsersHelp;
+using ParsecCore.Help;
 
 namespace ParsecCore
 {
@@ -284,5 +285,35 @@ namespace ParsecCore
             Parser<Func<T, T, T>> op
         ) =>
             Chainr1Parser.Parser(value, op);
+
+        /// <summary>
+        /// This parser fails if <c>parser</c> succeeds. It does not consume any input.
+        /// </summary>
+        /// <typeparam name="T"> The return type of parser </typeparam>
+        /// <param name="parser"> Parser which should not succeed </param>
+        /// <param name="msgIfParsed"> The error message to use if <c>parser</c> succeeds </param>
+        /// <returns> Parser which fails if <c>parser</c> succeeds </returns>
+        public static Parser<None> NotFollowedBy<T>(Parser<T> parser, string msgIfParsed)
+        {
+            var failParser = from _ in parser.Try()
+                             from fail in Parsers.Fail<None>(msgIfParsed)
+                             select fail;
+            return Choice(failParser, Parsers.Return(new None())).Try();
+        }
+
+        /// <summary>
+        /// applies <c>parser</c> zero or more times until parser <c>till</c> succeeds.
+        /// Returns the list of values returned by <c>parser</c>.
+        /// </summary>
+        /// <typeparam name="T"> The return type of the value parser </typeparam>
+        /// <typeparam name="TEnd"> The return type of the till parser </typeparam>
+        /// <param name="parser"> The value parser </param>
+        /// <param name="till"> The end parser </param>
+        /// <returns> Parser which applies <c>parser</c> untill <c>till</c> succeeds </returns>
+        public static Parser<IEnumerable<T>> ManyTill<T, TEnd>(
+            Parser<T> parser,
+            Parser<TEnd> till
+        ) =>
+            ManyTillParser.Parser(parser, till);
     }
 }

@@ -226,7 +226,7 @@ namespace ParsecCore
         /// <typeparam name="T"> The return type of the parser </typeparam>
         /// <param name="parser"> Parser to look ahead with </param>
         /// <returns> Parser which looks ahead (parses without consuming input) </returns>
-        public static Parser<T> lookAhead<T>(this Parser<T> parser)
+        public static Parser<T> LookAhead<T>(this Parser<T> parser)
         {
             return (input) =>
             {
