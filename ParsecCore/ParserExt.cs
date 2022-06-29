@@ -217,5 +217,28 @@ namespace ParsecCore
                 }
                 return result;
             };
+
+        /// <summary>
+        /// Parses <c>parser</c> without consuming input.
+        /// If <c>parser</c> fails and consumes input, then so does lookAhead
+        /// (combine with <see cref="Try{T}(Parser{T})"/> if this is undesirable)
+        /// </summary>
+        /// <typeparam name="T"> The return type of the parser </typeparam>
+        /// <param name="parser"> Parser to look ahead with </param>
+        /// <returns> Parser which looks ahead (parses without consuming input) </returns>
+        public static Parser<T> lookAhead<T>(this Parser<T> parser)
+        {
+            return (input) =>
+            {
+                var initialPosition = input.Position;
+                var result = parser(input);
+                if (result.HasRight)
+                {
+                    input.Seek(initialPosition);
+                }
+
+                return result;
+            };
+        }
     }
 }
