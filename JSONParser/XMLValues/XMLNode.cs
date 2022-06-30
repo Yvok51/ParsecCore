@@ -1,0 +1,7 @@
+﻿
+namespace JSONtoXML
+{
+    class XMLNode
+    {
+    }
+}
