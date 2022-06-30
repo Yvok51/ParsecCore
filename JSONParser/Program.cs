@@ -2,7 +2,7 @@
 
 using ParsecCore.Input;
 
-namespace JSONParser
+namespace JSONtoXML
 {
     class Program
     {

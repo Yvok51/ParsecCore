@@ -1,4 +1,4 @@
-﻿namespace JSONParser
+﻿namespace JSONtoXML
 {
     class BoolValue : JsonValue
     {

@@ -6,7 +6,7 @@ using System.Globalization;
 using ParsecCore;
 using ParsecCore.MaybeNS;
 
-namespace JSONParser
+namespace JSONtoXML
 {
     /// <summary>
     /// Parsers for JSON.
@@ -20,19 +20,19 @@ namespace JSONParser
         private static readonly Parser<string> whitespace =
             Parsers.Satisfy(c => c == ' ' || c == '\n' || c == '\t' || c == '\r', "whitespace").Many();
 
-        private static readonly Parser<string> valueSeparator = ParsecCore.Parsers.Symbol(",");
+        private static readonly Parser<string> valueSeparator = Parsers.Symbol(",");
 
         ////////// NULL //////////
         private static readonly Parser<NullValue> NullValue =
-            from _ in ParsecCore.Parsers.Symbol("null")
+            from _ in Parsers.Symbol("null")
             select new NullValue();
 
         ////////// BOOLEAN //////////
         private static readonly Parser<bool> trueParser =
-            from _ in ParsecCore.Parsers.Symbol("true")
+            from _ in Parsers.Symbol("true")
             select true;
         private static readonly Parser<bool> falseParser =
-            from _ in ParsecCore.Parsers.Symbol("false")
+            from _ in Parsers.Symbol("false")
             select false;
         private static readonly Parser<bool> Boolean = Combinators.Choice(trueParser, falseParser);
         public static Parser<BoolValue> BoolValue =
@@ -40,29 +40,29 @@ namespace JSONParser
             select new BoolValue(b);
 
         ////////// NUMBER //////////
-        private static readonly Parser<string> zero = ParsecCore.Parsers.String("0");
+        private static readonly Parser<string> zero = Parsers.String("0");
         private static readonly Parser<string> nonZeroInteger =
-            from firstDigit in ParsecCore.Parsers.Satisfy(c => char.IsDigit(c) && c != '0', "non-zero digit")
-            from nextDigits in ParsecCore.Parsers.Digit.Many()
+            from firstDigit in Parsers.Satisfy(c => char.IsDigit(c) && c != '0', "non-zero digit")
+            from nextDigits in Parsers.Digit.Many()
             select firstDigit.ToString() + nextDigits;
         private static readonly Parser<string> integer = Combinators.Choice(zero, nonZeroInteger);
 
-        private static readonly Parser<string> minus = ParsecCore.Parsers.String("-");
-        private static readonly Parser<string> plus = ParsecCore.Parsers.String("+");
+        private static readonly Parser<string> minus = Parsers.String("-");
+        private static readonly Parser<string> plus = Parsers.String("+");
         private static readonly Parser<string> plusOrMinus = Combinators.Choice(plus, minus);
 
-        private static readonly Parser<string> decimalPoint = ParsecCore.Parsers.String(".");
+        private static readonly Parser<string> decimalPoint = Parsers.String(".");
         private static readonly Parser<string> fractionalPart =
             from point in decimalPoint
-            from digits in ParsecCore.Parsers.Digits
+            from digits in Parsers.Digits
             select point + digits;
 
         private static readonly Parser<string> exponentSymbol =
-            Combinators.Choice(ParsecCore.Parsers.String("e"), ParsecCore.Parsers.String("E"));
+            Combinators.Choice(Parsers.String("e"), Parsers.String("E"));
         private static readonly Parser<string> exponent =
             from symbol in exponentSymbol
             from sign in plusOrMinus.Optional()
-            from digits in ParsecCore.Parsers.Digits
+            from digits in Parsers.Digits
             select symbol + sign.Else("") + digits;
 
         private static readonly CultureInfo USCulture = new CultureInfo("en-US");
@@ -78,16 +78,16 @@ namespace JSONParser
             select new NumberValue(n);
 
         ////////// STRING //////////
-        private static readonly Parser<char> quote = ParsecCore.Parsers.Char('\"');
-        private static readonly Parser<char> escape = ParsecCore.Parsers.Char('\\');
+        private static readonly Parser<char> quote = Parsers.Char('\"');
+        private static readonly Parser<char> escape = Parsers.Char('\\');
 
-        private static readonly Parser<char> hexadecimalDigit = ParsecCore.Parsers.Satisfy(
+        private static readonly Parser<char> hexadecimalDigit = Parsers.Satisfy(
             c => char.IsDigit(c) || c == 'A' || c == 'B' || c == 'C' || c == 'D' || c == 'E' || c == 'F',
             "hexadecimal digit"
         );
         private static readonly Parser<char> hexEncoded =
             from _ in escape
-            from __ in ParsecCore.Parsers.Char('u')
+            from __ in Parsers.Char('u')
             from first in hexadecimalDigit
             from second in hexadecimalDigit
             from third in hexadecimalDigit
@@ -97,7 +97,7 @@ namespace JSONParser
                 NumberStyles.AllowHexSpecifier
             );
 
-        private static readonly Parser<char> nonQouteChar = ParsecCore.Parsers.Satisfy(c => c != '"', "non-quote character");
+        private static readonly Parser<char> nonQouteChar = Parsers.Satisfy(c => c != '"', "non-quote character");
 
         private static readonly Dictionary<char, char> toEscaped = new Dictionary<char, char>
         {
@@ -114,7 +114,7 @@ namespace JSONParser
             List<Parser<char>> parsers = new List<Parser<char>>();
             foreach (var c in chars)
             {
-                parsers.Add(ParsecCore.Parsers.Char(c));
+                parsers.Add(Parsers.Char(c));
             }
             return parsers;
         }
@@ -140,7 +140,7 @@ namespace JSONParser
 
         ////////// ARRAY //////////
         private static Parser<T> betweenBrackets<T>(Parser<T> betweenParser) =>
-            Combinators.Between(ParsecCore.Parsers.Symbol("["), betweenParser, ParsecCore.Parsers.Symbol("]"));
+            Combinators.Between(Parsers.Symbol("["), betweenParser, Parsers.Symbol("]"));
 
         private static Parser<IEnumerable<T>> ListOfParser<T>(Parser<T> valueParser) =>
             betweenBrackets(Combinators.SepBy(valueParser, valueSeparator));
@@ -151,12 +151,12 @@ namespace JSONParser
 
         ////////// OBJECT //////////
         private static Parser<T> betweenBraces<T>(Parser<T> betweenParser) =>
-            Combinators.Between(ParsecCore.Parsers.Symbol("{"), betweenParser, ParsecCore.Parsers.Symbol("}"));
+            Combinators.Between(Parsers.Symbol("{"), betweenParser, Parsers.Symbol("}"));
 
         private static Parser<IEnumerable<T>> ObjectOfParser<T>(Parser<T> valueParser) =>
             betweenBraces(Combinators.SepBy(valueParser, valueSeparator));
 
-        private static readonly Parser<string> nameSeperator = Combinators.Between(whitespace, ParsecCore.Parsers.String(":"));
+        private static readonly Parser<string> nameSeperator = Combinators.Between(whitespace, Parsers.String(":"));
         private static readonly Parser<ObjectKeyValuePair> member =
             from key in Combinators.Between(whitespace, StringValue)
             from sep in nameSeperator

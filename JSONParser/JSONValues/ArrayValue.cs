@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace JSONParser
+namespace JSONtoXML
 {
     class ArrayValue : JsonValue
     {

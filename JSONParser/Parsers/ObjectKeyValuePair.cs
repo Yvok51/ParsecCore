@@ -1,4 +1,4 @@
-﻿namespace JSONParser
+﻿namespace JSONtoXML
 {
     struct ObjectKeyValuePair
     {
