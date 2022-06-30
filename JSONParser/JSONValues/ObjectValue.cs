@@ -3,7 +3,7 @@ using System.Text;
 
 namespace JSONtoXML
 {
-    class ObjectValue : JsonValue
+    public class ObjectValue : JsonValue
     {
         private Dictionary<StringValue, JsonValue> _values;
 

@@ -12,7 +12,7 @@ namespace JSONtoXML
     /// Parsers for JSON.
     /// Based on this RFC: https://datatracker.ietf.org/doc/html/rfc8259
     /// </summary>
-    static class JSONParsers
+    public static class JSONParsers
     {
         // We don't use Parser.Spaces since the its definition of whitespace is different
         // to the definition found in the JSON RFC.
@@ -23,7 +23,7 @@ namespace JSONtoXML
         private static readonly Parser<string> valueSeparator = Parsers.Symbol(",");
 
         ////////// NULL //////////
-        private static readonly Parser<NullValue> NullValue =
+        public static readonly Parser<NullValue> NullValue =
             from _ in Parsers.Symbol("null")
             select new NullValue();
 

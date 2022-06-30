@@ -1,6 +1,6 @@
 ﻿namespace JSONtoXML
 {
-    class StringValue : JsonValue
+    public class StringValue : JsonValue
     {
         private string _value;
 
