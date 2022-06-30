@@ -16,23 +16,31 @@ namespace JSONtoXML
     {
         // We don't use Parser.Spaces since the its definition of whitespace is different
         // to the definition found in the JSON RFC.
-        // Subsequently we also don't use Parser.Token and Parser.Symbol but instead Combinator.Between
+        // Subsequently we also don't use Parser.Token and Parsers.Symbol but instead Combinators.Between and custom Symbol
         private static readonly Parser<string> whitespace =
             Parsers.Satisfy(c => c == ' ' || c == '\n' || c == '\t' || c == '\r', "whitespace").Many();
 
-        private static readonly Parser<string> valueSeparator = Parsers.Symbol(",");
+        private static Parser<T> Token<T>(Parser<T> parser) =>
+            from result in parser
+            from _ in whitespace
+            select result;
+
+        private static Parser<string> Symbol(string s) =>
+            Token(Parsers.String(s));
+
+        private static readonly Parser<string> valueSeparator = Symbol(",");
 
         ////////// NULL //////////
         public static readonly Parser<NullValue> NullValue =
-            from _ in Parsers.Symbol("null")
+            from _ in Symbol("null")
             select new NullValue();
 
         ////////// BOOLEAN //////////
         private static readonly Parser<bool> trueParser =
-            from _ in Parsers.Symbol("true")
+            from _ in Symbol("true")
             select true;
         private static readonly Parser<bool> falseParser =
-            from _ in Parsers.Symbol("false")
+            from _ in Symbol("false")
             select false;
         private static readonly Parser<bool> Boolean = Combinators.Choice(trueParser, falseParser);
         public static Parser<BoolValue> BoolValue =
@@ -140,7 +148,7 @@ namespace JSONtoXML
 
         ////////// ARRAY //////////
         private static Parser<T> betweenBrackets<T>(Parser<T> betweenParser) =>
-            Combinators.Between(Parsers.Symbol("["), betweenParser, Parsers.Symbol("]"));
+            Combinators.Between(Symbol("["), betweenParser, Symbol("]"));
 
         private static Parser<IEnumerable<T>> ListOfParser<T>(Parser<T> valueParser) =>
             betweenBrackets(Combinators.SepBy(valueParser, valueSeparator));
@@ -151,7 +159,7 @@ namespace JSONtoXML
 
         ////////// OBJECT //////////
         private static Parser<T> betweenBraces<T>(Parser<T> betweenParser) =>
-            Combinators.Between(Parsers.Symbol("{"), betweenParser, Parsers.Symbol("}"));
+            Combinators.Between(Symbol("{"), betweenParser, Symbol("}"));
 
         private static Parser<IEnumerable<T>> ObjectOfParser<T>(Parser<T> valueParser) =>
             betweenBraces(Combinators.SepBy(valueParser, valueSeparator));
