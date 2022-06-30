@@ -97,7 +97,7 @@ namespace JSONtoXML
                 NumberStyles.AllowHexSpecifier
             );
 
-        private static readonly Parser<char> nonQouteChar = Parsers.Satisfy(c => c != '"', "non-quote character");
+        private static readonly Parser<char> insideStringChar = Parsers.Satisfy(c => c != '"' && c != '\n', "non-quote character");
 
         private static readonly Dictionary<char, char> toEscaped = new Dictionary<char, char>
         {
@@ -125,9 +125,9 @@ namespace JSONtoXML
             from escapedChar in charToEscape
             select toEscaped[escapedChar];
 
-        private static readonly Parser<char> escaped = Combinators.Choice(hexEncoded, escapedChar);
+        private static readonly Parser<char> escaped = Combinators.Choice(escapedChar.Try(), hexEncoded);
 
-        private static readonly Parser<char> stringChar = Combinators.Choice(escaped, nonQouteChar);
+        private static readonly Parser<char> stringChar = Combinators.Choice(escaped, insideStringChar);
         private static readonly Parser<string> String = Combinators.Between(quote, stringChar.Many());
 
         public static readonly Parser<StringValue> StringValue =

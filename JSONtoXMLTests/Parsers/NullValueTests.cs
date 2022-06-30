@@ -17,16 +17,6 @@ namespace JSONtoXMLTests.Parsers
         }
 
         [Fact]
-        public void NullValueParsedWithWhitespace()
-        {
-            var input = ParserInput.Create(" \t null    \n ");
-            var result = JSONParsers.NullValue(input);
-
-            Assert.True(result.HasRight);
-            Assert.Equal(new NullValue(), result.Right);
-        }
-
-        [Fact]
         public void NullValueFails()
         {
             var input = ParserInput.Create("nuxll");
