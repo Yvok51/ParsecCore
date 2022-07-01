@@ -28,7 +28,7 @@ namespace ParsecCore
                     return result;
                 }
 
-                return Either.Error<ParseError, T>(result.Left.NewErrorMessage(msg));
+                return Either.Error<ParseError, T>(result.Left.WithErrorMessage(msg));
             };
         }
 
