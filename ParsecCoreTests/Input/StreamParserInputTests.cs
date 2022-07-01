@@ -12,12 +12,32 @@ namespace ParsecCoreTests.Input
 
         private Stream createStream(string str)
         {
-            MemoryStream stream = new MemoryStream();
-            StreamWriter writer = new StreamWriter(stream, _encoding);
-            writer.Write(str);
-            writer.Flush();
-            stream.Seek(0, SeekOrigin.Begin);
+            Stream stream = new MemoryStream(_encoding.GetBytes(str));
             return stream;
+        }
+
+        public (Position, int) ReadTill(IParserInput reader, char[] expectedChars, int startIndex, char seekBackTo, char stopAt)
+        {
+            Position positionToSeek = reader.Position;
+            int i = startIndex;
+            while (!reader.EndOfInput)
+            {
+                Position positionToBeRead = reader.Position;
+                char c = reader.Read();
+                if (c == seekBackTo)
+                {
+                    positionToSeek = positionToBeRead;
+                }
+
+                Assert.Equal(expectedChars[i], c);
+                i++;
+                if (c == stopAt)
+                {
+                    break;
+                }
+            }
+
+            return (positionToSeek, i);
         }
 
         [Fact]
@@ -48,25 +68,8 @@ namespace ParsecCoreTests.Input
                 var expectedChars = new char[] { 'a', 'b', 'c', 'd', 'e', 'c', 'd', 'e', 'f', 'g' };
 
                 IParserInput reader = ParserInput.Create(input, _encoding);
-                Position positionToSeek = reader.Position;
 
-                int i = 0;
-                while (!reader.EndOfInput)
-                {
-                    Position positionToBeRead = reader.Position;
-                    char c = reader.Read();
-                    if (c == 'c')
-                    {
-                        positionToSeek = positionToBeRead;
-                    }
-
-                    Assert.Equal(expectedChars[i], c);
-                    i++;
-                    if (c == 'e')
-                    {
-                        break;
-                    }
-                }
+                var (positionToSeek, i) = ReadTill(reader, expectedChars, 0, 'c', 'e');
 
                 reader.Seek(positionToSeek);
 
@@ -87,26 +90,36 @@ namespace ParsecCoreTests.Input
                 var expectedChars = new char[] { 'a', 'b', 'c', 'd', '\n', 'e', 'f', 'c', 'd', '\n', 'e', 'f', 'g', 'h', 'i' };
 
                 IParserInput reader = ParserInput.Create(input, _encoding);
-                Position positionToSeek = reader.Position;
 
-                int i = 0;
+                var (positionToSeek, i) = ReadTill(reader, expectedChars, 0, 'c', 'f');
+
+                reader.Seek(positionToSeek);
+
                 while (!reader.EndOfInput)
                 {
-                    Position positionToBeRead = reader.Position;
-                    char c = reader.Read();
-                    if (c == 'c')
-                    {
-                        positionToSeek = positionToBeRead;
-                    }
-
-                    Assert.Equal(expectedChars[i], c);
+                    Assert.Equal(expectedChars[i], reader.Read());
                     i++;
-                    if (c == 'f')
-                    {
-                        break;
-                    }
                 }
+                Assert.Equal(expectedChars.Length, i);
+            }
+        }
 
+        [Fact]
+        public void SeekMultipleTimes()
+        {
+            using (var input = createStream("abcdefg"))
+            {
+                var expectedChars = new char[] { 'a', 'b', 'c', 'd', 'e', 'c', 'd', 'e', 'c', 'd', 'e', 'f', 'd', 'e', 'f', 'g' };
+
+                IParserInput reader = ParserInput.Create(input, _encoding);
+
+                var (positionToSeek, i) = ReadTill(reader, expectedChars, 0, 'c', 'e');
+                reader.Seek(positionToSeek);
+
+                (positionToSeek, i) = ReadTill(reader, expectedChars, i, 'c', 'e');
+                reader.Seek(positionToSeek);
+
+                (positionToSeek, i) = ReadTill(reader, expectedChars, i, 'd', 'f');
                 reader.Seek(positionToSeek);
 
                 while (!reader.EndOfInput)
