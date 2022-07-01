@@ -143,8 +143,20 @@ namespace JSONtoXML
             select new StringValue(str);
 
         ////////// VALUE //////////
+        
+        /** 
+         * Create a wrapper parser as a hack to circumnavigate the issue
+         * with JsonValue and ArrayValue/ObjectValue being dependent on each
+         * other.
+         * With the wrapper lambda the variables ArrayValue and ObjectValue 
+         * are captured and their value is added later on -> when the parser
+         * is invoked the values are correct and not null
+         */
         public static readonly Parser<JsonValue> JsonValue =
-            Combinators.Between(whitespace, Combinators.Choice<JsonValue>(NullValue, BoolValue, NumberValue, StringValue, ArrayValue, ObjectValue));
+            (input) =>
+            {
+                return Combinators.Between(whitespace, Combinators.Choice<JsonValue>(NullValue, BoolValue, NumberValue, StringValue, ArrayValue, ObjectValue))(input);
+            };
 
         ////////// ARRAY //////////
         private static Parser<T> betweenBrackets<T>(Parser<T> betweenParser) =>
