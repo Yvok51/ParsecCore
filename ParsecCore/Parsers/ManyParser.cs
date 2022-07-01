@@ -14,7 +14,7 @@ namespace ParsecCore.ParsersHelp
     {
         public static Parser<IEnumerable<T>> Parser<T>(Parser<T> parser)
         {
-            Parser<IMaybe<T>> optParser = parser.Try().Optional();
+            Parser<IMaybe<T>> optParser = parser.Optional();
             return (input) =>
             {
                 List<T> result = new List<T>();

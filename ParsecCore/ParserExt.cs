@@ -72,9 +72,10 @@ namespace ParsecCore
         /// <summary>
         /// Returns a parser which tries to parse according to the given parser as many times as possible.
         /// Can parse even zero times.
-        /// If parsing fails in the middle of one iteration, then the parser does <strong>NOT</strong> fail
-        /// and returns all of the parsed iterations. Only input equivalent to the fully parsed iterations
-        /// is consumed.
+        /// If parsing fails in the middle of one iteration (some input was consumed),
+        /// then the parser fails regardless of how many previous iterations were parsed already.
+        /// If this behaviour is not desired add the modifier <see cref="Try{T}(Parser{T})"/> 
+        /// to the parser beforehand.
         /// </summary>
         /// <typeparam name="T"> The type of the parser </typeparam>
         /// <param name="parser"> The parser to apply </param>
@@ -85,9 +86,10 @@ namespace ParsecCore
         /// <summary>
         /// Returns a parser which tries to parse according to the given parser as many times as possible.
         /// Must be sucessful at least once otherwise an error is returned.
-        /// If parsing fails in the middle of one iteration, then the parser does <strong>NOT</strong> fail
-        /// and returns all of the parsed iterations. Only input equivalent to the fully parsed iterations
-        /// is consumed.
+        /// If parsing fails in the middle of one iteration (some input was consumed),
+        /// then the parser fails regardless of how many previous iterations were parsed already.
+        /// If this behaviour is not desired add the modifier <see cref="Try{T}(Parser{T})"/> 
+        /// to the parser beforehand.
         /// </summary>
         /// <typeparam name="T"> The type of the parser </typeparam>
         /// <param name="parser"> The parser to apply </param>
