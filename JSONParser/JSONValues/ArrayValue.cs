@@ -25,7 +25,10 @@ namespace JSONtoXML
                 builder.Append(val.ToString());
                 builder.Append(seperator);
             }
-            builder.Remove(builder.Length - seperator.Length, seperator.Length);
+            if (builder.Length > "[".Length)
+            {
+                builder.Remove(builder.Length - seperator.Length, seperator.Length);
+            }
             builder.Append(" ]");
             return builder.ToString();
         }
