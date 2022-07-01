@@ -7,6 +7,5 @@ namespace ParsecCoreTests
 {
     public class ManyParserTests
     {
-        []
     }
 }
