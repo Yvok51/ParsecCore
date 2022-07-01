@@ -36,10 +36,16 @@ namespace JSONtoXML
             return builder.ToString();
         }
 
-        public override int GetHashCode() => _values.GetHashCode();
+        public override int GetHashCode() =>
+            _values.GetHashCode();
 
-        public override bool Equals(object obj) => obj is ObjectValue value && Equals(value);
+        public override bool Equals(object obj) => 
+            obj is ObjectValue value && Equals(value);
 
-        public bool Equals(ObjectValue other) => !(other is null) && Value == other.Value;
+        public bool Equals(ObjectValue other) =>
+            !(other is null) && Value == other.Value;
+
+        public bool MemberwiseEquals(ObjectValue other) =>
+            !(other is null) && Value.MemberwiseEquals(other.Value);
     }
 }
