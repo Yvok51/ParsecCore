@@ -26,6 +26,11 @@ namespace ParsecCore.ParsersHelp
                     parseResult = optParser(input);
                 }
 
+                if (parseResult.HasLeft)
+                {
+                    return Either.Error<ParseError, IEnumerable<T>>(parseResult.Left);
+                }
+
                 return Either.Result<ParseError, IEnumerable<T>>(result);
             };
         }
