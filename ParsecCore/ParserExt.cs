@@ -126,6 +126,7 @@ namespace ParsecCore
 
         /// <summary>
         /// Aplies the parser as many times as possible and ignores the result.
+        /// <see cref="Many{T}(Parser{T})"/> for specifics.
         /// </summary>
         /// <typeparam name="T"> The type of parser </typeparam>
         /// <param name="parser"> The parser to apply </param>
@@ -184,18 +185,11 @@ namespace ParsecCore
         /// <param name="parser"> The parser to modify </param>
         /// <param name="defaultValue"> The default value to return if the parser fails </param>
         /// <returns> Parser which returns a default value upon failure </returns>
-        public static Parser<T> Option<T>(this Parser<T> parser, T defaultValue) =>
-            (input) =>
-            {
-                var initialPosition = input.Position;
-                var result = parser(input);
-                if (result.HasRight || initialPosition != input.Position)
-                {
-                    return result;
-                }
-
-                return Either.Result<ParseError, T>(defaultValue);
-            };
+        public static Parser<T> Option<T>(this Parser<T> parser, T defaultValue)
+        {
+            return from opt in parser.Optional()
+                   select opt.Else(defaultValue);
+        }
 
         /// <summary>
         /// Makes the parser not consume any input if it fails.
