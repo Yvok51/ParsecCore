@@ -36,7 +36,15 @@ namespace JSONtoXML
             var input = ParserInput.Create(jsonString);
             var result = JSONParsers.JsonValue(input);
 
-            Console.WriteLine(result);
+            if (result.HasLeft)
+            {
+                Console.WriteLine("Error during parsing:");
+                Console.WriteLine(result.Left);
+                return;
+            }
+
+            var xml = ToXML.ConvertJSON(result.Right);
+            PrintXML.Print(xml, Console.Out);
         }
     }
 }

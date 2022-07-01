@@ -1,7 +1,7 @@
 ﻿
 namespace JSONtoXML
 {
-    class XMLNode
+    abstract class XMLNode
     {
     }
 }
