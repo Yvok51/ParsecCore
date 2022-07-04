@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
+using ParsecCore.Help;
+
 namespace ParsecCore
 {
     class SepBy1Parser
     {
-        public static Parser<IEnumerable<TValue>> Parser<TValue, TSeperator>(
+        public static Parser<IReadOnlyList<TValue>> Parser<TValue, TSeperator>(
             Parser<TValue> valueParser,
             Parser<TSeperator> seperatorParser
         )
@@ -15,7 +17,7 @@ namespace ParsecCore
                               select val;
             return from firstParse in valueParser
                    from subsequentParses in sepValueParser.Many()
-                   select new TValue[] { firstParse }.Concat(subsequentParses);
+                   select subsequentParses.Prepend(firstParse);
         }
     }
 }

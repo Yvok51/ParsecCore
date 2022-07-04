@@ -12,7 +12,7 @@ namespace ParsecCore.ParsersHelp
     /// <typeparam name="T"> The type of parser return value </typeparam>
     class ManyParser
     {
-        public static Parser<IEnumerable<T>> Parser<T>(Parser<T> parser)
+        public static Parser<IReadOnlyList<T>> Parser<T>(Parser<T> parser)
         {
             Parser<IMaybe<T>> optParser = parser.Optional();
             return (input) =>
@@ -28,10 +28,10 @@ namespace ParsecCore.ParsersHelp
 
                 if (parseResult.HasLeft)
                 {
-                    return Either.Error<ParseError, IEnumerable<T>>(parseResult.Left);
+                    return Either.Error<ParseError, IReadOnlyList<T>>(parseResult.Left);
                 }
 
-                return Either.Result<ParseError, IEnumerable<T>>(result);
+                return Either.Result<ParseError, IReadOnlyList<T>>(result);
             };
         }
     }

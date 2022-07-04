@@ -10,12 +10,12 @@ namespace ParsecCore.ParsersHelp
     /// <typeparam name="T"></typeparam>
     class AllParser
     {
-        public static Parser<IEnumerable<T>> Parser<T>(params Parser<T>[] parsers)
+        public static Parser<IReadOnlyList<T>> Parser<T>(params Parser<T>[] parsers)
         {
             return Parser((IEnumerable<Parser<T>>)parsers);
         }
 
-        public static Parser<IEnumerable<T>> Parser<T>(IEnumerable<Parser<T>> parsers)
+        public static Parser<IReadOnlyList<T>> Parser<T>(IEnumerable<Parser<T>> parsers)
         {
             return (input) =>
             {
@@ -26,13 +26,13 @@ namespace ParsecCore.ParsersHelp
                     var parsedResult = parser(input);
                     if (parsedResult.HasLeft)
                     {
-                        return Either.Error<ParseError, IEnumerable<T>>(parsedResult.Left);
+                        return Either.Error<ParseError, IReadOnlyList<T>>(parsedResult.Left);
                     }
 
                     result.Add(parsedResult.Right);
                 }
 
-                return Either.Result<ParseError, IEnumerable<T>>(result);
+                return Either.Result<ParseError, IReadOnlyList<T>>(result);
             };
         }
     }

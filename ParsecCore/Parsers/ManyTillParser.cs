@@ -6,7 +6,7 @@ namespace ParsecCore.ParsersHelp
 {
     class ManyTillParser
     {
-        public static Parser<IEnumerable<T>> Parser<T, TEnd>(Parser<T> many, Parser<TEnd> till)
+        public static Parser<IReadOnlyList<T>> Parser<T, TEnd>(Parser<T> many, Parser<TEnd> till)
         {
             Parser<TEnd> tryTill = till.Try();
             return (input) =>
@@ -19,14 +19,14 @@ namespace ParsecCore.ParsersHelp
                     var manyResult = many(input);
                     if (manyResult.HasLeft)
                     {
-                        return Either.Error<ParseError, IEnumerable<T>>(manyResult.Left);
+                        return Either.Error<ParseError, IReadOnlyList<T>>(manyResult.Left);
                     }
 
                     result.Add(manyResult.Right);
                     tillResult = tryTill(input);
                 }
 
-                return Either.Result<ParseError, IEnumerable<T>>(result);
+                return Either.Result<ParseError, IReadOnlyList<T>>(result);
             };
         }
     }

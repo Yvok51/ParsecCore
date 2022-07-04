@@ -80,7 +80,7 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of the parser </typeparam>
         /// <param name="parser"> The parser to apply </param>
         /// <returns> Parser which applies the given parser as many times as possible </returns>
-        public static Parser<IEnumerable<T>> Many<T>(this Parser<T> parser) =>
+        public static Parser<IReadOnlyList<T>> Many<T>(this Parser<T> parser) =>
             ManyParser.Parser(parser);
 
         /// <summary>
@@ -94,11 +94,11 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of the parser </typeparam>
         /// <param name="parser"> The parser to apply </param>
         /// <returns> Parser which applies the given parser as many times as possible </returns>
-        public static Parser<IEnumerable<T>> Many1<T>(this Parser<T> parser)
+        public static Parser<IReadOnlyList<T>> Many1<T>(this Parser<T> parser)
         {
             return from firstParse in parser
                    from restParses in parser.Many()
-                   select new T[] { firstParse }.Concat(restParses);
+                   select restParses.Prepend(firstParse);
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace ParsecCore
         /// <param name="parser"> The parser to apply </param>
         /// <param name="count"> Number of times to apply the parser </param>
         /// <returns></returns>
-        public static Parser<IEnumerable<T>> Count<T>(this Parser<T> parser, int count) =>
+        public static Parser<IReadOnlyList<T>> Count<T>(this Parser<T> parser, int count) =>
             CountParser.Parser(parser, count);
 
         /// <summary>

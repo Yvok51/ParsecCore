@@ -5,7 +5,7 @@ namespace ParsecCore.Help
 {
     static class Functions
     {
-        public static string ToPrettyString<T>(this IEnumerable<T> collection, string sep = ",")
+        public static string ToPrettyString<T>(this IReadOnlyList<T> collection, string sep = ",")
         {
             StringBuilder builder = new StringBuilder();
             builder.Append("[");
@@ -19,6 +19,15 @@ namespace ParsecCore.Help
             builder.Append("]");
 
             return builder.ToString();
+        }
+
+        public static IReadOnlyList<T> Prepend<T>(this IReadOnlyList<T> rest, T value)
+        {
+            List<T> newList = new List<T>(rest.Count + 1);
+            newList.Add(value);
+            newList.AddRange(rest);
+
+            return newList;
         }
     }
 }

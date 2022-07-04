@@ -7,11 +7,11 @@ namespace ParsecCore.ParsersHelp
 {
     class CountParser
     {
-        public static Parser<IEnumerable<T>> Parser<T>(Parser<T> parser, int count)
+        public static Parser<IReadOnlyList<T>> Parser<T>(Parser<T> parser, int count)
         {
             if (count <= 0)
             {
-                return Parsers.Return<IEnumerable<T>>(Array.Empty<T>());
+                return Parsers.Return<IReadOnlyList<T>>(Array.Empty<T>());
             }
             return (input) =>
             {
@@ -23,13 +23,13 @@ namespace ParsecCore.ParsersHelp
                     var parseResult = parser(input);
                     if (parseResult.HasLeft)
                     {
-                        return Either.Error<ParseError, IEnumerable<T>>(parseResult.Left);
+                        return Either.Error<ParseError, IReadOnlyList<T>>(parseResult.Left);
                     }
                     result[i] = parseResult.Right;
                     i++;
                 } while (i < count);
 
-                return Either.Result<ParseError, IEnumerable<T>>(result);
+                return Either.Result<ParseError, IReadOnlyList<T>>(result);
             };
         }
     }

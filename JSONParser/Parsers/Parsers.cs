@@ -117,7 +117,7 @@ namespace JSONtoXML
             { 'r', '\r' },
             { 't', '\t' },
         };
-        private static IEnumerable<Parser<char>> charsToParsers(IEnumerable<char> chars)
+        private static IReadOnlyList<Parser<char>> charsToParsers(IEnumerable<char> chars)
         {
             List<Parser<char>> parsers = new List<Parser<char>>();
             foreach (var c in chars)
@@ -162,7 +162,7 @@ namespace JSONtoXML
         private static Parser<T> betweenBrackets<T>(Parser<T> betweenParser) =>
             Combinators.Between(Symbol("["), betweenParser, Symbol("]"));
 
-        private static Parser<IEnumerable<T>> ListOfParser<T>(Parser<T> valueParser) =>
+        private static Parser<IReadOnlyList<T>> ListOfParser<T>(Parser<T> valueParser) =>
             betweenBrackets(Combinators.SepBy(valueParser, valueSeparator));
 
         public static readonly Parser<ArrayValue> ArrayValue =
@@ -173,7 +173,7 @@ namespace JSONtoXML
         private static Parser<T> betweenBraces<T>(Parser<T> betweenParser) =>
             Combinators.Between(Symbol("{"), betweenParser, Symbol("}"));
 
-        private static Parser<IEnumerable<T>> ObjectOfParser<T>(Parser<T> valueParser) =>
+        private static Parser<IReadOnlyList<T>> ObjectOfParser<T>(Parser<T> valueParser) =>
             betweenBraces(Combinators.SepBy(valueParser, valueSeparator));
 
         private static readonly Parser<string> nameSeperator = Combinators.Between(whitespace, Parsers.String(":"));

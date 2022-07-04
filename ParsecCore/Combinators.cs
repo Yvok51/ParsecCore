@@ -45,24 +45,24 @@ namespace ParsecCore
 
         /// <summary>
         /// Returns a parser which tries to parse all of the given parsers in a sequence.
-        /// If it succeeds it returns an IEnumerable of the parsed results.
+        /// If it succeeds it returns an IReadOnlyList of the parsed results.
         /// If it fails it returns the first encountered parse error
         /// </summary>
         /// <typeparam name="T"> The type of parsers </typeparam>
         /// <param name="parsers"> Parsers to sequentially apply </param>
         /// <returns> Parser which sequentially aplies all of the given parsers </returns>
-        public static Parser<IEnumerable<T>> All<T>(params Parser<T>[] parsers) =>
+        public static Parser<IReadOnlyList<T>> All<T>(params Parser<T>[] parsers) =>
             AllParser.Parser(parsers);
 
         /// <summary>
         /// Returns a parser which tries to parse all of the given parsers in a sequence.
-        /// If it succeeds it returns an IEnumerable of the parsed results.
+        /// If it succeeds it returns an IReadOnlyList of the parsed results.
         /// If it fails it returns the first encountered parse error
         /// </summary>
         /// <typeparam name="T"> The type of parsers </typeparam>
         /// <param name="parsers"> Parsers to sequentially apply </param>
         /// <returns> Parser which sequentially aplies all of the given parsers </returns>
-        public static Parser<IEnumerable<T>> All<T>(IEnumerable<Parser<T>> parsers) =>
+        public static Parser<IReadOnlyList<T>> All<T>(IEnumerable<Parser<T>> parsers) =>
             AllParser.Parser(parsers);
 
         /// <summary>
@@ -118,11 +118,11 @@ namespace ParsecCore
         /// <param name="valueParser"> Parser for the values </param>
         /// <param name="separatorParser"> Parser for the seperators </param>
         /// <returns> Parser which returns a list of parsed values </returns>
-        public static Parser<IEnumerable<TValue>> SepBy<TValue, TSeparator>(
+        public static Parser<IReadOnlyList<TValue>> SepBy<TValue, TSeparator>(
             Parser<TValue> valueParser,
             Parser<TSeparator> separatorParser
         ) =>
-            Choice(SepBy1(valueParser, separatorParser), Parsers.Return<IEnumerable<TValue>>(Array.Empty<TValue>()));
+            Choice(SepBy1(valueParser, separatorParser), Parsers.Return<IReadOnlyList<TValue>>(Array.Empty<TValue>()));
 
         /// <summary>
         /// Parse seperated values. Parses a list of values each of which is separated from the other.
@@ -134,7 +134,7 @@ namespace ParsecCore
         /// <param name="valueParser"> Parser for the values </param>
         /// <param name="separatorParser"> Parser for the seperators </param>
         /// <returns> Parser which returns a list of parsed values </returns>
-        public static Parser<IEnumerable<TValue>> SepBy1<TValue, TSeparator>(
+        public static Parser<IReadOnlyList<TValue>> SepBy1<TValue, TSeparator>(
             Parser<TValue> valueParser,
             Parser<TSeparator> separatorParser
         ) =>
@@ -149,7 +149,7 @@ namespace ParsecCore
         /// <param name="valueParser"> The parser for the values </param>
         /// <param name="separatorParser"> The parser for the separators </param>
         /// <returns> Parser which returns a list of parsed values </returns>
-        public static Parser<IEnumerable<TValue>> EndBy<TValue, TSeparator>(
+        public static Parser<IReadOnlyList<TValue>> EndBy<TValue, TSeparator>(
             Parser<TValue> valueParser,
             Parser<TSeparator> separatorParser
         )
@@ -169,7 +169,7 @@ namespace ParsecCore
         /// <param name="valueParser"> The parser for the values </param>
         /// <param name="separatorParser"> The parser for the separators </param>
         /// <returns> Parser which returns a list of parsed values </returns>
-        public static Parser<IEnumerable<TValue>> EndBy1<TValue, TSeparator>(
+        public static Parser<IReadOnlyList<TValue>> EndBy1<TValue, TSeparator>(
             Parser<TValue> valueParser,
             Parser<TSeparator> separatorParser
         )
@@ -177,7 +177,7 @@ namespace ParsecCore
             return from firstValue in valueParser
                    from _ in separatorParser
                    from values in EndBy(valueParser, separatorParser)
-                   select new TValue[] { firstValue }.Concat(values);
+                   select values.Prepend(firstValue);
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace ParsecCore
         /// <param name="valueParser"> The parser for the values </param>
         /// <param name="separatorParser"> The parser for the separators </param>
         /// <returns> Parser which returns a list of parsed values </returns>
-        public static Parser<IEnumerable<TValue>> SepEndBy<TValue, TSeparator>(
+        public static Parser<IReadOnlyList<TValue>> SepEndBy<TValue, TSeparator>(
             Parser<TValue> valueParser,
             Parser<TSeparator> separatorParser
         ) =>
@@ -203,7 +203,7 @@ namespace ParsecCore
         /// <param name="valueParser"> The parser for the values </param>
         /// <param name="separatorParser"> The parser for the separators </param>
         /// <returns> Parser which returns a list of parsed values </returns>
-        public static Parser<IEnumerable<TValue>> SepEndBy1<TValue, TSeparator>(
+        public static Parser<IReadOnlyList<TValue>> SepEndBy1<TValue, TSeparator>(
             Parser<TValue> valueParser,
             Parser<TSeparator> separatorParser
         ) =>
@@ -310,7 +310,7 @@ namespace ParsecCore
         /// <param name="parser"> The value parser </param>
         /// <param name="till"> The end parser </param>
         /// <returns> Parser which applies <c>parser</c> untill <c>till</c> succeeds </returns>
-        public static Parser<IEnumerable<T>> ManyTill<T, TEnd>(
+        public static Parser<IReadOnlyList<T>> ManyTill<T, TEnd>(
             Parser<T> parser,
             Parser<TEnd> till
         ) =>
