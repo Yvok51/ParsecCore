@@ -41,9 +41,12 @@ namespace ParsecCore.Input
 
         public void Seek(Position position)
          {
-            _reader.BaseStream.Position = position.Offset;
-            _reader.DiscardBufferedData();
-            _position = position;
+            if (position != _position)
+            {
+                _reader.BaseStream.Position = position.Offset;
+                _reader.DiscardBufferedData();
+                _position = position;
+            }
         }
 
         public char Peek()
