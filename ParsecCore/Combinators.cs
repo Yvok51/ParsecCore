@@ -192,7 +192,7 @@ namespace ParsecCore
             Parser<TValue> valueParser,
             Parser<TSeparator> separatorParser
         ) =>
-            Choice(SepBy(valueParser, separatorParser).Try(), EndBy(valueParser, separatorParser).Try()); // TODO: Probably reimplement it more efficiently
+            Choice(SepBy(valueParser, separatorParser).Try(), EndBy(valueParser, separatorParser));
 
         /// <summary>
         /// Parses list of seperated values which optionally end with a separator.
@@ -207,7 +207,7 @@ namespace ParsecCore
             Parser<TValue> valueParser,
             Parser<TSeparator> separatorParser
         ) =>
-            Choice(SepBy1(valueParser, separatorParser).Try(), EndBy1(valueParser, separatorParser).Try()); // TODO: Probably reimplement it more efficiently
+            Choice(SepBy1(valueParser, separatorParser).Try(), EndBy1(valueParser, separatorParser));
 
         /// <summary>
         /// Parses zero or more occurences of the given values seperated by operators
