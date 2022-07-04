@@ -156,7 +156,7 @@ namespace ParsecCore
         /// <summary>
         /// Aplies the parser a given amount of times.
         /// If the count is zero or less, then the returned parser is equivalent to
-        /// the <see cref="Parsers.Return{T}(T)">ReturnParser</see>
+        /// the <see cref="Parsers.Return{T}(T)">ReturnParser</see> of an empty enumerable
         /// </summary>
         /// <typeparam name="T"> The type of parser to apply </typeparam>
         /// <param name="parser"> The parser to apply </param>
