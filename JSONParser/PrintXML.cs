@@ -11,9 +11,10 @@ namespace JSONtoXML
     {
         public static void Print(XMLNode node, TextWriter writer)
         {
-            var xmlDeclaration = $"<?xml version=\"1.0\" encoding=\"{writer.Encoding.EncodingName}\"?>";
-            writer.WriteLine(xmlDeclaration);
+            var xmlDeclaration = $"<?xml version=\"1.0\" encoding=\"{writer.Encoding.WebName}\"?>";
+            writer.Write(xmlDeclaration);
             PrintImpl(node, writer, 0);
+            writer.WriteLine();
             writer.Flush();
         }
 
@@ -31,28 +32,38 @@ namespace JSONtoXML
 
         private static void PrintImpl(XMLElementNode node, TextWriter writer, int indentation)
         {
+            writer.WriteLine();
             writer.Write(IndentationToString(indentation));
             writer.Write($"<{node.Tag}{AttributesToString(node.Attributes)}");
+
             if (node.ChildNodes.Count == 0)
             {
-                writer.WriteLine("/>");
+                writer.Write("/>");
                 return;
             }
-            writer.WriteLine(">");
+            if (node.ChildNodes.Count == 1 && node.ChildNodes[0] is XMLTextNode textNode)
+            {
+                writer.Write(">");
+                PrintImpl(textNode, writer, 0);
+                writer.Write($"</{node.Tag}>");
+                return;
+            }
+
+            writer.Write(">");
 
             foreach (var child in node.ChildNodes)
             {
                 PrintImpl(child, writer, indentation + 1);
             }
-
+            writer.WriteLine();
             writer.Write(IndentationToString(indentation));
-            writer.WriteLine($"</{node.Tag}>");
+            writer.Write($"</{node.Tag}>");
         }
 
         private static void PrintImpl(XMLTextNode node, TextWriter writer, int indentation)
         {
             writer.Write(IndentationToString(indentation));
-            writer.WriteLine(node.Content);
+            writer.Write(node.Content);
         }
 
         private static string singleIndentation = "  ";

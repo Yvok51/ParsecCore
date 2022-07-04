@@ -35,7 +35,7 @@ namespace JSONtoXML
             List<XMLNode> childNodes = new List<XMLNode>();
             foreach (var (key, value) in objectValue.Value)
             {
-                childNodes.Add(ConvertImpl(value, key.Value, null));
+                childNodes.Add(ConvertImpl(value, key.Value, attributes));
             }
 
             return childNodes;
@@ -46,7 +46,7 @@ namespace JSONtoXML
             List<XMLNode> nodes = new List<XMLNode>();
             foreach (var value in arrayValue.Value)
             {
-                nodes.Add(ConvertImpl(value, tag, attributes));
+                nodes.Add(ConvertImpl(value, "Item", attributes));
             }
 
             return nodes;
