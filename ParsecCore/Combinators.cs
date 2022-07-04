@@ -174,10 +174,9 @@ namespace ParsecCore
             Parser<TSeparator> separatorParser
         )
         {
-            return from firstValue in valueParser
-                   from _ in separatorParser
-                   from values in EndBy(valueParser, separatorParser)
-                   select values.Prepend(firstValue);
+            return (from val in valueParser
+                    from sep in separatorParser
+                    select val).Many1();
         }
 
         /// <summary>
