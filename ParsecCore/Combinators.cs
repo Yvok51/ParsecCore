@@ -301,7 +301,7 @@ namespace ParsecCore
         }
 
         /// <summary>
-        /// applies <c>parser</c> zero or more times until parser <c>till</c> succeeds.
+        /// Applies <c>parser</c> zero or more times until parser <c>till</c> succeeds.
         /// Returns the list of values returned by <c>parser</c>.
         /// </summary>
         /// <typeparam name="T"> The return type of the value parser </typeparam>
