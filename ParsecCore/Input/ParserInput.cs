@@ -8,5 +8,7 @@ namespace ParsecCore.Input
         public static IParserInput Create(string inputString) => new StringParserInput(inputString);
 
         public static IParserInput Create(Stream stream, Encoding encoding) => new StreamParserInput(stream, encoding);
+        
+        public static IParserInput Create(StreamReader reader) => new StreamParserInput(reader);
     }
 }

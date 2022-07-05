@@ -11,6 +11,18 @@ namespace ParsecCore.Input
     /// </summary>
     class StreamParserInput : IParserInput
     {
+        public StreamParserInput(StreamReader reader)
+        {
+            if (reader is null || !reader.BaseStream.CanRead || !reader.BaseStream.CanSeek)
+            {
+                throw new ArgumentException("Provided reader must be not null, must be able to read, and must be able to seek");
+            }
+
+            _reader = reader;
+            _position = Position.Start((int)_reader.BaseStream.Position);
+            _encoding = reader.CurrentEncoding;
+        }
+
         public StreamParserInput(Stream stream, Encoding encoding)
         {
             if (stream is null || !stream.CanRead || !stream.CanSeek)
