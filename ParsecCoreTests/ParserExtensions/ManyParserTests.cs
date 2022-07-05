@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using Xunit;
-
-using ParsecCore;
+﻿using ParsecCore;
 using ParsecCore.Input;
+using System.Collections.Generic;
+using Xunit;
 
 namespace ParsecCoreTests
 {

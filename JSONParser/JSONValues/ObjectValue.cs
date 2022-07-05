@@ -39,7 +39,7 @@ namespace JSONtoXML
         public override int GetHashCode() =>
             _values.GetHashCode();
 
-        public override bool Equals(object obj) => 
+        public override bool Equals(object obj) =>
             obj is ObjectValue value && Equals(value);
 
         public bool Equals(ObjectValue other) =>

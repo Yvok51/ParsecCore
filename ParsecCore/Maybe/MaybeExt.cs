@@ -28,7 +28,8 @@ namespace ParsecCore.MaybeNS
             Func<TFirst, TSecond, TResult> getResult)
         {
             return first.Match(
-                firstResult => {
+                firstResult =>
+                {
                     var second = getSecond(firstResult);
                     return second.Match(
                         secondResult => Maybe.FromValue(getResult(firstResult, secondResult)),

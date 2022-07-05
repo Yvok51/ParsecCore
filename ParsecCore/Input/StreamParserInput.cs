@@ -52,7 +52,7 @@ namespace ParsecCore.Input
         }
 
         public void Seek(Position position)
-         {
+        {
             if (position != _position)
             {
                 _reader.BaseStream.Position = position.Offset;

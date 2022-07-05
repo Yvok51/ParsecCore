@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-
-using ParsecCore.EitherNS;
+﻿using ParsecCore.EitherNS;
+using System.Collections.Generic;
 
 namespace ParsecCore.ParsersHelp
 {

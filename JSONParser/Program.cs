@@ -1,8 +1,6 @@
-﻿using System;
+﻿using ParsecCore.Input;
+using System;
 using System.IO;
-using System.Text;
-
-using ParsecCore.Input;
 
 namespace JSONtoXML
 {

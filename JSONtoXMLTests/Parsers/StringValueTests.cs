@@ -1,6 +1,6 @@
-﻿using Xunit;
-using JSONtoXML;
+﻿using JSONtoXML;
 using ParsecCore.Input;
+using Xunit;
 
 namespace JSONtoXMLTests.Parsers
 {

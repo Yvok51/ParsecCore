@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
-using Xunit;
-using JSONtoXML;
+﻿using JSONtoXML;
 using ParsecCore.Input;
+using System;
+using System.Collections.Generic;
+using Xunit;
 
 namespace JSONtoXMLTests.Parsers
 {

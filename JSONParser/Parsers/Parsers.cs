@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Globalization;
-
-using ParsecCore;
+﻿using ParsecCore;
 using ParsecCore.MaybeNS;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 
 namespace JSONtoXML
 {
@@ -16,7 +15,7 @@ namespace JSONtoXML
     {
         // We don't use Parser.Spaces since the its definition of whitespace is different
         // to the definition found in the JSON RFC.
-        // Subsequently we also don't use Parser.Token and Parsers.Symbol but instead Combinators.Between and custom Symbol
+        // Subsequently we also don't use Token and Symbol but instead Between and custom Symbol
         private static readonly Parser<string> whitespace =
             Parsers.Satisfy(c => c == ' ' || c == '\n' || c == '\t' || c == '\r', "whitespace").Many();
 
@@ -71,7 +70,7 @@ namespace JSONtoXML
             from symbol in exponentSymbol
             from sign in plusOrMinus.Optional()
             from digits in Parsers.Digits
-            select symbol + sign.Else("") + digits;
+            select symbol + sign.Else(string.Empty) + digits;
 
         private static readonly CultureInfo USCulture = new CultureInfo("en-US");
         private static readonly Parser<double> Number =
@@ -79,7 +78,10 @@ namespace JSONtoXML
             from integer in integer
             from frac in fractionalPart.Optional()
             from exp in exponent.Optional()
-            select Double.Parse(minus.Else("") + integer + frac.Else("") + exp.Else(""), USCulture);
+            select Double.Parse(
+                minus.Else(string.Empty) + integer + frac.Else(string.Empty) + exp.Else(string.Empty),
+                USCulture
+            );
 
         public static readonly Parser<NumberValue> NumberValue =
             from n in Number
@@ -105,7 +107,8 @@ namespace JSONtoXML
                 NumberStyles.AllowHexSpecifier
             );
 
-        private static readonly Parser<char> insideStringChar = Parsers.Satisfy(c => c != '"' && c != '\n', "non-quote/non-CRLF character");
+        private static readonly Parser<char> insideStringChar =
+            Parsers.Satisfy(c => c != '"' && c != '\n', "non-quote/non-CRLF character");
 
         private static readonly Dictionary<char, char> toEscaped = new Dictionary<char, char>
         {
@@ -143,7 +146,7 @@ namespace JSONtoXML
             select new StringValue(str);
 
         ////////// VALUE //////////
-        
+
         /** 
          * Create a wrapper parser as a hack to circumnavigate the issue
          * with JsonValue and ArrayValue/ObjectValue being dependent on each
@@ -155,7 +158,17 @@ namespace JSONtoXML
         public static readonly Parser<JsonValue> JsonValue =
             (input) =>
             {
-                return Combinators.Between(whitespace, Combinators.Choice<JsonValue>(NullValue, BoolValue, NumberValue, StringValue, ArrayValue, ObjectValue))(input);
+                return Combinators.Between(
+                    whitespace,
+                    Combinators.Choice<JsonValue>(
+                        NullValue,
+                        BoolValue,
+                        NumberValue,
+                        StringValue,
+                        ArrayValue,
+                        ObjectValue
+                    )
+                )(input);
             };
 
         ////////// ARRAY //////////

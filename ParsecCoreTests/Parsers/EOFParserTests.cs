@@ -1,9 +1,6 @@
-﻿using Xunit;
-
-using ParsecCore;
+﻿using ParsecCore;
 using ParsecCore.Input;
-using ParsecCore.EitherNS;
-using ParsecCore.Help;
+using Xunit;
 
 namespace ParsecCoreTests
 {
@@ -21,7 +18,7 @@ namespace ParsecCoreTests
         }
 
         [Fact]
-        public void FailsCorrectly ()
+        public void FailsCorrectly()
         {
             IParserInput input = ParserInput.Create("This is outrageous. It's unfair");
 

@@ -1,5 +1,5 @@
-﻿using ParsecCore.Help;
-using ParsecCore.EitherNS;
+﻿using ParsecCore.EitherNS;
+using ParsecCore.Help;
 
 namespace ParsecCore.ParsersHelp
 {

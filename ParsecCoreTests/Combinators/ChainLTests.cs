@@ -1,9 +1,8 @@
-﻿using System;
-using System.Linq;
-
-using Xunit;
-using ParsecCore;
+﻿using ParsecCore;
 using ParsecCore.Input;
+using System;
+using System.Linq;
+using Xunit;
 
 namespace ParsecCoreTests
 {

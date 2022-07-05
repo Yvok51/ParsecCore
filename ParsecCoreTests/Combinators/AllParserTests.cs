@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-
-using Xunit;
-
-using ParsecCore;
+﻿using ParsecCore;
 using ParsecCore.Input;
+using System.Collections.Generic;
+using Xunit;
 
 namespace ParsecCoreTests
 {
@@ -22,7 +20,7 @@ namespace ParsecCoreTests
 
             Assert.True(result.HasRight);
             var resultList = new List<string>(result.Right);
-            
+
             Assert.Equal("You underestimate", resultList[0]);
             Assert.Equal(" ", resultList[1]);
             Assert.Equal("my power!", resultList[2]);

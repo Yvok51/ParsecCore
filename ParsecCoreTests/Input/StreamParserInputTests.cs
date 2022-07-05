@@ -1,8 +1,7 @@
-﻿using System.IO;
+﻿using ParsecCore.Input;
+using System.IO;
 using System.Text;
-
 using Xunit;
-using ParsecCore.Input;
 
 namespace ParsecCoreTests.Input
 {

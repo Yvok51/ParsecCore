@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using Xunit;
-
-using ParsecCore;
+﻿using ParsecCore;
 using ParsecCore.Input;
+using System.Collections.Generic;
+using Xunit;
 
 namespace ParsecCoreTests
 {
@@ -18,7 +17,7 @@ namespace ParsecCoreTests
             var parser = Parsers.Digit.Count(count);
 
             var result = parser(input);
-            
+
             Assert.True(result.HasRight);
             var parsedList = new List<char>(result.Right);
             Assert.Empty(parsedList);

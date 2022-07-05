@@ -4,7 +4,7 @@ namespace ParsecCore.EitherNS
 {
     struct Error<TError, TResult> : IEither<TError, TResult>
     {
-        public Error(TError error) 
+        public Error(TError error)
         {
             _error = error;
         }

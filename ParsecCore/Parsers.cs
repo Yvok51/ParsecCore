@@ -1,11 +1,10 @@
-﻿using System;
+﻿using ParsecCore.EitherNS;
+using ParsecCore.Help;
+using ParsecCore.MaybeNS;
+using ParsecCore.ParsersHelp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using ParsecCore.ParsersHelp;
-using ParsecCore.Help;
-using ParsecCore.EitherNS;
-using ParsecCore.MaybeNS;
 
 namespace ParsecCore
 {
@@ -96,7 +95,7 @@ namespace ParsecCore
         public static readonly Parser<int> DecimalInteger =
             from op in Combinators.Choice(Symbol("-"), Symbol("+")).Optional()
             from digits in Token(Digits)
-            select Int32.Parse(op.Else("") + digits);
+            select Int32.Parse(op.Else(string.Empty) + digits);
 
         /// <summary>
         /// Parses an octal digit
@@ -140,7 +139,8 @@ namespace ParsecCore
         /// <param name="chars"> Possible characters to parse </param>
         /// <returns> Parser which only parses one of the given characters </returns>
         public static Parser<char> OneOf(char[] chars) =>
-            Satisfy(c => {
+            Satisfy(c =>
+            {
                 foreach (char includedChar in chars)
                 {
                     if (c == includedChar)
@@ -158,7 +158,8 @@ namespace ParsecCore
         /// <param name="chars"> The list of characters the read character must not be in </param>
         /// <returns> Parser which parses a character only if it is not included in the given list </returns>
         public static Parser<char> NoneOf(char[] chars) =>
-            Satisfy(c => {
+            Satisfy(c =>
+            {
                 foreach (char excludedChar in chars)
                 {
                     if (c == excludedChar)
@@ -220,7 +221,7 @@ namespace ParsecCore
         /// </summary>
         /// <param name="stringToParse"> The string for the parser to parse </param>
         /// <returns> Parser which parses exactly the given string and any whitespace afterwards </returns>
-        public static Parser<string> Symbol(string stringToParse) => 
+        public static Parser<string> Symbol(string stringToParse) =>
             Token(String(stringToParse));
     }
 }

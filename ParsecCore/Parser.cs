@@ -1,5 +1,5 @@
-﻿using ParsecCore.Input;
-using ParsecCore.EitherNS;
+﻿using ParsecCore.EitherNS;
+using ParsecCore.Input;
 
 namespace ParsecCore
 {

@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Xunit;
-
+﻿
 using ParsecCore;
-using ParsecCore.Input;
 using ParsecCore.EitherNS;
+using ParsecCore.Input;
+using Xunit;
 
 namespace ParsecCoreTests
 {

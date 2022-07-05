@@ -1,7 +1,5 @@
-﻿using System;
+﻿using ParsecCore.Input;
 using Xunit;
-
-using ParsecCore.Input;
 
 namespace ParsecCoreTests.Input
 {
@@ -16,7 +14,7 @@ namespace ParsecCoreTests.Input
             IParserInput reader = ParserInput.Create(input);
 
             int i = 0;
-            while(!reader.EndOfInput)
+            while (!reader.EndOfInput)
             {
                 Assert.Equal(expectedChars[i], reader.Read());
                 i++;

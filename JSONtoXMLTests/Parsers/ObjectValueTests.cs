@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
-using Xunit;
-using JSONtoXML;
+﻿using JSONtoXML;
 using ParsecCore.Input;
+using System;
+using System.Collections.Generic;
+using Xunit;
 
 namespace JSONtoXMLTests.Parsers
 {
@@ -27,7 +26,7 @@ namespace JSONtoXMLTests.Parsers
             var result = JSONParsers.ObjectValue(input);
 
             List<ObjectKeyValuePair> expectedValues = new List<ObjectKeyValuePair>();
-            expectedValues.Add(new ObjectKeyValuePair() { Key = new StringValue("a"), Value = new NumberValue(1)});
+            expectedValues.Add(new ObjectKeyValuePair() { Key = new StringValue("a"), Value = new NumberValue(1) });
 
             Assert.True(result.HasRight);
             var expected = new ObjectValue(expectedValues);

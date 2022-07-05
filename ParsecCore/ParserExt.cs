@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using ParsecCore.EitherNS;
+﻿using ParsecCore.EitherNS;
 using ParsecCore.Help;
 using ParsecCore.MaybeNS;
 using ParsecCore.ParsersHelp;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ParsecCore
 {
@@ -152,7 +151,7 @@ namespace ParsecCore
             return from _ in parser.Many1()
                    select new None();
         }
-        
+
         /// <summary>
         /// Aplies the parser a given amount of times.
         /// If the count is zero or less, then the returned parser is equivalent to

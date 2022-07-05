@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
+﻿using ParsecCore.Help;
 using ParsecCore.ParsersHelp;
-using ParsecCore.Help;
+using System;
+using System.Collections.Generic;
 
 namespace ParsecCore
 {

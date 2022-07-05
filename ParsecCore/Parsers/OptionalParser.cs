@@ -1,5 +1,5 @@
-﻿using ParsecCore.MaybeNS;
-using ParsecCore.EitherNS;
+﻿using ParsecCore.EitherNS;
+using ParsecCore.MaybeNS;
 
 namespace ParsecCore.ParsersHelp
 {
@@ -20,7 +20,7 @@ namespace ParsecCore.ParsersHelp
                     return Either.Result<ParseError, IMaybe<T>>(Maybe.Nothing<T>());
                 }
 
-                return Either.Error<ParseError, IMaybe<T>>(result.Left);                
+                return Either.Error<ParseError, IMaybe<T>>(result.Left);
             };
         }
     }

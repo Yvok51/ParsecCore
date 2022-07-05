@@ -44,7 +44,8 @@ namespace ParsecCore.EitherNS
             Func<TFirst, TSecond, TResult> getResult)
         {
             return first.Match(
-                firstResult => {
+                firstResult =>
+                {
                     var second = getSecond(firstResult);
                     return second.Match(
                         secondResult => Either.Result<TLeft, TResult>(getResult(firstResult, secondResult)),

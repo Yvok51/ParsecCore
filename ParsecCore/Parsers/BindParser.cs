@@ -1,6 +1,5 @@
-﻿using System;
-
-using ParsecCore.EitherNS;
+﻿using ParsecCore.EitherNS;
+using System;
 
 namespace ParsecCore.ParsersHelp
 {

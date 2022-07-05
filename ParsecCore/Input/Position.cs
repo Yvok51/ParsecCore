@@ -5,7 +5,7 @@ namespace ParsecCore.Input
     public struct Position : IEquatable<Position>
     {
         public static Position Start(int offset = 0) => new Position(line: 1, column: 1, offset: offset);
-        
+
         public Position(int line, int column, int offset)
         {
             Line = line;
