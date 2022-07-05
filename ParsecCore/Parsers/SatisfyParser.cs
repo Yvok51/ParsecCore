@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using ParsecCore.EitherNS;
 
@@ -10,6 +11,16 @@ namespace ParsecCore.ParsersHelp
     /// </summary>
     class SatisfyParser
     {
+        private static Dictionary<char, string> escapedChars = new Dictionary<char, string>()
+        {
+            { '\n', "\\n" },
+            { '\b', "\\b" },
+            { '\f', "\\f" },
+            { '\r', "\\r" },
+            { '\t', "\\t" },
+            { '\v', "\\v" },
+        };
+
         public static Parser<char> Parser(Predicate<char> predicate, string predicateDescription)
         {
             return (input) =>
@@ -24,7 +35,8 @@ namespace ParsecCore.ParsersHelp
 
                 if (!predicate(read))
                 {
-                    return Either.Error<ParseError, char>(new ParseError($"character '{read}' does not conform, {predicateDescription} exprected", readPosition));
+                    string readChar = escapedChars.ContainsKey(read) ? escapedChars[read] : read.ToString();
+                    return Either.Error<ParseError, char>(new ParseError($"character '{readChar}' does not conform, {predicateDescription} exprected", readPosition));
                 }
 
                 input.Read();

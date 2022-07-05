@@ -39,7 +39,17 @@ namespace ParsecCore
         /// <param name="c"> The character to parse </param>
         /// <returns> Parser which parses only the given character </returns>
         public static Parser<char> Char(char c) =>
-            Satisfy(i => i == c, $"character {c}");
+            Satisfy(i => i == c, escapedChars.ContainsKey(c) ? $"character '{escapedChars[c]}'" : $"character '{c}'");
+
+        private static Dictionary<char, string> escapedChars = new Dictionary<char, string>()
+        {
+            { '\n', "\\n" },
+            { '\b', "\\b" },
+            { '\f', "\\f" },
+            { '\r', "\\r" },
+            { '\t', "\\t" },
+            { '\v', "\\v" },
+        };
 
         /// <summary>
         /// Parses a single whitespace

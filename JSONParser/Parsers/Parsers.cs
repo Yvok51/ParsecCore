@@ -105,7 +105,7 @@ namespace JSONtoXML
                 NumberStyles.AllowHexSpecifier
             );
 
-        private static readonly Parser<char> insideStringChar = Parsers.Satisfy(c => c != '"' && c != '\n', "non-quote character");
+        private static readonly Parser<char> insideStringChar = Parsers.Satisfy(c => c != '"' && c != '\n', "non-quote/non-CRLF character");
 
         private static readonly Dictionary<char, char> toEscaped = new Dictionary<char, char>
         {
