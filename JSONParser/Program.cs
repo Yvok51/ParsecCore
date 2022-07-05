@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 
 using ParsecCore.Input;
 
@@ -33,8 +35,13 @@ namespace JSONtoXML
 ";
         static void Main(string[] args)
         {
-            var input = ParserInput.Create(jsonString);
-            var result = JSONParsers.JsonValue(input);
+            ConvertToXML((StreamReader)Console.In, (StreamWriter)Console.Out);
+        }
+
+        static void ConvertToXML(StreamReader input, StreamWriter output)
+        {
+            var parserInput = ParserInput.Create(input);
+            var result = JSONParsers.JsonValue(parserInput);
 
             if (result.HasLeft)
             {
@@ -44,7 +51,7 @@ namespace JSONtoXML
             }
 
             var xml = ToXML.ConvertJSON(result.Right);
-            PrintXML.Print(xml, Console.Out);
+            PrintXML.Print(xml, output);
         }
     }
 }
