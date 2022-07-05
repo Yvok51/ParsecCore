@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "JSONtoXML": {
+      "commandName": "Project",
+      "commandLineArgs": "example-json/sample1.json output.xml"
+    }
+  }
+}

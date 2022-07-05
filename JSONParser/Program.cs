@@ -35,7 +35,19 @@ namespace JSONtoXML
 ";
         static void Main(string[] args)
         {
-            ConvertToXML((StreamReader)Console.In, (StreamWriter)Console.Out);
+            if (args.Length != 2)
+            {
+                Console.WriteLine("Not the right number of arguments");
+                return;
+            }
+            var inputFile = args[0];
+            var outputFile = args[1];
+
+            using (StreamReader input = new StreamReader(inputFile))
+            using (StreamWriter output = new StreamWriter(outputFile))
+            {
+                ConvertToXML(input, output);
+            }
         }
 
         static void ConvertToXML(StreamReader input, StreamWriter output)
