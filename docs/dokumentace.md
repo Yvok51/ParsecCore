@@ -1,4 +1,4 @@
-# Uživatelská dokumentace
+# Dokumentace
 
 ParsecCore je knihovna v jazyce C#, pomocí které lze vytvářet nejrůznější parsery. Knihovna je inspirována Haskellovou knihovnou [*Parsec*](https://hackage.haskell.org/package/parsec). Jedná se tedy o knihovnu, která obsahuje několik jednoduchých základních parserů a funkce, pomocí kterých lze parsery kombinovat dohromady. S knihovnou, stejně jako s původním *Parsecem*, jsou vytvářeny *top-down* parsery, avšak knihovna obsahuje kombinátory *ChainL* a *ChainL1*, pomocí kterých se lze vypořádat s levou rekurzí.
 
