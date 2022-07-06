@@ -93,9 +93,9 @@ namespace ParsecCore
         /// Parses an integer
         /// </summary>
         public static readonly Parser<int> DecimalInteger =
-            from op in Combinators.Choice(Symbol("-"), Symbol("+")).Optional()
+            from op in Combinators.Choice(Symbol("-"), Symbol("+")).Option(string.Empty)
             from digits in Token(Digits)
-            select Int32.Parse(op.Else(string.Empty) + digits);
+            select Int32.Parse(op + digits);
 
         /// <summary>
         /// Parses an octal digit

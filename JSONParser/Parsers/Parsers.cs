@@ -68,20 +68,17 @@ namespace JSONtoXML
             Combinators.Choice(Parsers.String("e"), Parsers.String("E"));
         private static readonly Parser<string> exponent =
             from symbol in exponentSymbol
-            from sign in plusOrMinus.Optional()
+            from sign in plusOrMinus.Option(string.Empty)
             from digits in Parsers.Digits
-            select symbol + sign.Else(string.Empty) + digits;
+            select symbol + sign + digits;
 
         private static readonly CultureInfo USCulture = new CultureInfo("en-US");
         private static readonly Parser<double> Number =
-            from minus in minus.Optional()
+            from minus in minus.Option(string.Empty)
             from integer in integer
-            from frac in fractionalPart.Optional()
-            from exp in exponent.Optional()
-            select Double.Parse(
-                minus.Else(string.Empty) + integer + frac.Else(string.Empty) + exp.Else(string.Empty),
-                USCulture
-            );
+            from frac in fractionalPart.Option(string.Empty)
+            from exp in exponent.Option(string.Empty)
+            select Double.Parse(minus + integer + frac + exp, USCulture);
 
         public static readonly Parser<NumberValue> NumberValue =
             from n in Number
