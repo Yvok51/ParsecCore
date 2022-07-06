@@ -22,7 +22,7 @@ namespace ParsecCore
 
         public override string ToString()
         {
-            return $"{Position} - {Error}";
+            return $"{Position.Line}:{Position.Column} - {Error}";
         }
     }
 }
