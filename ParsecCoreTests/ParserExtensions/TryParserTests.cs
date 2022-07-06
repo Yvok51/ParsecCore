@@ -15,8 +15,8 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal("12", result.Right);
+            Assert.True(result.IsResult);
+            Assert.Equal("12", result.Result);
             Assert.NotEqual(initialPosition, input.Position);
         }
 
@@ -29,7 +29,7 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasLeft);
+            Assert.True(result.IsError);
             Assert.Equal(initialPosition, input.Position);
         }
 
@@ -42,7 +42,7 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasLeft);
+            Assert.True(result.IsError);
             Assert.Equal(initialPosition, input.Position);
         }
     }

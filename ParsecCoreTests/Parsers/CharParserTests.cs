@@ -18,8 +18,8 @@ namespace ParsecCoreTests
 
             IEither<ParseError, char> result = parser(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal(toParse, result.Right);
+            Assert.True(result.IsResult);
+            Assert.Equal(toParse, result.Result);
         }
 
         [Theory]
@@ -33,8 +33,8 @@ namespace ParsecCoreTests
 
             IEither<ParseError, char> result = parser(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal(toParse, result.Right);
+            Assert.True(result.IsResult);
+            Assert.Equal(toParse, result.Result);
         }
 
         [Theory]
@@ -48,8 +48,8 @@ namespace ParsecCoreTests
 
             IEither<ParseError, char> result = parser(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal(toParse, result.Right);
+            Assert.True(result.IsResult);
+            Assert.Equal(toParse, result.Result);
 
             Assert.False(input.EndOfInput);
             Assert.Equal(1, input.Position.Offset);
@@ -66,7 +66,7 @@ namespace ParsecCoreTests
 
             IEither<ParseError, char> result = parser(input);
 
-            Assert.True(result.HasLeft);
+            Assert.True(result.IsError);
         }
     }
 }

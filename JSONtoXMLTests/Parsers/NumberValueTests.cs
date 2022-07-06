@@ -12,8 +12,8 @@ namespace JSONtoXMLTests.Parsers
             var input = ParserInput.Create("13");
             var result = JSONParsers.NumberValue(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal(new NumberValue(13), result.Right);
+            Assert.True(result.IsResult);
+            Assert.Equal(new NumberValue(13), result.Result);
         }
 
         [Fact]
@@ -22,8 +22,8 @@ namespace JSONtoXMLTests.Parsers
             var input = ParserInput.Create("-13");
             var result = JSONParsers.NumberValue(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal(new NumberValue(-13), result.Right);
+            Assert.True(result.IsResult);
+            Assert.Equal(new NumberValue(-13), result.Result);
         }
 
         [Fact]
@@ -32,8 +32,8 @@ namespace JSONtoXMLTests.Parsers
             var input = ParserInput.Create("2.25");
             var result = JSONParsers.NumberValue(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal(new NumberValue(2.25), result.Right);
+            Assert.True(result.IsResult);
+            Assert.Equal(new NumberValue(2.25), result.Result);
         }
 
         [Fact]
@@ -42,8 +42,8 @@ namespace JSONtoXMLTests.Parsers
             var input = ParserInput.Create("2e6");
             var result = JSONParsers.NumberValue(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal(new NumberValue(2_000_000), result.Right);
+            Assert.True(result.IsResult);
+            Assert.Equal(new NumberValue(2_000_000), result.Result);
         }
 
         [Fact]
@@ -52,8 +52,8 @@ namespace JSONtoXMLTests.Parsers
             var input = ParserInput.Create("-2.5e-2");
             var result = JSONParsers.NumberValue(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal(new NumberValue(-0.025), result.Right);
+            Assert.True(result.IsResult);
+            Assert.Equal(new NumberValue(-0.025), result.Result);
         }
 
         [Fact]
@@ -62,7 +62,7 @@ namespace JSONtoXMLTests.Parsers
             var input = ParserInput.Create("abc");
             var result = JSONParsers.NumberValue(input);
 
-            Assert.True(result.HasLeft);
+            Assert.True(result.IsError);
         }
     }
 }

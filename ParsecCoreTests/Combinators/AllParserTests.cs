@@ -18,8 +18,8 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasRight);
-            var resultList = new List<string>(result.Right);
+            Assert.True(result.IsResult);
+            var resultList = new List<string>(result.Result);
 
             Assert.Equal("You underestimate", resultList[0]);
             Assert.Equal(" ", resultList[1]);
@@ -37,7 +37,7 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasLeft);
+            Assert.True(result.IsError);
         }
     }
 }

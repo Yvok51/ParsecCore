@@ -11,16 +11,16 @@ namespace ParsecCore.ParsersHelp
             {
                 var initialPosition = input.Position;
                 var result = parser(input);
-                if (result.HasRight)
+                if (result.IsResult)
                 {
-                    return Either.Result<ParseError, IMaybe<T>>(Maybe.FromValue(result.Right));
+                    return Either.Result<ParseError, IMaybe<T>>(Maybe.FromValue(result.Result));
                 }
                 if (initialPosition == input.Position)
                 {
                     return Either.Result<ParseError, IMaybe<T>>(Maybe.Nothing<T>());
                 }
 
-                return Either.Error<ParseError, IMaybe<T>>(result.Left);
+                return Either.Error<ParseError, IMaybe<T>>(result.Error);
             };
         }
     }

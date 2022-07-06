@@ -14,8 +14,8 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal(100, result.Right);
+            Assert.True(result.IsResult);
+            Assert.Equal(100, result.Result);
         }
 
         [Fact]

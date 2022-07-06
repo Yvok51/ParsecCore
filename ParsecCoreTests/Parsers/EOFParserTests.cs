@@ -13,7 +13,7 @@ namespace ParsecCoreTests
 
             var result = Parsers.EOF(input);
 
-            Assert.True(result.HasRight);
+            Assert.True(result.IsResult);
             Assert.True(input.EndOfInput);
         }
 
@@ -24,7 +24,7 @@ namespace ParsecCoreTests
 
             var result = Parsers.EOF(input);
 
-            Assert.True(result.HasLeft);
+            Assert.True(result.IsError);
             Assert.False(input.EndOfInput);
         }
     }

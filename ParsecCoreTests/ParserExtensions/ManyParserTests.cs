@@ -15,8 +15,8 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal(0, result.Right.Length);
+            Assert.True(result.IsResult);
+            Assert.Equal(0, result.Result.Length);
         }
 
         [Fact]
@@ -29,12 +29,12 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal(expected.Count, result.Right.Length);
+            Assert.True(result.IsResult);
+            Assert.Equal(expected.Count, result.Result.Length);
 
             for (int i = 0; i < expected.Count; i++)
             {
-                Assert.Equal(expected[i], result.Right[i]);
+                Assert.Equal(expected[i], result.Result[i]);
             }
         }
 
@@ -50,12 +50,12 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal(expected.Count, result.Right.Length);
+            Assert.True(result.IsResult);
+            Assert.Equal(expected.Count, result.Result.Length);
 
             for (int i = 0; i < expected.Count; i++)
             {
-                Assert.Equal(expected[i], result.Right[i]);
+                Assert.Equal(expected[i], result.Result[i]);
             }
         }
 
@@ -71,12 +71,12 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal(expected.Count, result.Right.Length);
+            Assert.True(result.IsResult);
+            Assert.Equal(expected.Count, result.Result.Length);
 
             for (int i = 0; i < expected.Count; i++)
             {
-                Assert.Equal(expected[i], result.Right[i]);
+                Assert.Equal(expected[i], result.Result[i]);
             }
         }
 
@@ -91,12 +91,12 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal(expected.Count, result.Right.Count);
+            Assert.True(result.IsResult);
+            Assert.Equal(expected.Count, result.Result.Count);
 
             for (int i = 0; i < expected.Count; i++)
             {
-                Assert.Equal(expected[i], result.Right[i]);
+                Assert.Equal(expected[i], result.Result[i]);
             }
         }
 
@@ -112,12 +112,12 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal(expected.Count, result.Right.Length);
+            Assert.True(result.IsResult);
+            Assert.Equal(expected.Count, result.Result.Length);
 
             for (int i = 0; i < expected.Count; i++)
             {
-                Assert.Equal(expected[i], result.Right[i]);
+                Assert.Equal(expected[i], result.Result[i]);
             }
         }
 
@@ -129,7 +129,7 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasLeft);
+            Assert.True(result.IsError);
         }
 
         [Fact]
@@ -140,7 +140,7 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasLeft);
+            Assert.True(result.IsError);
         }
     }
 }

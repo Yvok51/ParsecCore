@@ -27,8 +27,8 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal(4, result.Right);
+            Assert.True(result.IsResult);
+            Assert.Equal(4, result.Result);
         }
 
         [Fact]
@@ -39,8 +39,8 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal(12, result.Right);
+            Assert.True(result.IsResult);
+            Assert.Equal(12, result.Result);
         }
 
         [Fact]
@@ -51,8 +51,8 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal(3, result.Right);
+            Assert.True(result.IsResult);
+            Assert.Equal(3, result.Result);
         }
 
         [Fact]
@@ -63,8 +63,8 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal(0, result.Right);
+            Assert.True(result.IsResult);
+            Assert.Equal(0, result.Result);
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasLeft);
+            Assert.True(result.IsError);
         }
     }
 }

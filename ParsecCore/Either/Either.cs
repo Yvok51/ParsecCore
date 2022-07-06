@@ -11,7 +11,7 @@
         /// <returns> IEither which represents a success, holding the value `value` </returns>
         public static IEither<TLeft, TRight> Result<TLeft, TRight>(TRight value)
         {
-            return new Result<TLeft, TRight>(value);
+            return new ResultValue<TLeft, TRight>(value);
         }
 
         /// <summary>
@@ -23,7 +23,7 @@
         /// <returns> IEither which represents an error, holding the value `error` </returns>
         public static IEither<TLeft, TRight> Error<TLeft, TRight>(TLeft error)
         {
-            return new Error<TLeft, TRight>(error);
+            return new ErrorValue<TLeft, TRight>(error);
         }
     }
 }

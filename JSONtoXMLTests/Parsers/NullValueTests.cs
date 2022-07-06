@@ -12,8 +12,8 @@ namespace JSONtoXMLTests.Parsers
             var input = ParserInput.Create("null");
             var result = JSONParsers.NullValue(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal(new NullValue(), result.Right);
+            Assert.True(result.IsResult);
+            Assert.Equal(new NullValue(), result.Result);
         }
 
         [Fact]
@@ -22,7 +22,7 @@ namespace JSONtoXMLTests.Parsers
             var input = ParserInput.Create("nuxll");
             var result = JSONParsers.NullValue(input);
 
-            Assert.True(result.HasLeft);
+            Assert.True(result.IsError);
         }
     }
 }

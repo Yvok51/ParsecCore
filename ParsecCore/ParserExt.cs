@@ -22,12 +22,12 @@ namespace ParsecCore
             return (input) =>
             {
                 var result = parser(input);
-                if (result.HasRight)
+                if (result.IsResult)
                 {
                     return result;
                 }
 
-                return Either.Error<ParseError, T>(result.Left.WithErrorMessage(msg));
+                return Either.Error<ParseError, T>(result.Error.WithErrorMessage(msg));
             };
         }
 
@@ -201,7 +201,7 @@ namespace ParsecCore
             {
                 var initialPosition = input.Position;
                 var result = parser(input);
-                if (result.HasRight)
+                if (result.IsResult)
                 {
                     return result;
                 }
@@ -227,7 +227,7 @@ namespace ParsecCore
             {
                 var initialPosition = input.Position;
                 var result = parser(input);
-                if (result.HasRight)
+                if (result.IsResult)
                 {
                     input.Seek(initialPosition);
                 }

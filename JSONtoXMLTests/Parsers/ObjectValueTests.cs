@@ -14,9 +14,9 @@ namespace JSONtoXMLTests.Parsers
             var input = ParserInput.Create("{}");
             var result = JSONParsers.ObjectValue(input);
 
-            Assert.True(result.HasRight);
+            Assert.True(result.IsResult);
             var expected = new ObjectValue(Array.Empty<ObjectKeyValuePair>());
-            Assert.True(expected.MemberwiseEquals(result.Right));
+            Assert.True(expected.MemberwiseEquals(result.Result));
         }
 
         [Fact]
@@ -28,9 +28,9 @@ namespace JSONtoXMLTests.Parsers
             List<ObjectKeyValuePair> expectedValues = new List<ObjectKeyValuePair>();
             expectedValues.Add(new ObjectKeyValuePair() { Key = new StringValue("a"), Value = new NumberValue(1) });
 
-            Assert.True(result.HasRight);
+            Assert.True(result.IsResult);
             var expected = new ObjectValue(expectedValues);
-            Assert.True(expected.MemberwiseEquals(result.Right));
+            Assert.True(expected.MemberwiseEquals(result.Result));
         }
 
         [Fact]
@@ -44,9 +44,9 @@ namespace JSONtoXMLTests.Parsers
             expectedValues.Add(new ObjectKeyValuePair() { Key = new StringValue("b"), Value = new NumberValue(2) });
             expectedValues.Add(new ObjectKeyValuePair() { Key = new StringValue("c"), Value = new NumberValue(3) });
 
-            Assert.True(result.HasRight);
+            Assert.True(result.IsResult);
             var expected = new ObjectValue(expectedValues);
-            Assert.True(expected.MemberwiseEquals(result.Right));
+            Assert.True(expected.MemberwiseEquals(result.Result));
         }
 
         [Fact]
@@ -61,9 +61,9 @@ namespace JSONtoXMLTests.Parsers
             expectedValues.Add(new ObjectKeyValuePair() { Key = new StringValue("c"), Value = new NullValue() });
             expectedValues.Add(new ObjectKeyValuePair() { Key = new StringValue("d"), Value = new BoolValue(true) });
 
-            Assert.True(result.HasRight);
+            Assert.True(result.IsResult);
             var expected = new ObjectValue(expectedValues);
-            Assert.True(expected.MemberwiseEquals(result.Right));
+            Assert.True(expected.MemberwiseEquals(result.Result));
         }
 
         [Fact]
@@ -72,7 +72,7 @@ namespace JSONtoXMLTests.Parsers
             var input = ParserInput.Create("{\"a\": 1, \"b\": \"abc\", \"c\": null, \"d\": true");
             var result = JSONParsers.ObjectValue(input);
 
-            Assert.True(result.HasLeft);
+            Assert.True(result.IsError);
         }
 
         [Fact]
@@ -81,7 +81,7 @@ namespace JSONtoXMLTests.Parsers
             var input = ParserInput.Create("{\"a\": 1, \"b\": \"abc\", \"c\": null, \"d\": true, }");
             var result = JSONParsers.ObjectValue(input);
 
-            Assert.True(result.HasLeft);
+            Assert.True(result.IsError);
         }
 
         [Fact]
@@ -90,7 +90,7 @@ namespace JSONtoXMLTests.Parsers
             var input = ParserInput.Create("{\"a\": 1, \"b\": \"abc\", \"c\": , \"d\": true }");
             var result = JSONParsers.ObjectValue(input);
 
-            Assert.True(result.HasLeft);
+            Assert.True(result.IsError);
         }
 
         [Fact]
@@ -99,7 +99,7 @@ namespace JSONtoXMLTests.Parsers
             var input = ParserInput.Create("{\"a\": 1, : \"abc\", \"c\": null, \"d\": true }");
             var result = JSONParsers.ObjectValue(input);
 
-            Assert.True(result.HasLeft);
+            Assert.True(result.IsError);
         }
 
         [Fact]
@@ -108,7 +108,7 @@ namespace JSONtoXMLTests.Parsers
             var input = ParserInput.Create("{\"a\" 1, \"b\": \"abc\", \"c\": null, \"d\": true}");
             var result = JSONParsers.ObjectValue(input);
 
-            Assert.True(result.HasLeft);
+            Assert.True(result.IsError);
         }
     }
 }

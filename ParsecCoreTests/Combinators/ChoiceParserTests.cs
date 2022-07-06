@@ -16,8 +16,8 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal("Hold", result.Right);
+            Assert.True(result.IsResult);
+            Assert.Equal("Hold", result.Result);
         }
 
         [Fact]
@@ -30,8 +30,8 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal("Your clones", result.Right);
+            Assert.True(result.IsResult);
+            Assert.Equal("Your clones", result.Result);
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasLeft);
+            Assert.True(result.IsError);
         }
     }
 }

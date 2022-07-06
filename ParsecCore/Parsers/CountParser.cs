@@ -20,11 +20,11 @@ namespace ParsecCore.ParsersHelp
                 do
                 {
                     var parseResult = parser(input);
-                    if (parseResult.HasLeft)
+                    if (parseResult.IsError)
                     {
-                        return Either.Error<ParseError, IReadOnlyList<T>>(parseResult.Left);
+                        return Either.Error<ParseError, IReadOnlyList<T>>(parseResult.Error);
                     }
-                    result[i] = parseResult.Right;
+                    result[i] = parseResult.Result;
                     i++;
                 } while (i < count);
 

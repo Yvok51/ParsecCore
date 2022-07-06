@@ -15,10 +15,10 @@ namespace ParsecCore.ParsersHelp
             {
                 if (input.EndOfInput)
                 {
-                    return new Result<ParseError, None>(new None());
+                    return new ResultValue<ParseError, None>(new None());
                 }
 
-                return new Error<ParseError, None>(new ParseError("Unexpected char encountered, expected EOF", input.Position));
+                return new ErrorValue<ParseError, None>(new ParseError("Unexpected char encountered, expected EOF", input.Position));
             };
         }
     }

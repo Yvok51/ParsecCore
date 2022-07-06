@@ -12,8 +12,8 @@ namespace JSONtoXMLTests.Parsers
             var input = ParserInput.Create("true");
             var result = JSONParsers.BoolValue(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal(new BoolValue(true), result.Right);
+            Assert.True(result.IsResult);
+            Assert.Equal(new BoolValue(true), result.Result);
         }
 
         [Fact]
@@ -22,8 +22,8 @@ namespace JSONtoXMLTests.Parsers
             var input = ParserInput.Create("false");
             var result = JSONParsers.BoolValue(input);
 
-            Assert.True(result.HasRight);
-            Assert.Equal(new BoolValue(false), result.Right);
+            Assert.True(result.IsResult);
+            Assert.Equal(new BoolValue(false), result.Result);
         }
 
         [Fact]
@@ -32,7 +32,7 @@ namespace JSONtoXMLTests.Parsers
             var input = ParserInput.Create("False");
             var result = JSONParsers.BoolValue(input);
 
-            Assert.True(result.HasLeft);
+            Assert.True(result.IsError);
         }
     }
 }

@@ -23,12 +23,12 @@ namespace ParsecCore.ParsersHelp
                 foreach (var parser in parsers)
                 {
                     var parsedResult = parser(input);
-                    if (parsedResult.HasLeft)
+                    if (parsedResult.IsError)
                     {
-                        return Either.Error<ParseError, IReadOnlyList<T>>(parsedResult.Left);
+                        return Either.Error<ParseError, IReadOnlyList<T>>(parsedResult.Error);
                     }
 
-                    result.Add(parsedResult.Right);
+                    result.Add(parsedResult.Result);
                 }
 
                 return Either.Result<ParseError, IReadOnlyList<T>>(result);

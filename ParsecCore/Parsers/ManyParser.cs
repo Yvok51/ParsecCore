@@ -19,15 +19,15 @@ namespace ParsecCore.ParsersHelp
                 List<T> result = new List<T>();
 
                 var parseResult = optParser(input);
-                while (parseResult.HasRight && !parseResult.Right.IsEmpty)
+                while (parseResult.IsResult && !parseResult.Result.IsEmpty)
                 {
-                    result.Add(parseResult.Right.Value);
+                    result.Add(parseResult.Result.Value);
                     parseResult = optParser(input);
                 }
 
-                if (parseResult.HasLeft)
+                if (parseResult.IsError)
                 {
-                    return Either.Error<ParseError, IReadOnlyList<T>>(parseResult.Left);
+                    return Either.Error<ParseError, IReadOnlyList<T>>(parseResult.Error);
                 }
 
                 return Either.Result<ParseError, IReadOnlyList<T>>(result);

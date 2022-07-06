@@ -49,10 +49,10 @@ namespace ParsecCore.EitherNS
                     var second = getSecond(firstResult);
                     return second.Match(
                         secondResult => Either.Result<TLeft, TResult>(getResult(firstResult, secondResult)),
-                        () => Either.Error<TLeft, TResult>(second.Left)
+                        () => Either.Error<TLeft, TResult>(second.Error)
                     );
                 },
-                () => Either.Error<TLeft, TResult>(first.Left)
+                () => Either.Error<TLeft, TResult>(first.Error)
             );
         }
 

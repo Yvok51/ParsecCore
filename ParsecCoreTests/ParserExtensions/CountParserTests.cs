@@ -18,8 +18,8 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasRight);
-            var parsedList = new List<char>(result.Right);
+            Assert.True(result.IsResult);
+            var parsedList = new List<char>(result.Result);
             Assert.Empty(parsedList);
         }
 
@@ -34,8 +34,8 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasRight);
-            var parsedList = new List<char>(result.Right);
+            Assert.True(result.IsResult);
+            var parsedList = new List<char>(result.Result);
 
             Assert.Equal(expected.Count, parsedList.Count);
             for (int i = 0; i < parsedList.Count; i++)
@@ -55,8 +55,8 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasRight);
-            var parsedList = new List<char>(result.Right);
+            Assert.True(result.IsResult);
+            var parsedList = new List<char>(result.Result);
 
             Assert.Equal(expected.Count, parsedList.Count);
             for (int i = 0; i < parsedList.Count; i++)
@@ -73,7 +73,7 @@ namespace ParsecCoreTests
 
             var result = parser(input);
 
-            Assert.True(result.HasLeft);
+            Assert.True(result.IsError);
         }
     }
 }

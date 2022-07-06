@@ -13,15 +13,15 @@ namespace ParsecCore.ParsersHelp
                 List<T> result = new List<T>();
 
                 var tillResult = tryTill(input);
-                while (tillResult.HasLeft)
+                while (tillResult.IsError)
                 {
                     var manyResult = many(input);
-                    if (manyResult.HasLeft)
+                    if (manyResult.IsError)
                     {
-                        return Either.Error<ParseError, IReadOnlyList<T>>(manyResult.Left);
+                        return Either.Error<ParseError, IReadOnlyList<T>>(manyResult.Error);
                     }
 
-                    result.Add(manyResult.Right);
+                    result.Add(manyResult.Result);
                     tillResult = tryTill(input);
                 }
 
