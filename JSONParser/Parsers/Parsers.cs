@@ -199,5 +199,12 @@ namespace JSONtoXML
         public static readonly Parser<ObjectValue> ObjectValue =
             from members in ObjectOfParser(member)
             select new ObjectValue(members);
+
+        ////////// JSON DOCUMENT //////////
+
+        public static readonly Parser<JsonValue> JsonDocument =
+            from value in JsonValue
+            from _ in Parsers.EOF
+            select value;
     }
 }

@@ -51,7 +51,7 @@ namespace JSONtoXML
         static void ConvertToXML(StreamReader input, StreamWriter output)
         {
             var parserInput = ParserInput.Create(input);
-            var result = JSONParsers.JsonValue(parserInput);
+            var result = JSONParsers.JsonDocument(parserInput);
 
             if (result.IsError)
             {
