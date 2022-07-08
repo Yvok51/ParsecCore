@@ -33,22 +33,36 @@ namespace JSONtoXML
 ";
         static void Main(string[] args)
         {
+            if (args.Length == 1 && (args[0] == "-h" || args[0] == "--help"))
+            {
+                PrintUsage();
+                return;
+            }
             if (args.Length != 2)
             {
                 Console.WriteLine("Not the right number of arguments");
+                PrintUsage();
                 return;
             }
             var inputFile = args[0];
             var outputFile = args[1];
 
-            using (StreamReader input = new StreamReader(inputFile))
-            using (StreamWriter output = new StreamWriter(outputFile))
+            try
             {
-                ConvertToXML(input, output);
+                using (StreamReader input = new StreamReader(inputFile))
+                using (StreamWriter output = new StreamWriter(outputFile))
+                {
+                    ConvertToXML(input, output);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Unexpected exception:");
+                Console.WriteLine(e);
             }
         }
 
-        static void ConvertToXML(StreamReader input, StreamWriter output)
+        static void ConvertToXML(StreamReader input, TextWriter output)
         {
             var parserInput = ParserInput.Create(input);
             var result = JSONParsers.JsonDocument(parserInput);
@@ -62,6 +76,15 @@ namespace JSONtoXML
 
             var xml = ToXML.ConvertJSON(result.Result);
             PrintXML.Print(xml, output);
+        }
+
+
+        public static void PrintUsage()
+        {
+            Console.WriteLine("JSONtoXML usage:");
+            Console.WriteLine("JSONtoXML.exe {inputFile} {outputFile}");
+            Console.WriteLine("- Input file has to exist");
+            Console.WriteLine("- Output file will be overwritten or created");
         }
     }
 }
