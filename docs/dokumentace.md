@@ -93,33 +93,6 @@ Výraz `select myExpression` je vždy poslední výraz v naší LINQ syntaxi a u
 
 LINQ notace se, jak už bylo zmíněno, sama stará o chybu v parsování. Pokud by v nějakém výrazu `from myVariable in myParser` aplikace parseru `myParser` selhala, tak automaticky je chyba předána výš k vytvořenému parseru, který tedy při aplikaci vrátí tu samou chybu.
 
-### Základní parsery a kombinátory
-
-Nyní představíme pár základních parserů a kombinátorů, které jsou užitečné při práci s knihovnou.
-
-Parsery:
-
-- `EOF` - parsuje konec souboru
-- `Char` - naparsuje jeden znak
-- `Satisfy` - naparsuje znak pokud projde predikátem
-- `Spaces` - naparsuje libovolné množství whitespace
-- `String` - naparsuje daný řetězec
-- `Token` - aplikuje daný parser a zkonzumuje libovolné množství whitespace poté
-- `Symbol` - naparsuje daný řetězec a zkonzumuje libovolné množství whitespace poté (kombinace `String` a `Token`)
-- `Return` - parser, který vždy uspějeje
-- `Fail` - parser, který vždy **ne**uspějeje
-
-Kombinátoři:
-
-- `Many` - modifikuje parser, aby aplikoval sám sebe libovolně-krát a vrátí list naparsovaných hodnot
-- `Count` - modifikuje parser, aby aplikoval sám sebe tolikrát, kolik je dáno, a vrátí list naparsovaných hodnot
-- `Option` - modifikuje parser tak, aby vrátil defaultní hodnotu v případě, že parsování neuspěje
-- `Try` - modifikuje parser, aby parser nezkonzumoval žádný vstup při neúspěchu v parsování.
-- `LookAhead` - modifikuje parser, aby parser nezkonzumoval žádný vstup v případě úspěchu v parsování.
-- `Choose` - pokusí se aplikovat list parserů jeden po sobě a vrátí první úspěch. Pokud všechny parsery neuspějí, tak vrátí chybu posledního parseru.
-- `SepBy` - pokusí se naparsovat hodnoty oddělenné jistým separátorem. Užitečné pro parsování listů
-- `ChainL` - pokusí se naparsovat binární operace s levou associativitou. Užitečné pro vypořádání se s levou rekurzí
-
 ### Cyklická závislost parserů
 
 Jedna nepříjemná situace, která může nastat, při konstruování komplexnejších parserů, je, že parsery jsou cyklicky závislé na sobě. Tedy máme dva parsery `parser1` a `parser2`, které používají sami sebe navzájem při konstrukci. Problémem samozřejmě je, že proměnná použitého parseru bude u jednoho z nich mít hodnotu null.
@@ -155,6 +128,45 @@ Parser<int> parser2 =
 ```
 
 Tímto způsobem vytvoříme closure nad lambda výrazem, který zachytí proměnnou `parser2`. Pokud budeme používat `parser1` až po definici `parser2`, tak proměnná již nebude mít hodnotu null aplikace parseru se povede.
+
+### Základní parsery a kombinátory
+
+Nyní představíme pár základních parserů a kombinátorů, které jsou užitečné při práci s knihovnou.
+
+Parsery:
+
+- `EOF` - parsuje konec souboru
+- `Char` - naparsuje jeden znak
+- `Satisfy` - naparsuje znak pokud projde predikátem
+- `Spaces` - naparsuje libovolné množství whitespace
+- `String` - naparsuje daný řetězec
+- `Token` - aplikuje daný parser a zkonzumuje libovolné množství whitespace poté
+- `Symbol` - naparsuje daný řetězec a zkonzumuje libovolné množství whitespace poté (kombinace `String` a `Token`)
+- `Return` - parser, který vždy uspějeje
+- `Fail` - parser, který vždy **ne**uspějeje
+
+Kombinátoři:
+
+- `Many` - modifikuje parser, aby aplikoval sám sebe libovolně-krát a vrátí list naparsovaných hodnot
+- `Count` - modifikuje parser, aby aplikoval sám sebe tolikrát, kolik je dáno, a vrátí list naparsovaných hodnot
+- `Option` - modifikuje parser tak, aby vrátil defaultní hodnotu v případě, že parsování neuspěje
+- `Try` - modifikuje parser, aby parser nezkonzumoval žádný vstup při neúspěchu v parsování.
+- `LookAhead` - modifikuje parser, aby parser nezkonzumoval žádný vstup v případě úspěchu v parsování.
+- `Choose` - pokusí se aplikovat list parserů jeden po sobě a vrátí první úspěch. Pokud všechny parsery neuspějí, tak vrátí chybu posledního parseru.
+- `SepBy` - pokusí se naparsovat hodnoty oddělenné jistým separátorem. Užitečné pro parsování listů
+- `ChainL` - pokusí se naparsovat binární operace s levou associativitou. Užitečné pro vypořádání se s levou rekurzí
+
+### Pomocné typy
+
+Knihovna obsahuje několik pomocných typů, s kterými jako uživatel budete pracovat.
+
+První z nich je již zmíněný `IEither<TError, TResult>`. Tento typ reprezentuje výsledek výpočtu, který mohl skončit s chybou. Pokud chyba nastala, tak `IEither` obsahuje pouze typ daný parametrem `TError`, jehož hodnotu dostaneme pomocí vlastností `Error`. Naopak pokud výpočet skončí bez chyby, tak obsahuje pouze hodnotu typu `TResult`, kterou získáme pomocí vlastnotsi `Result`. V obou případech druhá nevyužitá vlastnost vyhodí výjimku. Instance `IEither` je získáná zavoláním `Either.Result`, pokud chceme reprezentovat výsledek výpočtu, a `Either.Error`, pokud chceme reprezentovat chybu ve výpočtu.
+
+Další z nich je `IMaybe<T>`, který také reprezentuje možnou chybu při výpočtu. Narozdíl od `IEither` nám pouze říká zda chyba nastala. Pokud chyba nastala, tak vlastnost `IsEmpty` vrátí `true` a pokus získat hodnotu skončí s vyjímkou. Instance `IMaybe` je vytvořena zavoláním `Maybe.FromValue`, pokud nenastalo k chybě, a `Maybe.Nothing`, pokud k chybě nastalo.
+
+Následujícím pomocným typem je `ParseError`. Jedná se o jednoduchou strukturu, která nás informuje o chybě při parsování. K tomuto účelu obsahuje pozici ve vstupu, kde k chybě nastalo, a také chybovou zprávu popisující chybu.
+
+Posledním pomocným typem, s kterým se setkáte, je `None`. Tento typ reprezentuje prázdný typ. Například u parseru `EOF` sémanticky nemá smysl vracet žádnou hodnotu a návratová hodnota takového parseru by mělo být něco jako `IEither<ParseError, void>`. Nemůžeme však použít `void` jako typový parametr, proto jsme vytvořili typ `None`, který syntakticky funguje a sémanticky má stejný význam.
 
 ## JSONtoXML
 
