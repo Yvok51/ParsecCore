@@ -156,6 +156,8 @@ Kombinátoři:
 - `SepBy` - pokusí se naparsovat hodnoty oddělenné jistým separátorem. Užitečné pro parsování listů
 - `ChainL` - pokusí se naparsovat binární operace s levou associativitou. Užitečné pro vypořádání se s levou rekurzí
 
+ParsecCore podporuje všechny kombinátory, které se nacházejí v původní knihovně [*Parsec*](https://hackage.haskell.org/package/parsec-3.1.15.1/docs/Text-Parsec.html#g:2) takže pokud tyto kombinátory by nestačili, tak si můžete projít funkce obsažené v souborech `Combinators.cs` a `ParserExt.cs`, zda neobsahují funkci, kterou byste zrovna potřebovali.
+
 ### Pomocné typy
 
 Knihovna obsahuje několik pomocných typů, s kterými jako uživatel budete pracovat.
@@ -170,10 +172,12 @@ Posledním pomocným typem, s kterým se setkáte, je `None`. Tento typ reprezen
 
 ## JSONtoXML
 
+### Používání
+
 Program JSONtoXML je použit tímto způsobem:
 
 ```powershell
-JSONtoXML.exe [inputFile] [outputFile]
+JSONtoXML.exe {inputFile} {outputFile}
 ```
 
 Soubor `inputFile` musí mít jako obsah validní JSON. Konkrétně se jedná o JSON specifikován [zde](https://datatracker.ietf.org/doc/html/rfc8259).
@@ -232,3 +236,11 @@ Ukázka jak JSON bude převeden do formátu XML:
   </phoneNumbers>
 </root>
 ```
+
+### Vnitřní reprezentace
+
+Položky v AST JSONu jsou reprezentovány třídou `JsonValue` a jejími potomky, zatímco položky v ASAT XML jsou reprezentovány třídou `XMLNode` a jejími potomky.
+
+Soubor `Parsers.cs` obsahuje parsery používané k parsování JSONu. Jediným používaným parserem mimo třídu je `JsonDocument`, který naparsuje celý soubor JSON a i zkontroluje zda soubor neobsahoval nic po JSONu.
+
+Třída `ToXML` obsahuje funkce, které převedou JSON AST na XML AST a třída `PrintXML` vytiskne XML AST.
