@@ -1,6 +1,6 @@
 ﻿namespace JSONtoXML
 {
-    public class NumberValue : JsonValue
+    public sealed class NumberValue : JsonValue
     {
         private double _value;
 

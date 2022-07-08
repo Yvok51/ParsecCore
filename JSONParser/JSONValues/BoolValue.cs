@@ -1,6 +1,6 @@
 ﻿namespace JSONtoXML
 {
-    public class BoolValue : JsonValue
+    public sealed class BoolValue : JsonValue
     {
         private bool _value;
 
