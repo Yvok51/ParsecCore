@@ -13,6 +13,11 @@ namespace ParsecCore
             Error = error;
         }
 
+        /// <summary>
+        /// Creates a new ParseError with same position but a different message
+        /// </summary>
+        /// <param name="errorMsg"> The new error message </param>
+        /// <returns> ParseError with a new error message </returns>
         public ParseError WithErrorMessage(string errorMsg) =>
             new ParseError(errorMsg, Position);
 

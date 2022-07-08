@@ -17,11 +17,21 @@ namespace ParsecCore.Input
         public int Column { get; init; }
         public int Offset { get; init; }
 
+        /// <summary>
+        /// Forward the position by a single character in the same row as before
+        /// </summary>
+        /// <param name="offsetBy"> How much to offset by (how many bytes the character took up) </param>
+        /// <returns> The forwarded position </returns>
         public Position NextColumn(int offsetBy = 1)
         {
             return new Position(line: Line, column: Column + 1, offset: Offset + offsetBy);
         }
 
+        /// <summary>
+        /// Forward the position to the next line/row
+        /// </summary>
+        /// <param name="offsetBy"> How much to offset by (how many bytes the character took up) </param>
+        /// <returns> The forwared position </returns>
         public Position NextLine(int offsetBy = 1)
         {
             return new Position(line: Line + 1, column: 1, offset: Offset + offsetBy);
