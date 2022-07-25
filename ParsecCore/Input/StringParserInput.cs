@@ -4,9 +4,10 @@ namespace ParsecCore.Input
 {
     class StringParserInput : IParserInput<char>
     {
-        public StringParserInput(string input)
+        public StringParserInput(string input, int tabSize)
         {
             _input = input;
+            _tabSize = tabSize;
             _position = Position.Start();
         }
 
@@ -21,8 +22,18 @@ namespace ParsecCore.Input
                 throw new InvalidOperationException("Read past the end of the input");
             }
             char readChar = _input[_position.Offset];
-            _position = readChar == '\n' ? _position.NextLine() : _position.NextColumn();
+            UpdatePosition(readChar);
             return readChar;
+        }
+
+        private void UpdatePosition(char readChar)
+        {
+            _position = readChar switch
+            {
+                '\n' => _position.WithNewLine().WithIncreasedOffset(),
+                '\t' => _position.WithTab(_tabSize).WithIncreasedOffset(),
+                _ => _position.WithIncreasedColumn().WithIncreasedOffset()
+            };
         }
 
         public void Seek(Position position)
@@ -40,6 +51,7 @@ namespace ParsecCore.Input
             return _input[_position.Offset];
         }
 
+        private readonly int _tabSize;
         private readonly string _input;
         private Position _position;
     }

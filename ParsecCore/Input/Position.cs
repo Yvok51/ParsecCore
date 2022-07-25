@@ -18,23 +18,43 @@ namespace ParsecCore.Input
         public int Offset { get; init; }
 
         /// <summary>
-        /// Forward the position by a single character in the same row as before
+        /// Forward the position by a given amount of characters in the same row as before
         /// </summary>
-        /// <param name="offsetBy"> How much to offset by (how many bytes the character took up) </param>
+        /// <param name="columnIncrease"> By how many characters to move forward </param>
         /// <returns> The forwarded position </returns>
-        public Position NextColumn(int offsetBy = 1)
+        public Position WithIncreasedColumn(int columnIncrease = 1)
         {
-            return new Position(line: Line, column: Column + 1, offset: Offset + offsetBy);
+            return new Position(line: Line, column: Column + columnIncrease, offset: Offset);
         }
 
         /// <summary>
-        /// Forward the position to the next line/row
+        /// Forward the position by a given amount of characters in the same row as before
+        /// </summary>
+        /// <param name="columnIncrease"> By how many characters to move forward </param>
+        /// <returns> The forwarded position </returns>
+        public Position WithTab(int tabSize)
+        {
+            return new Position(line: Line, column: Column + tabSize - ((Column - 1) % tabSize), offset: Offset);
+        }
+
+        /// <summary>
+        /// Forward the position to subsequent line/row
+        /// </summary>
+        /// <param name="lineIncrease"> By how many lines to move forward </param>
+        /// <returns> The forwared position </returns>
+        public Position WithNewLine(int lineIncrease = 1)
+        {
+            return new Position(line: Line + lineIncrease, column: 1, offset: Offset);
+        }
+
+        /// <summary>
+        /// Increase the amount of read tokens (bytes, ...) from the input stream
         /// </summary>
         /// <param name="offsetBy"> How much to offset by (how many bytes the character took up) </param>
         /// <returns> The forwared position </returns>
-        public Position NextLine(int offsetBy = 1)
+        public Position WithIncreasedOffset(int offsetBy = 1)
         {
-            return new Position(line: Line + 1, column: 1, offset: Offset + offsetBy);
+            return new Position(line: Line, column: Column, offset: Offset + offsetBy);
         }
 
         public override string ToString()
