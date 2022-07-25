@@ -5,9 +5,9 @@ namespace ParsecCore.ParsersHelp
 {
     class BindParser
     {
-        public static Parser<TResult> Parser<TFirst, TSecond, TResult>(
-            Parser<TFirst> first,
-            Func<TFirst, Parser<TSecond>> getSecond,
+        public static Parser<TResult, TInputToken> Parser<TFirst, TSecond, TResult, TInputToken>(
+            Parser<TFirst, TInputToken> first,
+            Func<TFirst, Parser<TSecond, TInputToken>> getSecond,
             Func<TFirst, TSecond, TResult> getResult
         )
         {

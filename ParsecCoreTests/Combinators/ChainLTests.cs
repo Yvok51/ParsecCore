@@ -11,11 +11,11 @@ namespace ParsecCoreTests
         private static Func<int, int, int> addition = (int a, int b) => a + b;
         private static Func<int, int, int> multiplication = (int a, int b) => a * b;
 
-        private static Parser<Func<int, int, int>> additionParser =
+        private static Parser<Func<int, int, int>, char> additionParser =
             from _ in Parsers.Symbol("+")
             select addition;
 
-        private static Parser<Func<int, int, int>> multiplicationParser =
+        private static Parser<Func<int, int, int>, char> multiplicationParser =
             from _ in Parsers.Symbol("*")
             select multiplication;
 

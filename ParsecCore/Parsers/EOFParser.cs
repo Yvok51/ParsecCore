@@ -9,7 +9,7 @@ namespace ParsecCore.ParsersHelp
     /// </summary>
     class EOFParser
     {
-        public static Parser<None> Parser()
+        public static Parser<None, TInputToken> Parser<TInputToken>()
         {
             return (input) =>
             {

@@ -6,12 +6,12 @@ namespace ParsecCore.ParsersHelp
 {
     class ChoiceParser
     {
-        public static Parser<T> Parser<T>(params Parser<T>[] parsers)
+        public static Parser<T, TInputToken> Parser<T, TInputToken>(params Parser<T, TInputToken>[] parsers)
         {
-            return Parser((IEnumerable<Parser<T>>)parsers);
+            return Parser((IEnumerable<Parser<T, TInputToken>>)parsers);
         }
 
-        public static Parser<T> Parser<T>(IEnumerable<Parser<T>> parsers)
+        public static Parser<T, TInputToken> Parser<T, TInputToken>(IEnumerable<Parser<T, TInputToken>> parsers)
         {
             return (input) =>
             {

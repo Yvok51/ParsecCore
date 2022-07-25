@@ -5,9 +5,9 @@ namespace ParsecCore.ParsersHelp
 {
     class ManyTillParser
     {
-        public static Parser<IReadOnlyList<T>> Parser<T, TEnd>(Parser<T> many, Parser<TEnd> till)
+        public static Parser<IReadOnlyList<T>, TInputToken> Parser<T, TEnd, TInputToken>(Parser<T, TInputToken> many, Parser<TEnd, TInputToken> till)
         {
-            Parser<TEnd> tryTill = till.Try();
+            Parser<TEnd, TInputToken> tryTill = till.Try();
             return (input) =>
             {
                 List<T> result = new List<T>();

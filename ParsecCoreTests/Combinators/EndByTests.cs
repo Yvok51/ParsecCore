@@ -12,7 +12,7 @@ namespace ParsecCoreTests
         {
             var valueParser = Parsers.Digits;
             var sepParser = Parsers.Char(',');
-            Parser<IReadOnlyList<string>> parser = Combinators.EndBy(valueParser, sepParser);
+            var parser = Combinators.EndBy(valueParser, sepParser);
             var input = ParserInput.Create(",");
 
             var result = parser(input);
@@ -26,7 +26,7 @@ namespace ParsecCoreTests
         {
             var valueParser = Parsers.Digits;
             var sepParser = Parsers.Char(',');
-            Parser<IReadOnlyList<string>> parser = Combinators.EndBy(valueParser, sepParser);
+            var parser = Combinators.EndBy(valueParser, sepParser);
             var input = ParserInput.Create("123,");
 
             var result = parser(input);
@@ -41,7 +41,7 @@ namespace ParsecCoreTests
         {
             var valueParser = Parsers.Digits;
             var sepParser = Parsers.Char(',');
-            Parser<IReadOnlyList<string>> parser = Combinators.EndBy(valueParser, sepParser);
+            var parser = Combinators.EndBy(valueParser, sepParser);
             var input = ParserInput.Create("123,159,357,456,789,");
 
             var expected = new List<string>();
@@ -67,7 +67,7 @@ namespace ParsecCoreTests
         {
             var valueParser = Parsers.Digits;
             var sepParser = Parsers.Char(',');
-            Parser<IReadOnlyList<string>> parser = Combinators.EndBy(valueParser, sepParser);
+            var parser = Combinators.EndBy(valueParser, sepParser);
             var input = ParserInput.Create("123,159,357,456,789");
 
             var result = parser(input);
@@ -80,7 +80,7 @@ namespace ParsecCoreTests
         {
             var valueParser = Parsers.Digits;
             var sepParser = Parsers.Char(',');
-            Parser<IReadOnlyList<string>> parser = Combinators.EndBy(valueParser, sepParser);
+            var parser = Combinators.EndBy(valueParser, sepParser);
             var input = ParserInput.Create("123,159,357,4a5,789");
 
             var result = parser(input);

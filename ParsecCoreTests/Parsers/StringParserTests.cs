@@ -14,7 +14,7 @@ namespace ParsecCoreTests
         [InlineData("7", "7")]
         public void ParseSingleLetter(string inputString, string toParse)
         {
-            Parser<string> parser = Parsers.String(toParse);
+            var parser = Parsers.String(toParse);
             var input = ParserInput.Create(inputString);
 
             IEither<ParseError, string> result = parser(input);
@@ -29,7 +29,7 @@ namespace ParsecCoreTests
         [InlineData("71025", "710")]
         public void ParseMltipleLetters(string inputString, string toParse)
         {
-            Parser<string> parser = Parsers.String(toParse);
+            var parser = Parsers.String(toParse);
             var input = ParserInput.Create(inputString);
 
             IEither<ParseError, string> result = parser(input);
@@ -44,7 +44,7 @@ namespace ParsecCoreTests
         [InlineData("71025", "710")]
         public void CorrectInputSizeAfterParse(string inputString, string toParse)
         {
-            Parser<string> parser = Parsers.String(toParse);
+            var parser = Parsers.String(toParse);
             var input = ParserInput.Create(inputString);
 
             IEither<ParseError, string> result = parser(input);
@@ -62,7 +62,7 @@ namespace ParsecCoreTests
         [InlineData("71025", "71025")]
         public void InputCorrectlySpentAfterParse(string inputString, string toParse)
         {
-            Parser<string> parser = Parsers.String(toParse);
+            var parser = Parsers.String(toParse);
             var input = ParserInput.Create(inputString);
 
             IEither<ParseError, string> result = parser(input);
@@ -79,7 +79,7 @@ namespace ParsecCoreTests
         [InlineData("71025", "general")]
         public void ParseCorrectlyFailed(string inputString, string toParse)
         {
-            Parser<string> parser = Parsers.String(toParse);
+            var parser = Parsers.String(toParse);
             var input = ParserInput.Create(inputString);
 
             IEither<ParseError, string> result = parser(input);
@@ -90,7 +90,7 @@ namespace ParsecCoreTests
         [Fact]
         public void ParsingFailureLocationCorrect()
         {
-            Parser<string> parser = Parsers.String("abd");
+            var parser = Parsers.String("abd");
             var input = ParserInput.Create("abcd");
 
             IEither<ParseError, string> result = parser(input);

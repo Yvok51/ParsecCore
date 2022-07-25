@@ -9,9 +9,9 @@ namespace ParsecCoreTests
         [Fact]
         public void FirstParserChosen()
         {
-            Parser<string> firstParser = Parsers.String("Hold");
-            Parser<string> secondParser = Parsers.String("Hold on");
-            Parser<string> parser = Combinators.Choice(firstParser, secondParser);
+            var firstParser = Parsers.String("Hold");
+            var secondParser = Parsers.String("Hold on");
+            var parser = Combinators.Choice(firstParser, secondParser);
             var input = ParserInput.Create("Hold on. This whole operation was your idea");
 
             var result = parser(input);
@@ -23,9 +23,9 @@ namespace ParsecCoreTests
         [Fact]
         public void FirstFailsSecondParserChosen()
         {
-            Parser<string> firstParser = Parsers.String("Impossible. Prehaps the archives are incomplete");
-            Parser<string> secondParser = Parsers.String("Your clones");
-            Parser<string> parser = Combinators.Choice(firstParser, secondParser);
+            var firstParser = Parsers.String("Impossible. Prehaps the archives are incomplete");
+            var secondParser = Parsers.String("Your clones");
+            var parser = Combinators.Choice(firstParser, secondParser);
             var input = ParserInput.Create("Your clones are very impressive, you must be very proud.");
 
             var result = parser(input);
@@ -37,9 +37,9 @@ namespace ParsecCoreTests
         [Fact]
         public void BothParsersFail()
         {
-            Parser<string> firstParser = Parsers.String("[Visible confusion]");
-            Parser<string> secondParser = Parsers.String("Yep");
-            Parser<string> parser = Combinators.Choice(firstParser, secondParser);
+            var firstParser = Parsers.String("[Visible confusion]");
+            var secondParser = Parsers.String("Yep");
+            var parser = Combinators.Choice(firstParser, secondParser);
             var input = ParserInput.Create("We will watch your career with great interest");
 
             var result = parser(input);

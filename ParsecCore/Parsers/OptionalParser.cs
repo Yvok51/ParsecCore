@@ -5,7 +5,7 @@ namespace ParsecCore.ParsersHelp
 {
     class OptionalParser
     {
-        public static Parser<IMaybe<T>> Parser<T>(Parser<T> parser)
+        public static Parser<IMaybe<T>, TInputToken> Parser<T, TInputToken>(Parser<T, TInputToken> parser)
         {
             return (input) =>
             {
