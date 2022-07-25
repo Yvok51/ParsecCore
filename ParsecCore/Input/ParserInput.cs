@@ -5,10 +5,10 @@ namespace ParsecCore.Input
 {
     public class ParserInput
     {
-        public static IParserInput Create(string inputString) => new StringParserInput(inputString);
+        public static IParserInput<char> Create(string inputString) => new StringParserInput(inputString);
 
-        public static IParserInput Create(Stream stream, Encoding encoding) => new StreamParserInput(stream, encoding);
+        public static IParserInput<char> Create(Stream stream, Encoding encoding) => new StreamParserInput(stream, encoding);
 
-        public static IParserInput Create(StreamReader reader) => new StreamParserInput(reader);
+        public static IParserInput<char> Create(StreamReader reader) => new StreamParserInput(reader);
     }
 }

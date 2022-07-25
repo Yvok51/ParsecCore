@@ -9,7 +9,7 @@ namespace ParsecCore.Input
     /// The underlying stream must be readable and seekable.
     /// The stream is not disposed of, the caller still holds the ownership of the stream.
     /// </summary>
-    class StreamParserInput : IParserInput
+    class StreamParserInput : IParserInput<char>
     {
         public StreamParserInput(StreamReader reader)
         {

@@ -2,7 +2,7 @@
 
 namespace ParsecCore.Input
 {
-    class StringParserInput : IParserInput
+    class StringParserInput : IParserInput<char>
     {
         public StringParserInput(string input)
         {
