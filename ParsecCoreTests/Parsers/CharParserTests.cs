@@ -14,7 +14,7 @@ namespace ParsecCoreTests
         public void ParseSingleLetter(string inputString, char toParse)
         {
             Parser<char> parser = Parsers.Char(toParse);
-            IParserInput input = ParserInput.Create(inputString);
+            var input = ParserInput.Create(inputString);
 
             IEither<ParseError, char> result = parser(input);
 
@@ -29,7 +29,7 @@ namespace ParsecCoreTests
         public void ParseMltipleLetters(string inputString, char toParse)
         {
             Parser<char> parser = Parsers.Char(toParse);
-            IParserInput input = ParserInput.Create(inputString);
+            var input = ParserInput.Create(inputString);
 
             IEither<ParseError, char> result = parser(input);
 
@@ -44,7 +44,7 @@ namespace ParsecCoreTests
         public void CorrectInputSizeAfterParse(string inputString, char toParse)
         {
             Parser<char> parser = Parsers.Char(toParse);
-            IParserInput input = ParserInput.Create(inputString);
+            var input = ParserInput.Create(inputString);
 
             IEither<ParseError, char> result = parser(input);
 
@@ -62,7 +62,7 @@ namespace ParsecCoreTests
         public void ParseCorrectlyFails(string inputString, char toParse)
         {
             Parser<char> parser = Parsers.Char(toParse);
-            IParserInput input = ParserInput.Create(inputString);
+            var input = ParserInput.Create(inputString);
 
             IEither<ParseError, char> result = parser(input);
 

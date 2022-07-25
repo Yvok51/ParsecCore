@@ -15,7 +15,7 @@ namespace ParsecCoreTests
         public void ParseSingleLetter(string inputString, string toParse)
         {
             Parser<string> parser = Parsers.String(toParse);
-            IParserInput input = ParserInput.Create(inputString);
+            var input = ParserInput.Create(inputString);
 
             IEither<ParseError, string> result = parser(input);
 
@@ -30,7 +30,7 @@ namespace ParsecCoreTests
         public void ParseMltipleLetters(string inputString, string toParse)
         {
             Parser<string> parser = Parsers.String(toParse);
-            IParserInput input = ParserInput.Create(inputString);
+            var input = ParserInput.Create(inputString);
 
             IEither<ParseError, string> result = parser(input);
 
@@ -45,7 +45,7 @@ namespace ParsecCoreTests
         public void CorrectInputSizeAfterParse(string inputString, string toParse)
         {
             Parser<string> parser = Parsers.String(toParse);
-            IParserInput input = ParserInput.Create(inputString);
+            var input = ParserInput.Create(inputString);
 
             IEither<ParseError, string> result = parser(input);
 
@@ -63,7 +63,7 @@ namespace ParsecCoreTests
         public void InputCorrectlySpentAfterParse(string inputString, string toParse)
         {
             Parser<string> parser = Parsers.String(toParse);
-            IParserInput input = ParserInput.Create(inputString);
+            var input = ParserInput.Create(inputString);
 
             IEither<ParseError, string> result = parser(input);
 
@@ -80,7 +80,7 @@ namespace ParsecCoreTests
         public void ParseCorrectlyFailed(string inputString, string toParse)
         {
             Parser<string> parser = Parsers.String(toParse);
-            IParserInput input = ParserInput.Create(inputString);
+            var input = ParserInput.Create(inputString);
 
             IEither<ParseError, string> result = parser(input);
 
@@ -91,7 +91,7 @@ namespace ParsecCoreTests
         public void ParsingFailureLocationCorrect()
         {
             Parser<string> parser = Parsers.String("abd");
-            IParserInput input = ParserInput.Create("abcd");
+            var input = ParserInput.Create("abcd");
 
             IEither<ParseError, string> result = parser(input);
 

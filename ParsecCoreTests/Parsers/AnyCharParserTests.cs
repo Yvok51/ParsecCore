@@ -13,7 +13,7 @@ namespace ParsecCoreTests
         [InlineData("podracing", 'p')]
         public void ParsesCorrectly(string inputString, char expected)
         {
-            IParserInput input = ParserInput.Create(inputString);
+            var input = ParserInput.Create(inputString);
             Parser<char> parser = Parsers.AnyChar;
 
             var result = parser(input);
@@ -25,7 +25,7 @@ namespace ParsecCoreTests
         [Fact]
         public void FailsCorrectly()
         {
-            IParserInput input = ParserInput.Create("");
+            var input = ParserInput.Create("");
             Parser<char> parser = Parsers.AnyChar;
 
             var result = parser(input);

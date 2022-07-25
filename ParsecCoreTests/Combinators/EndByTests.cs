@@ -13,7 +13,7 @@ namespace ParsecCoreTests
             var valueParser = Parsers.Digits;
             var sepParser = Parsers.Char(',');
             Parser<IReadOnlyList<string>> parser = Combinators.EndBy(valueParser, sepParser);
-            IParserInput input = ParserInput.Create(",");
+            var input = ParserInput.Create(",");
 
             var result = parser(input);
 
@@ -27,7 +27,7 @@ namespace ParsecCoreTests
             var valueParser = Parsers.Digits;
             var sepParser = Parsers.Char(',');
             Parser<IReadOnlyList<string>> parser = Combinators.EndBy(valueParser, sepParser);
-            IParserInput input = ParserInput.Create("123,");
+            var input = ParserInput.Create("123,");
 
             var result = parser(input);
 
@@ -42,7 +42,7 @@ namespace ParsecCoreTests
             var valueParser = Parsers.Digits;
             var sepParser = Parsers.Char(',');
             Parser<IReadOnlyList<string>> parser = Combinators.EndBy(valueParser, sepParser);
-            IParserInput input = ParserInput.Create("123,159,357,456,789,");
+            var input = ParserInput.Create("123,159,357,456,789,");
 
             var expected = new List<string>();
             expected.Add("123");
@@ -68,7 +68,7 @@ namespace ParsecCoreTests
             var valueParser = Parsers.Digits;
             var sepParser = Parsers.Char(',');
             Parser<IReadOnlyList<string>> parser = Combinators.EndBy(valueParser, sepParser);
-            IParserInput input = ParserInput.Create("123,159,357,456,789");
+            var input = ParserInput.Create("123,159,357,456,789");
 
             var result = parser(input);
 
@@ -81,7 +81,7 @@ namespace ParsecCoreTests
             var valueParser = Parsers.Digits;
             var sepParser = Parsers.Char(',');
             Parser<IReadOnlyList<string>> parser = Combinators.EndBy(valueParser, sepParser);
-            IParserInput input = ParserInput.Create("123,159,357,4a5,789");
+            var input = ParserInput.Create("123,159,357,4a5,789");
 
             var result = parser(input);
 
