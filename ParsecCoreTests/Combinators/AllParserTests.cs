@@ -10,11 +10,11 @@ namespace ParsecCoreTests
         [Fact]
         public void AllParsersApplied()
         {
-            Parser<string> firstParser = Parsers.String("You underestimate");
-            Parser<string> secondParser = Parsers.String(" ");
-            Parser<string> thirdParser = Parsers.String("my power!");
-            Parser<IReadOnlyList<string>> parser = Combinators.All(firstParser, secondParser, thirdParser);
-            IParserInput input = ParserInput.Create("You underestimate my power!");
+            var firstParser = Parsers.String("You underestimate");
+            var secondParser = Parsers.String(" ");
+            var thirdParser = Parsers.String("my power!");
+            var parser = Combinators.All(firstParser, secondParser, thirdParser);
+            var input = ParserInput.Create("You underestimate my power!");
 
             var result = parser(input);
 
@@ -29,11 +29,11 @@ namespace ParsecCoreTests
         [Fact]
         public void ParsingFailsIfAnyParserFails()
         {
-            Parser<string> firstParser = Parsers.String("I ");
-            Parser<string> secondParser = Parsers.String("love ");
-            Parser<string> thirdParser = Parsers.String("sand");
-            Parser<IReadOnlyList<string>> parser = Combinators.All(firstParser, secondParser, thirdParser);
-            IParserInput input = ParserInput.Create("I love democracy");
+            var firstParser = Parsers.String("I ");
+            var secondParser = Parsers.String("love ");
+            var thirdParser = Parsers.String("sand");
+            var parser = Combinators.All(firstParser, secondParser, thirdParser);
+            var input = ParserInput.Create("I love democracy");
 
             var result = parser(input);
 

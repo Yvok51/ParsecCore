@@ -9,12 +9,16 @@ namespace ParsecCore.ParsersHelp
     /// <typeparam name="T"></typeparam>
     class AllParser
     {
-        public static Parser<IReadOnlyList<T>> Parser<T>(params Parser<T>[] parsers)
+        public static Parser<IReadOnlyList<T>, TInputToken> Parser<T, TInputToken>(
+            params Parser<T, TInputToken>[] parsers
+        )
         {
-            return Parser((IEnumerable<Parser<T>>)parsers);
+            return Parser((IEnumerable<Parser<T, TInputToken>>)parsers);
         }
 
-        public static Parser<IReadOnlyList<T>> Parser<T>(IEnumerable<Parser<T>> parsers)
+        public static Parser<IReadOnlyList<T>, TInputToken> Parser<T, TInputToken>(
+            IEnumerable<Parser<T, TInputToken>> parsers
+        )
         {
             return (input) =>
             {

@@ -1,18 +1,18 @@
 ﻿namespace ParsecCore.Input
 {
-    public interface IParserInput
+    public interface IParserInput<out T>
     {
         /// <summary>
         /// Read and consume a single character from the input.
         /// </summary>
         /// <returns> The read character </returns>
-        public char Read();
+        public T Read();
 
         /// <summary>
         /// Read a single character from the input but don't consume it
         /// </summary>
         /// <returns> The read character </returns>
-        public char Peek();
+        public T Peek();
 
         /// <summary>
         /// Seek to the given position

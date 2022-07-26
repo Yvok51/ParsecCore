@@ -12,8 +12,8 @@ namespace ParsecCoreTests
         {
             var valueParser = Parsers.Digits;
             var sepParser = Parsers.Char(',');
-            Parser<IReadOnlyList<string>> parser = Combinators.SepBy(valueParser, sepParser);
-            IParserInput input = ParserInput.Create("");
+            var parser = Combinators.SepBy(valueParser, sepParser);
+            var input = ParserInput.Create("");
 
             var result = parser(input);
 
@@ -26,8 +26,8 @@ namespace ParsecCoreTests
         {
             var valueParser = Parsers.Digits;
             var sepParser = Parsers.Char(',');
-            Parser<IReadOnlyList<string>> parser = Combinators.SepBy(valueParser, sepParser);
-            IParserInput input = ParserInput.Create("123");
+            var parser = Combinators.SepBy(valueParser, sepParser);
+            var input = ParserInput.Create("123");
 
             var result = parser(input);
 
@@ -41,8 +41,8 @@ namespace ParsecCoreTests
         {
             var valueParser = Parsers.Digits;
             var sepParser = Parsers.Char(',');
-            Parser<IReadOnlyList<string>> parser = Combinators.SepBy(valueParser, sepParser);
-            IParserInput input = ParserInput.Create("123,159,357,456,789");
+            var parser = Combinators.SepBy(valueParser, sepParser);
+            var input = ParserInput.Create("123,159,357,456,789");
 
             var expected = new List<string>();
             expected.Add("123");
@@ -67,8 +67,8 @@ namespace ParsecCoreTests
         {
             var valueParser = Parsers.Digits;
             var sepParser = Parsers.Char(',');
-            Parser<IReadOnlyList<string>> parser = Combinators.SepBy(valueParser, sepParser);
-            IParserInput input = ParserInput.Create("123,159,357,456,789,");
+            var parser = Combinators.SepBy(valueParser, sepParser);
+            var input = ParserInput.Create("123,159,357,456,789,");
 
             var result = parser(input);
 
@@ -80,8 +80,8 @@ namespace ParsecCoreTests
         {
             var valueParser = Parsers.Digits;
             var sepParser = Parsers.Char(',');
-            Parser<IReadOnlyList<string>> parser = Combinators.SepBy(valueParser, sepParser);
-            IParserInput input = ParserInput.Create("123,159,357,a45,789");
+            var parser = Combinators.SepBy(valueParser, sepParser);
+            var input = ParserInput.Create("123,159,357,a45,789");
 
             var result = parser(input);
 

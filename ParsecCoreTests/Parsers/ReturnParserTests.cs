@@ -9,8 +9,8 @@ namespace ParsecCoreTests
         [Fact]
         public void ValueReturned()
         {
-            IParserInput input = ParserInput.Create("Do you know the tragedy of...");
-            Parser<int> parser = Parsers.Return(100);
+            var input = ParserInput.Create("Do you know the tragedy of...");
+            var parser = Parsers.Return<int, char>(100);
 
             var result = parser(input);
 
@@ -21,8 +21,8 @@ namespace ParsecCoreTests
         [Fact]
         public void InputNotConsumed()
         {
-            IParserInput input = ParserInput.Create("not just the men, but the women and the children, too");
-            Parser<int> parser = Parsers.Return(100);
+            var input = ParserInput.Create("not just the men, but the women and the children, too");
+            var parser = Parsers.Return<int, char>(100);
 
             var _ = parser(input);
 

@@ -9,27 +9,29 @@ namespace ParsecCore.Input
     /// The underlying stream must be readable and seekable.
     /// The stream is not disposed of, the caller still holds the ownership of the stream.
     /// </summary>
-    class StreamParserInput : IParserInput
+    class StreamParserInput : IParserInput<char>
     {
-        public StreamParserInput(StreamReader reader)
+        public StreamParserInput(StreamReader reader, int tabSize)
         {
             if (reader is null || !reader.BaseStream.CanRead || !reader.BaseStream.CanSeek)
             {
                 throw new ArgumentException("Provided reader must be not null, must be able to read, and must be able to seek");
             }
 
+            _tabSize = tabSize;
             _reader = reader;
             _position = Position.Start((int)_reader.BaseStream.Position);
             _encoding = reader.CurrentEncoding;
         }
 
-        public StreamParserInput(Stream stream, Encoding encoding)
+        public StreamParserInput(Stream stream, Encoding encoding, int tabSize)
         {
             if (stream is null || !stream.CanRead || !stream.CanSeek)
             {
                 throw new ArgumentException("Provided stream must be not null, must be able to read, and must be able to seek");
             }
 
+            _tabSize = tabSize;
             _reader = new StreamReader(stream, encoding);
             _position = Position.Start((int)_reader.BaseStream.Position);
             _encoding = encoding;
@@ -46,9 +48,19 @@ namespace ParsecCore.Input
             }
 
             char readChar = (char)_reader.Read();
-            int offsetBy = _encoding.GetByteCount(new char[] { readChar });
-            _position = readChar == '\n' ? _position.NextLine(offsetBy) : _position.NextColumn(offsetBy);
+            UpdatePosition(readChar);
             return readChar;
+        }
+
+        private void UpdatePosition(char readChar)
+        {
+            int offsetBy = _encoding.GetByteCount(new char[] { readChar });
+            _position = readChar switch
+            {
+                '\n' => _position.WithNewLine().WithIncreasedOffset(offsetBy),
+                '\t' => _position.WithTab(_tabSize).WithIncreasedOffset(offsetBy),
+                _ => _position.WithIncreasedColumn().WithIncreasedOffset(offsetBy)
+            };
         }
 
         public void Seek(Position position)
@@ -71,6 +83,7 @@ namespace ParsecCore.Input
             return (char)_reader.Peek();
         }
 
+        private int _tabSize;
         private StreamReader _reader;
         private Encoding _encoding;
         private Position _position;

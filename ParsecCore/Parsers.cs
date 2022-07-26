@@ -14,7 +14,7 @@ namespace ParsecCore
         /// Parser which parses an end of file - end of input
         /// None is a helper struct which is empty - it only serves the type system
         /// </summary>
-        public static readonly Parser<None> EOF = EOFParser.Parser();
+        public static readonly Parser<None, char> EOF = EOFParser.Parser<char>();
 
         /// <summary>
         /// Returns a parser which parses a char given it fulfills a predicate.
@@ -23,13 +23,13 @@ namespace ParsecCore
         /// <param name="predicate"> The predicate the character must fulfill </param>
         /// <param name="description"> Description of the expected character for error messages </param>
         /// <returns> Parser which parses a character given it fulfills a predicate </returns>
-        public static Parser<char> Satisfy(Predicate<char> predicate, string description) =>
+        public static Parser<char, char> Satisfy(Predicate<char> predicate, string description) =>
             SatisfyParser.Parser(predicate, description);
 
         /// <summary>
         /// Parser which parses any character
         /// </summary>
-        public static readonly Parser<char> AnyChar = Satisfy(c => true, "any character");
+        public static readonly Parser<char, char> AnyChar = Satisfy(c => true, "any character");
 
         /// <summary>
         /// Returns a parser which parses only the given character.
@@ -37,7 +37,7 @@ namespace ParsecCore
         /// </summary>
         /// <param name="c"> The character to parse </param>
         /// <returns> Parser which parses only the given character </returns>
-        public static Parser<char> Char(char c) =>
+        public static Parser<char, char> Char(char c) =>
             Satisfy(i => i == c, escapedChars.ContainsKey(c) ? $"character '{escapedChars[c]}'" : $"character '{c}'");
 
         private static Dictionary<char, string> escapedChars = new Dictionary<char, string>()
@@ -53,27 +53,27 @@ namespace ParsecCore
         /// <summary>
         /// Parses a single whitespace
         /// </summary>
-        public static readonly Parser<char> Space = Satisfy(char.IsWhiteSpace, "whitespace");
+        public static readonly Parser<char, char> Space = Satisfy(char.IsWhiteSpace, "whitespace");
 
         /// <summary>
         /// Parses as much whitespace as possible
         /// </summary>
-        public static readonly Parser<string> Spaces = Space.Many();
+        public static readonly Parser<string, char> Spaces = Space.Many();
 
         /// <summary>
         /// Parses a horizontal tab
         /// </summary>
-        public static readonly Parser<char> Tab = Satisfy(c => c == '\t', "horizontal tab");
+        public static readonly Parser<char, char> Tab = Satisfy(c => c == '\t', "horizontal tab");
 
         /// <summary>
         /// Parses a newline (line feed) character
         /// </summary>
-        public static readonly Parser<char> NewLine = Satisfy(c => c == '\n', "newline");
+        public static readonly Parser<char, char> NewLine = Satisfy(c => c == '\n', "newline");
 
         /// <summary>
         /// Parses carriage return folled by line feed (\r\n), returns only line feed (\n)
         /// </summary>
-        public static readonly Parser<char> CRLF =
+        public static readonly Parser<char, char> CRLF =
             from cr in Satisfy(c => c == '\r', "carriage return")
             from lf in NewLine
             select '\n';
@@ -82,17 +82,17 @@ namespace ParsecCore
         /// <summary>
         /// Parses a single digit
         /// </summary>
-        public static readonly Parser<char> Digit = Satisfy(c => c >= '0' && c <= '9', "digit");
+        public static readonly Parser<char, char> Digit = Satisfy(c => c >= '0' && c <= '9', "digit");
 
         /// <summary>
         /// Parses as many digits as possible, but at least one
         /// </summary>
-        public static readonly Parser<string> Digits = Digit.Many1();
+        public static readonly Parser<string, char> Digits = Digit.Many1();
 
         /// <summary>
         /// Parses an integer
         /// </summary>
-        public static readonly Parser<int> DecimalInteger =
+        public static readonly Parser<int, char> DecimalInteger =
             from op in Combinators.Choice(Symbol("-"), Symbol("+")).Option(string.Empty)
             from digits in Token(Digits)
             select Int32.Parse(op + digits);
@@ -100,12 +100,12 @@ namespace ParsecCore
         /// <summary>
         /// Parses an octal digit
         /// </summary>
-        public static readonly Parser<char> OctDigit = Satisfy(c => c >= '0' && c <= '7', "octal digit");
+        public static readonly Parser<char, char> OctDigit = Satisfy(c => c >= '0' && c <= '7', "octal digit");
 
         /// <summary>
         /// Parses a hexadecimal digit
         /// </summary>
-        public static readonly Parser<char> HexDigit = Satisfy(
+        public static readonly Parser<char, char> HexDigit = Satisfy(
             c => (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'),
             "hexadecimal digit"
             );
@@ -113,24 +113,24 @@ namespace ParsecCore
         /// <summary>
         /// Parses a letter
         /// </summary>
-        public static readonly Parser<char> Letter = Satisfy(char.IsLetter, "letter");
+        public static readonly Parser<char, char> Letter = Satisfy(char.IsLetter, "letter");
 
         /// <summary>
         /// Parses an alphanumeric character
         /// </summary>
-        public static readonly Parser<char> AlphaNum = Satisfy(char.IsLetterOrDigit, "alphanumeric character");
+        public static readonly Parser<char, char> AlphaNum = Satisfy(char.IsLetterOrDigit, "alphanumeric character");
 
         /// <summary>
         /// Parses an upper-case character
         /// </summary>
-        public static readonly Parser<char> Upper = Satisfy(char.IsUpper, "upper-case character");
+        public static readonly Parser<char, char> Upper = Satisfy(char.IsUpper, "upper-case character");
 
         /// <summary>
         /// Parses a lower-case character
         /// </summary>
-        public static readonly Parser<char> Lower = Satisfy(char.IsLower, "lower-case character");
+        public static readonly Parser<char, char> Lower = Satisfy(char.IsLower, "lower-case character");
 
-        private static IEnumerable<Parser<char>> ToCharParsers(IEnumerable<char> chars) =>
+        private static IEnumerable<Parser<char, char>> ToCharParsers(IEnumerable<char> chars) =>
             chars.Select(c => Char(c));
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace ParsecCore
         /// </summary>
         /// <param name="chars"> Possible characters to parse </param>
         /// <returns> Parser which only parses one of the given characters </returns>
-        public static Parser<char> OneOf(char[] chars) =>
+        public static Parser<char, char> OneOf(char[] chars) =>
             Satisfy(c =>
             {
                 foreach (char includedChar in chars)
@@ -157,7 +157,7 @@ namespace ParsecCore
         /// </summary>
         /// <param name="chars"> The list of characters the read character must not be in </param>
         /// <returns> Parser which parses a character only if it is not included in the given list </returns>
-        public static Parser<char> NoneOf(char[] chars) =>
+        public static Parser<char, char> NoneOf(char[] chars) =>
             Satisfy(c =>
             {
                 foreach (char excludedChar in chars)
@@ -177,7 +177,7 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of the value the parser returns </typeparam>
         /// <param name="value"> The value for the parser to return </param>
         /// <returns> Parser which returns the given value </returns>
-        public static Parser<T> Return<T>(T value) =>
+        public static Parser<T, TInputToken> Return<T, TInputToken>(T value) =>
             (input) => Either.Result<ParseError, T>(value);
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of parser </typeparam>
         /// <param name="msg"> The message to fail with </param>
         /// <returns> Parser which always fails with the given message </returns>
-        public static Parser<T> Fail<T>(string msg) =>
+        public static Parser<T, TInputToken> Fail<T, TInputToken>(string msg) =>
             (input) => Either.Error<ParseError, T>(new ParseError(msg, input.Position));
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace ParsecCore
         /// </summary>
         /// <param name="stringToParse"> The string for the parser to parse </param>
         /// <returns> Parser which parses exactly the given string </returns>
-        public static Parser<string> String(string stringToParse)
+        public static Parser<string, char> String(string stringToParse)
         {
             return from chars in AllParser.Parser(ToCharParsers(stringToParse))
                    select string.Concat(chars);
@@ -209,7 +209,7 @@ namespace ParsecCore
         /// <returns>
         /// Parser which parses the same value as the input parser surrounded by an arbitrary amount of whitespace.
         /// </returns>
-        public static Parser<T> Token<T>(Parser<T> parser)
+        public static Parser<T, char> Token<T>(Parser<T, char> parser)
         {
             return from x in parser
                    from _ in Spaces
@@ -221,7 +221,7 @@ namespace ParsecCore
         /// </summary>
         /// <param name="stringToParse"> The string for the parser to parse </param>
         /// <returns> Parser which parses exactly the given string and any whitespace afterwards </returns>
-        public static Parser<string> Symbol(string stringToParse) =>
+        public static Parser<string, char> Symbol(string stringToParse) =>
             Token(String(stringToParse));
     }
 }

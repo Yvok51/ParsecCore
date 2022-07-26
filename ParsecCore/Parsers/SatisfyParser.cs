@@ -20,7 +20,7 @@ namespace ParsecCore.ParsersHelp
             { '\v', "\\v" },
         };
 
-        public static Parser<char> Parser(Predicate<char> predicate, string predicateDescription)
+        public static Parser<char, char> Parser(Predicate<char> predicate, string predicateDescription)
         {
             return (input) =>
             {
@@ -35,12 +35,38 @@ namespace ParsecCore.ParsersHelp
                 if (!predicate(read))
                 {
                     string readChar = escapedChars.ContainsKey(read) ? escapedChars[read] : read.ToString();
-                    return Either.Error<ParseError, char>(new ParseError($"character '{readChar}' does not conform, {predicateDescription} exprected", readPosition));
+                    return Either.Error<ParseError, char>(new ParseError($"Character '{readChar}' does not conform, {predicateDescription} exprected", readPosition));
                 }
 
                 input.Read();
 
                 return Either.Result<ParseError, char>(read);
+            };
+        }
+
+        public static Parser<TInputToken, TInputToken> Parser<TInputToken>(
+            Predicate<TInputToken> predicate,
+            string predicateDescription
+        )
+        {
+            return (input) =>
+            {
+                var readPosition = input.Position;
+                if (input.EndOfInput)
+                {
+                    return Either.Error<ParseError, TInputToken>(new ParseError("Unexpected end of file encountered", input.Position));
+                }
+
+                TInputToken read = input.Peek();
+
+                if (!predicate(read))
+                {
+                    return Either.Error<ParseError, TInputToken>(new ParseError($"Token '{read}' does not conform, {predicateDescription} exprected", readPosition));
+                }
+
+                input.Read();
+
+                return Either.Result<ParseError, TInputToken>(read);
             };
         }
     }

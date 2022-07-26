@@ -6,11 +6,13 @@ namespace ParsecCore.ParsersHelp
 {
     class CountParser
     {
-        public static Parser<IReadOnlyList<T>> Parser<T>(Parser<T> parser, int count)
+        public static Parser<IReadOnlyList<T>, TInputToken> Parser<T, TInputToken>(
+            Parser<T, TInputToken> parser, int count
+        )
         {
             if (count <= 0)
             {
-                return Parsers.Return<IReadOnlyList<T>>(Array.Empty<T>());
+                return Parsers.Return<IReadOnlyList<T>, TInputToken>(Array.Empty<T>());
             }
             return (input) =>
             {

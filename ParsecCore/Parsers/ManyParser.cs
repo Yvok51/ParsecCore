@@ -11,9 +11,9 @@ namespace ParsecCore.ParsersHelp
     /// <typeparam name="T"> The type of parser return value </typeparam>
     class ManyParser
     {
-        public static Parser<IReadOnlyList<T>> Parser<T>(Parser<T> parser)
+        public static Parser<IReadOnlyList<T>, TInputToken> Parser<T, TInputToken>(Parser<T, TInputToken> parser)
         {
-            Parser<IMaybe<T>> optParser = parser.Optional();
+            Parser<IMaybe<T>, TInputToken> optParser = parser.Optional();
             return (input) =>
             {
                 List<T> result = new List<T>();

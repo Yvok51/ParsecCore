@@ -6,9 +6,9 @@ namespace ParsecCore
 {
     class SepBy1Parser
     {
-        public static Parser<IReadOnlyList<TValue>> Parser<TValue, TSeperator>(
-            Parser<TValue> valueParser,
-            Parser<TSeperator> seperatorParser
+        public static Parser<IReadOnlyList<TValue>, TInputToken> Parser<TValue, TSeperator, TInputToken>(
+            Parser<TValue, TInputToken> valueParser,
+            Parser<TSeperator, TInputToken> seperatorParser
         )
         {
             var sepValueParser = from sep in seperatorParser
