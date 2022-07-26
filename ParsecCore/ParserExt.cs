@@ -235,5 +235,29 @@ namespace ParsecCore
                 return result;
             };
         }
+
+        public static Parser<T, TInputToken> Or<T, TInputToken>(
+            this Parser<T, TInputToken> parser,
+            Parser<T, TInputToken> secondParser
+        )
+        {
+            return (input) =>
+            {
+                var initialPosition = input.Position;
+                var firstResult = parser(input);
+                if (firstResult.IsResult || (firstResult.IsError && initialPosition != input.Position))
+                {
+                    return firstResult;
+                }
+
+                var secondResult = secondParser(input);
+                if (secondResult.IsError)
+                {
+                    return Either.Error<ParseError, T>(firstResult.Error.Combine(secondResult.Error));
+                }
+
+                return secondResult;
+            };
+        }
     }
 }
