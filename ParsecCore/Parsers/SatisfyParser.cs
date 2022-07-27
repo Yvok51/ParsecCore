@@ -27,7 +27,12 @@ namespace ParsecCore.ParsersHelp
                 var readPosition = input.Position;
                 if (input.EndOfInput)
                 {
-                    return Either.Error<ParseError, char>(new ParseError("Unexpected end of file encountered", input.Position));
+                    return Either.Error<ParseError, char>(
+                        new ParseError(
+                            new ExpectEncouterErrorMessage(predicateDescription, "end of file"),
+                            input.Position
+                        )
+                    );
                 }
 
                 char read = input.Peek();
@@ -35,7 +40,12 @@ namespace ParsecCore.ParsersHelp
                 if (!predicate(read))
                 {
                     string readChar = escapedChars.ContainsKey(read) ? escapedChars[read] : read.ToString();
-                    return Either.Error<ParseError, char>(new ParseError($"Character '{readChar}' does not conform, {predicateDescription} exprected", readPosition));
+                    return Either.Error<ParseError, char>(
+                        new ParseError(
+                            new ExpectEncouterErrorMessage(predicateDescription, $"character '{readChar}'"),
+                            readPosition
+                        )
+                    );
                 }
 
                 input.Read();
@@ -54,14 +64,24 @@ namespace ParsecCore.ParsersHelp
                 var readPosition = input.Position;
                 if (input.EndOfInput)
                 {
-                    return Either.Error<ParseError, TInputToken>(new ParseError("Unexpected end of file encountered", input.Position));
+                    return Either.Error<ParseError, TInputToken>(
+                        new ParseError(
+                            new ExpectEncouterErrorMessage(predicateDescription, "end of file"),
+                            input.Position
+                        )
+                    );
                 }
 
                 TInputToken read = input.Peek();
 
                 if (!predicate(read))
                 {
-                    return Either.Error<ParseError, TInputToken>(new ParseError($"Token '{read}' does not conform, {predicateDescription} exprected", readPosition));
+                    return Either.Error<ParseError, TInputToken>(
+                        new ParseError(
+                            new ExpectEncouterErrorMessage(predicateDescription, $"token '{read}'"),
+                            readPosition
+                        )
+                    );
                 }
 
                 input.Read();

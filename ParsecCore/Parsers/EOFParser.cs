@@ -18,7 +18,12 @@ namespace ParsecCore.ParsersHelp
                     return new ResultValue<ParseError, None>(new None());
                 }
 
-                return new ErrorValue<ParseError, None>(new ParseError("Unexpected char encountered, expected EOF", input.Position));
+                return Either.Error<ParseError, None>(
+                    new ParseError(
+                        new ExpectEncouterErrorMessage("end of file", "character"),
+                        input.Position
+                    )
+                );
             };
         }
     }

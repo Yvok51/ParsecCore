@@ -11,13 +11,19 @@ namespace ParsecCore
     public static class ParserExt
     {
         /// <summary>
-        /// Changes the error message returned by the parser if it fails
+        /// Changes the error message returned by the parser if it fails.
+        /// The parser modified by this method behaves the same except that when it fails,
+        /// the new expected message is used 
         /// </summary>
         /// <typeparam name="T"> The type of parser </typeparam>
+        /// <typeparam name="TInputToken"> The type of the token returned by the parser's input </typeparam>
         /// <param name="parser"> The parser whose error message to change </param>
-        /// <param name="msg"> The new message to return in case of an error </param>
-        /// <returns> Parser which upon failure returns ParseError with the specified message </returns>
-        public static Parser<T, TInputToken> FailWith<T, TInputToken>(this Parser<T, TInputToken> parser, string msg)
+        /// <param name="newMessage"> The new error message </param>
+        /// <returns> Parser which upon failure returns ParseError with modified error message </returns>
+        public static Parser<T, TInputToken> FailWith<T, TInputToken>(
+            this Parser<T, TInputToken> parser,
+            ErrorMessage newMessage
+        )
         {
             return (input) =>
             {
@@ -27,7 +33,7 @@ namespace ParsecCore
                     return result;
                 }
 
-                return Either.Error<ParseError, T>(result.Error.WithErrorMessage(msg));
+                return Either.Error<ParseError, T>(result.Error.WithErrorMessage(newMessage));
             };
         }
 

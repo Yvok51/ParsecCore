@@ -10,25 +10,28 @@ namespace ParsecCore
     /// </summary>
     public struct ParseError
     {
-        public ParseError(string error, Position position)
+        public ParseError(ErrorMessage error, Position position)
         {
             Position = position;
-            Errors = new List<string>();
+            Errors = new List<ErrorMessage>();
             Errors.Add(error);
         }
 
-        public ParseError(List<string> errors, Position position)
+        public ParseError(List<ErrorMessage> errors, Position position)
         {
             Position = position;
             Errors = errors;
         }
+
+        public Position Position { get; init; }
+        public List<ErrorMessage> Errors { get; init; }
 
         /// <summary>
         /// Creates a new ParseError with same position but a different message
         /// </summary>
         /// <param name="errorMsg"> The new error message </param>
         /// <returns> ParseError with a new error message </returns>
-        public ParseError WithErrorMessage(string errorMsg) =>
+        public ParseError WithErrorMessage(ErrorMessage errorMsg) =>
             new ParseError(errorMsg, Position);
 
         /// <summary>
@@ -36,7 +39,7 @@ namespace ParsecCore
         /// </summary>
         /// <param name="errorMsg"> The new error message </param>
         /// <returns> ParseError with a new error message </returns>
-        public ParseError WithErrorMessages(List<string> errorMsgs) =>
+        public ParseError WithErrorMessages(List<ErrorMessage> errorMsgs) =>
             new ParseError(errorMsgs, Position);
 
         /// <summary>
@@ -59,17 +62,13 @@ namespace ParsecCore
             }
             else
             {
-                List<string> concatErrors = new List<string>(Errors.Count + secondError.Errors.Count);
+                List<ErrorMessage> concatErrors = new(Errors.Count + secondError.Errors.Count);
                 concatErrors.AddRange(Errors);
                 concatErrors.AddRange(secondError.Errors);
 
                 return new ParseError(concatErrors, Position);
             }
         }
-
-        public Position Position { get; init; }
-
-        public List<string> Errors { get; init; }
 
         public override string ToString()
         {
@@ -83,7 +82,7 @@ namespace ParsecCore
             return AddErrorMessages(stringBuilder, Errors).ToString();
         }
 
-        private StringBuilder AddErrorMessages(StringBuilder stringBuilder, List<string> errorMessages)
+        private StringBuilder AddErrorMessages(StringBuilder stringBuilder, List<ErrorMessage> errorMessages)
         {
             stringBuilder.Append("     ");
             stringBuilder.Append(errorMessages[0]);

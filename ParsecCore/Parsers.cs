@@ -187,7 +187,7 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of parser </typeparam>
         /// <param name="msg"> The message to fail with </param>
         /// <returns> Parser which always fails with the given message </returns>
-        public static Parser<T, TInputToken> Fail<T, TInputToken>(string msg) =>
+        public static Parser<T, TInputToken> Fail<T, TInputToken>(ErrorMessage msg) =>
             (input) => Either.Error<ParseError, T>(new ParseError(msg, input.Position));
 
         /// <summary>
