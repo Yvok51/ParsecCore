@@ -56,5 +56,21 @@ namespace ParsecCore.EitherNS
             );
         }
 
+        /// <summary>
+        /// Combine two errors together.
+        /// Presumes both <c>IEither</c> are errors, throws <see cref="InvalidOperationException"/> otherwise
+        /// </summary>
+        /// <typeparam name="T">  The result type of the either </typeparam>
+        /// <param name="left"> The first <c>IEither</c> </param>
+        /// <param name="right"> The second <c>IEither</c> </param>
+        /// <returns></returns>
+        public static IEither<ParseError, T> CombineErrors<T>(
+            this IEither<ParseError, T> left,
+            IEither<ParseError, T> right
+        )
+        {
+            return Either.Error<ParseError, T>(left.Error.Combine(right.Error));
+        }
+
     }
 }

@@ -77,17 +77,21 @@ namespace ParsecCore.Input
         public static bool operator !=(Position left, Position right) =>
             !left.Equals(right);
 
+        public static bool operator <(Position left, Position right) =>
+            left.Offset < right.Offset;
+
+        public static bool operator >(Position left, Position right) =>
+            left.Offset > right.Offset;
+
         /// <summary>
-        /// Returns the minimum position based on the line and column number
+        /// Returns the minimum position based on the offset number
         /// </summary>
         /// <param name="left"> The first position to consider </param>
         /// <param name="right"> The second position to consider </param>
         /// <returns> The minimum of the two positions </returns>
         public static Position Min(Position left, Position right)
         {
-            if (left.Line < right.Line) return left;
-            if (right.Line < left.Line) return right;
-            return right.Column < left.Column ? right : left;
+            return right < left ? right : left;
         }
     }
 }
