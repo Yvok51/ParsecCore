@@ -253,7 +253,7 @@ namespace ParsecCore
                 var secondResult = secondParser(input);
                 if (secondResult.IsError)
                 {
-                    return Either.Error<ParseError, T>(firstResult.Error.Combine(secondResult.Error));
+                    return firstResult.CombineErrors(secondResult);
                 }
 
                 return secondResult;

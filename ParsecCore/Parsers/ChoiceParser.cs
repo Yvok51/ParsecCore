@@ -1,6 +1,7 @@
 ﻿using ParsecCore.EitherNS;
 using ParsecCore.Input;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ParsecCore.ParsersHelp
 {
@@ -16,17 +17,27 @@ namespace ParsecCore.ParsersHelp
             return (input) =>
             {
                 Position initialPosition = input.Position;
-                IEither<ParseError, T> parseResult = Either.Error<ParseError, T>(new ParseError("No match found", initialPosition));
+                List<IEither<ParseError, T>> parseResults = new();
                 foreach (var parser in parsers)
                 {
-                    parseResult = parser(input);
-                    if (parseResult.IsResult || input.Position != initialPosition)
+                    IEither<ParseError, T> currentParseResult = parser(input);
+                    parseResults.Add(currentParseResult);
+                    if (currentParseResult.IsResult)
                     {
-                        return parseResult;
+                        return currentParseResult;
                     }
+                    if (input.Position != initialPosition)
+                    {
+                        return parseResults.Aggregate((left, right) => left.CombineErrors(right));
+                    }
+
+                }
+                if (parseResults.Count == 0)
+                {
+                    return Either.Error<ParseError, T>(new ParseError("No parser provided", initialPosition));
                 }
 
-                return parseResult;
+                return parseResults.Aggregate((left, right) => left.CombineErrors(right));
             };
         }
     }

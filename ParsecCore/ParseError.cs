@@ -74,18 +74,29 @@ namespace ParsecCore
         public override string ToString()
         {
             StringBuilder stringBuilder = new StringBuilder();
-            string prefix = $"{Position.Line}:{Position.Column} - ";
-            foreach (var errorMsg in Errors)
+            stringBuilder.Append($"(line {Position.Line}, column {Position.Column}):\n");
+            if (stringBuilder.Length == 0)
             {
-                stringBuilder.Append(prefix);
-                stringBuilder.Append(errorMsg);
+                return stringBuilder.Append("  Unknown parsing error").ToString();
+            }
+
+            return AddErrorMessages(stringBuilder, Errors).ToString();
+        }
+
+        private StringBuilder AddErrorMessages(StringBuilder stringBuilder, List<string> errorMessages)
+        {
+            stringBuilder.Append("     ");
+            stringBuilder.Append(errorMessages[0]);
+            stringBuilder.Append('\n');
+
+            for (int i = 1; i < errorMessages.Count; ++i)
+            {
+                stringBuilder.Append("  or ");
+                stringBuilder.Append(errorMessages[i]);
                 stringBuilder.Append('\n');
             }
-            if (stringBuilder.Length > 0)
-            {
-                stringBuilder.Remove(stringBuilder.Length - 1, 1);
-            }
-            return stringBuilder.ToString();
+
+            return stringBuilder.Remove(stringBuilder.Length - 1, 1);
         }
     }
 }
