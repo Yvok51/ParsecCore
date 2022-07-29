@@ -1,7 +1,9 @@
 ﻿using System.Text;
 using System.Collections.Generic;
+using System.Linq;
 
 using ParsecCore.Input;
+using ParsecCore.Help;
 
 namespace ParsecCore
 {
@@ -10,37 +12,57 @@ namespace ParsecCore
     /// </summary>
     public struct ParseError
     {
-        public ParseError(ErrorMessage error, Position position)
+        private ParseError(
+            Position position,
+            List<GenericMessage> genericMessages,
+            List<ExpectedMessage> expectedMessages,
+            List<EncounteredMessage> encounteredMessages
+        )
         {
             Position = position;
-            Errors = new List<ErrorMessage>();
-            Errors.Add(error);
+            _genericErrors = genericMessages;
+            _expectedErrors = expectedMessages;
+            _encounteredErrors = encounteredMessages;
         }
 
-        public ParseError(List<ErrorMessage> errors, Position position)
+        public ParseError(string errorMessage, Position position)
         {
             Position = position;
-            Errors = errors;
+            _genericErrors = new();
+            _expectedErrors = new();
+            _encounteredErrors = new();
+            _genericErrors.Add(new GenericMessage(errorMessage));
+        }
+
+        public ParseError(string expected, string encoutered, Position position)
+        {
+            Position = position;
+            _genericErrors = new();
+            _expectedErrors = new();
+            _encounteredErrors = new();
+
+            _expectedErrors.Add(new ExpectedMessage(expected));
+            _encounteredErrors.Add(new EncounteredMessage(encoutered));
         }
 
         public Position Position { get; init; }
-        public List<ErrorMessage> Errors { get; init; }
+
+        private List<GenericMessage> _genericErrors;
+        private List<ExpectedMessage> _expectedErrors;
+        private List<EncounteredMessage> _encounteredErrors;
 
         /// <summary>
         /// Creates a new ParseError with same position but a different message
         /// </summary>
         /// <param name="errorMsg"> The new error message </param>
         /// <returns> ParseError with a new error message </returns>
-        public ParseError WithErrorMessage(ErrorMessage errorMsg) =>
-            new ParseError(errorMsg, Position);
+        public ParseError WithExpectedMessage(string expected)
+        {
+            List<ExpectedMessage> expectedErrors = new();
+            expectedErrors.Add(new ExpectedMessage(expected));
 
-        /// <summary>
-        /// Creates a new ParseError with same position but a different messages
-        /// </summary>
-        /// <param name="errorMsg"> The new error message </param>
-        /// <returns> ParseError with a new error message </returns>
-        public ParseError WithErrorMessages(List<ErrorMessage> errorMsgs) =>
-            new ParseError(errorMsgs, Position);
+            return new ParseError(Position, new(_genericErrors), expectedErrors, new(_encounteredErrors));
+        }
 
         /// <summary>
         /// Combine two errors.
@@ -62,11 +84,14 @@ namespace ParsecCore
             }
             else
             {
-                List<ErrorMessage> concatErrors = new(Errors.Count + secondError.Errors.Count);
-                concatErrors.AddRange(Errors);
-                concatErrors.AddRange(secondError.Errors);
+                List<EncounteredMessage> newEncountered = 
+                    _encounteredErrors.Concat(secondError._encounteredErrors).Distinct().ToList();
+                List<ExpectedMessage> newExpected = 
+                    _expectedErrors.Concat(secondError._expectedErrors).Distinct().ToList();
+                List<GenericMessage> newGeneric = 
+                    _genericErrors.Concat(secondError._genericErrors).Distinct().ToList();
 
-                return new ParseError(concatErrors, Position);
+                return new ParseError(Position, newGeneric, newExpected, newEncountered);
             }
         }
 
@@ -74,16 +99,25 @@ namespace ParsecCore
         {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append($"(line {Position.Line}, column {Position.Column}):\n");
-            if (stringBuilder.Length == 0)
+            if (_expectedErrors.Count == 0 && _encounteredErrors.Count == 0 && _genericErrors.Count == 0)
             {
                 return stringBuilder.Append("  Unknown parsing error").ToString();
             }
 
-            return AddErrorMessages(stringBuilder, Errors).ToString();
+            AddErrorMessages(stringBuilder, _genericErrors);
+            AddErrorMessages(stringBuilder, _encounteredErrors);
+            AddErrorMessages(stringBuilder, _expectedErrors);
+
+            return stringBuilder.Remove(stringBuilder.Length - 1, 1).ToString(); // remove last \n
         }
 
-        private StringBuilder AddErrorMessages(StringBuilder stringBuilder, List<ErrorMessage> errorMessages)
+        private StringBuilder AddErrorMessages<T>(StringBuilder stringBuilder, List<T> errorMessages)
         {
+            if (errorMessages.Count == 0)
+            {
+                return stringBuilder;
+            }
+
             stringBuilder.Append("     ");
             stringBuilder.Append(errorMessages[0]);
             stringBuilder.Append('\n');
@@ -95,7 +129,7 @@ namespace ParsecCore
                 stringBuilder.Append('\n');
             }
 
-            return stringBuilder.Remove(stringBuilder.Length - 1, 1);
+            return stringBuilder;
         }
     }
 }

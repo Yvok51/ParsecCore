@@ -1,12 +1,8 @@
 ﻿namespace ParsecCore
 {
-    public abstract class ErrorMessage
+    internal struct GenericMessage
     {
-    }
-
-    public sealed class StringErrorMessage : ErrorMessage
-    {
-        public StringErrorMessage(string message)
+        public GenericMessage(string message)
         {
             Message = message;
         }
@@ -19,20 +15,33 @@
         }
     }
 
-    public sealed class ExpectEncouterErrorMessage : ErrorMessage
+    internal  struct ExpectedMessage
     {
-        public ExpectEncouterErrorMessage(string expected, string encoutered)
+        public ExpectedMessage(string expected)
         {
             Expected = expected;
+        }
+
+        public override string ToString()
+        {
+            return $"Expected {Expected}";
+        }
+
+        public string Expected { get; set; }
+    }
+
+    internal struct EncounteredMessage
+    {
+        public EncounteredMessage(string encoutered)
+        {
             Encoutered = encoutered;
         }
 
         public override string ToString()
         {
-            return $"Unexpected {Encoutered} encountered, {Expected} expected";
+            return $"Unexpected {Encoutered} encountered";
         }
 
-        public string Expected { get; set; }
         public string Encoutered { get; set; }
     }
 }

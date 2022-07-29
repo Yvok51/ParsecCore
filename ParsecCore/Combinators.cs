@@ -292,7 +292,7 @@ namespace ParsecCore
         /// <returns> Parser which fails if <c>parser</c> succeeds </returns>
         public static Parser<None, TInputToken> NotFollowedBy<T, TInputToken>(
             Parser<T, TInputToken> parser,
-            ErrorMessage msgIfParsed
+            string msgIfParsed
         )
         {
             var failParser = from _ in parser.Try()

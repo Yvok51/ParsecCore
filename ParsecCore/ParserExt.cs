@@ -13,16 +13,16 @@ namespace ParsecCore
         /// <summary>
         /// Changes the error message returned by the parser if it fails.
         /// The parser modified by this method behaves the same except that when it fails,
-        /// the new expected message is used 
+        /// the expected message is set to only contain the new provided error message.
         /// </summary>
         /// <typeparam name="T"> The type of parser </typeparam>
         /// <typeparam name="TInputToken"> The type of the token returned by the parser's input </typeparam>
         /// <param name="parser"> The parser whose error message to change </param>
-        /// <param name="newMessage"> The new error message </param>
+        /// <param name="newExpectedMessage"> The new expected error message </param>
         /// <returns> Parser which upon failure returns ParseError with modified error message </returns>
         public static Parser<T, TInputToken> FailWith<T, TInputToken>(
             this Parser<T, TInputToken> parser,
-            ErrorMessage newMessage
+            string newExpectedMessage
         )
         {
             return (input) =>
@@ -33,7 +33,7 @@ namespace ParsecCore
                     return result;
                 }
 
-                return Either.Error<ParseError, T>(result.Error.WithErrorMessage(newMessage));
+                return Either.Error<ParseError, T>(result.Error.WithExpectedMessage(newExpectedMessage));
             };
         }
 

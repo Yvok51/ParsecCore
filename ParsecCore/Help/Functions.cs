@@ -29,5 +29,14 @@ namespace ParsecCore.Help
 
             return newList;
         }
+
+        public static List<T> Concat<T>(this List<T> left, List<T> right)
+        {
+            List<T> concat = new(left.Count + right.Count);
+            concat.AddRange(left);
+            concat.AddRange(right);
+
+            return concat;
+        }
     }
 }

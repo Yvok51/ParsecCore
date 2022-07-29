@@ -34,7 +34,7 @@ namespace ParsecCore.ParsersHelp
                 }
                 if (parseResults.Count == 0)
                 {
-                    return Either.Error<ParseError, T>(new ParseError(new StringErrorMessage("No parser provided"), initialPosition));
+                    return Either.Error<ParseError, T>(new ParseError("No parser provided", initialPosition));
                 }
 
                 return parseResults.Aggregate((left, right) => left.CombineErrors(right));

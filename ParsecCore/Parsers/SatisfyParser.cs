@@ -29,7 +29,8 @@ namespace ParsecCore.ParsersHelp
                 {
                     return Either.Error<ParseError, char>(
                         new ParseError(
-                            new ExpectEncouterErrorMessage(predicateDescription, "end of file"),
+                            expected: predicateDescription,
+                            encoutered: "end of file",
                             input.Position
                         )
                     );
@@ -42,7 +43,8 @@ namespace ParsecCore.ParsersHelp
                     string readChar = escapedChars.ContainsKey(read) ? escapedChars[read] : read.ToString();
                     return Either.Error<ParseError, char>(
                         new ParseError(
-                            new ExpectEncouterErrorMessage(predicateDescription, $"character '{readChar}'"),
+                            expected: predicateDescription,
+                            encoutered: $"character '{readChar}'",
                             readPosition
                         )
                     );
@@ -66,7 +68,8 @@ namespace ParsecCore.ParsersHelp
                 {
                     return Either.Error<ParseError, TInputToken>(
                         new ParseError(
-                            new ExpectEncouterErrorMessage(predicateDescription, "end of file"),
+                            expected: predicateDescription,
+                            encoutered: "end of file",
                             input.Position
                         )
                     );
@@ -78,7 +81,8 @@ namespace ParsecCore.ParsersHelp
                 {
                     return Either.Error<ParseError, TInputToken>(
                         new ParseError(
-                            new ExpectEncouterErrorMessage(predicateDescription, $"token '{read}'"),
+                            expected: predicateDescription,
+                            encoutered: $"token '{read}'",
                             readPosition
                         )
                     );

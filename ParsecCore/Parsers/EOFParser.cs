@@ -20,7 +20,8 @@ namespace ParsecCore.ParsersHelp
 
                 return Either.Error<ParseError, None>(
                     new ParseError(
-                        new ExpectEncouterErrorMessage("end of file", "character"),
+                        expected: "end of file", 
+                        encoutered: "character",
                         input.Position
                     )
                 );
