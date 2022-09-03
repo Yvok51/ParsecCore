@@ -1,6 +1,6 @@
 ﻿namespace JSONtoXML
 {
-    public abstract class JsonValue
+    internal abstract class JsonValue
     {
     }
 }

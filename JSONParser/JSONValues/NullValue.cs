@@ -1,6 +1,6 @@
 ﻿namespace JSONtoXML
 {
-    public sealed class NullValue : JsonValue
+    internal sealed class NullValue : JsonValue
     {
         public override string ToString() => "null";
 

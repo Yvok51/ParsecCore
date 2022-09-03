@@ -4,7 +4,7 @@ using System.Text;
 
 namespace JSONtoXML
 {
-    class PrintXML
+    internal class PrintXML
     {
         public static void Print(XMLNode node, TextWriter writer)
         {

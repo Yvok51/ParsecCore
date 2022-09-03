@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ParsecCore.ParsersHelp
 {
-    class ManyTillParser
+    internal class ManyTillParser
     {
         public static Parser<IReadOnlyList<T>, TInputToken> Parser<T, TEnd, TInputToken>(Parser<T, TInputToken> many, Parser<TEnd, TInputToken> till)
         {

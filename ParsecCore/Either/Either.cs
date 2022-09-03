@@ -1,6 +1,6 @@
 ﻿namespace ParsecCore.EitherNS
 {
-    public static class Either
+    internal static class Either
     {
         /// <summary>
         /// Returns IEither representing a success holding the given value

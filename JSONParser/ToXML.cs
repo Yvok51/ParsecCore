@@ -2,7 +2,7 @@
 
 namespace JSONtoXML
 {
-    class ToXML
+    internal class ToXML
     {
         public static XMLNode ConvertJSON(JsonValue jsonValue)
         {

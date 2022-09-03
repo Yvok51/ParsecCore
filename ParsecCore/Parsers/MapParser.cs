@@ -10,7 +10,7 @@ namespace ParsecCore.ParsersHelp
     /// </summary>
     /// <typeparam name="TSource"> The result type of the provided parser </typeparam>
     /// <typeparam name="TResult"> The result type of the parser with the result value mapped by the given function </typeparam>
-    class MapParser
+    internal class MapParser
     {
         public static Parser<TResult, TInputToken> Parser<TSource, TResult, TInputToken>(
             Parser<TSource, TInputToken> sourceParser, Func<TSource, TResult> projection

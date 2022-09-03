@@ -2,7 +2,7 @@
 
 namespace ParsecCore.EitherNS
 {
-    struct ErrorValue<TError, TResult> : IEither<TError, TResult>
+    internal struct ErrorValue<TError, TResult> : IEither<TError, TResult>
     {
         public ErrorValue(TError error)
         {

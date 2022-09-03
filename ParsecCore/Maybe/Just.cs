@@ -2,7 +2,7 @@
 
 namespace ParsecCore.MaybeNS
 {
-    struct Just<T> : IMaybe<T>
+    internal struct Just<T> : IMaybe<T>
     {
         public Just(T value)
         {

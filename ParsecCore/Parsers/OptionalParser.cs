@@ -3,7 +3,7 @@ using ParsecCore.MaybeNS;
 
 namespace ParsecCore.ParsersHelp
 {
-    class OptionalParser
+    internal class OptionalParser
     {
         public static Parser<IMaybe<T>, TInputToken> Parser<T, TInputToken>(Parser<T, TInputToken> parser)
         {

@@ -3,7 +3,7 @@ using System;
 
 namespace ParsecCore.ParsersHelp
 {
-    class BindParser
+    internal class BindParser
     {
         public static Parser<TResult, TInputToken> Parser<TFirst, TSecond, TResult, TInputToken>(
             Parser<TFirst, TInputToken> first,

@@ -1,6 +1,6 @@
 ﻿namespace ParsecCore.MaybeNS
 {
-    public static class Maybe
+    internal static class Maybe
     {
         public static IMaybe<T> FromValue<T>(this T value)
         {

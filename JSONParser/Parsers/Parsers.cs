@@ -11,7 +11,7 @@ namespace JSONtoXML
     /// Parsers for JSON.
     /// Based on this RFC: https://datatracker.ietf.org/doc/html/rfc8259
     /// </summary>
-    public static class JSONParsers
+    internal static class JSONParsers
     {
         // We don't use Parser.Spaces since the its definition of whitespace is different
         // to the definition found in the JSON RFC.

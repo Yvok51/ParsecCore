@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ParsecCore.ParsersHelp
 {
-    class CountParser
+    internal class CountParser
     {
         public static Parser<IReadOnlyList<T>, TInputToken> Parser<T, TInputToken>(
             Parser<T, TInputToken> parser, int count

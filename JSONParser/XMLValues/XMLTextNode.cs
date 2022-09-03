@@ -1,7 +1,7 @@
 ﻿
 namespace JSONtoXML
 {
-    sealed class XMLTextNode : XMLNode
+    internal sealed class XMLTextNode : XMLNode
     {
         public string Content { get; init; }
     }

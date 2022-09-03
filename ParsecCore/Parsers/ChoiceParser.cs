@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace ParsecCore.ParsersHelp
 {
-    class ChoiceParser
+    internal class ChoiceParser
     {
         public static Parser<T, TInputToken> Parser<T, TInputToken>(params Parser<T, TInputToken>[] parsers)
         {

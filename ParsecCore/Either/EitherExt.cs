@@ -2,7 +2,7 @@
 
 namespace ParsecCore.EitherNS
 {
-    public static class EitherExt
+    internal static class EitherExt
     {
         /// <summary>
         /// Select is an exptension method used in LINQ expressions for a single `from ... in ...` statement

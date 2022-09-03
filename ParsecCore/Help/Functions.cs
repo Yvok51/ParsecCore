@@ -3,7 +3,7 @@ using System.Text;
 
 namespace ParsecCore.Help
 {
-    static class Functions
+    internal static class Functions
     {
         public static string ToPrettyString<T>(this IReadOnlyList<T> collection, string sep = ",")
         {

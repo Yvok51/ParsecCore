@@ -2,7 +2,7 @@
 
 namespace JSONtoXML
 {
-    static class Help
+    internal static class Help
     {
         public static List<T> ListOf<T>(params T[] ts) => new List<T>(ts);
 

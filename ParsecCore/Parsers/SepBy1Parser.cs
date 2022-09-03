@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ParsecCore
 {
-    class SepBy1Parser
+    internal class SepBy1Parser
     {
         public static Parser<IReadOnlyList<TValue>, TInputToken> Parser<TValue, TSeperator, TInputToken>(
             Parser<TValue, TInputToken> valueParser,

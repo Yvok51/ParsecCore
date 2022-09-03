@@ -2,7 +2,7 @@
 
 namespace ParsecCore.MaybeNS
 {
-    struct Nothing<T> : IMaybe<T>
+    internal struct Nothing<T> : IMaybe<T>
     {
         public bool IsEmpty => true;
 

@@ -7,7 +7,7 @@ namespace ParsecCore.ParsersHelp
     /// Parser tries to parse all of the given parsers in a sequence
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    class AllParser
+    internal class AllParser
     {
         public static Parser<IReadOnlyList<T>, TInputToken> Parser<T, TInputToken>(
             params Parser<T, TInputToken>[] parsers

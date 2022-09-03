@@ -8,7 +8,7 @@ namespace ParsecCore.ParsersHelp
     /// Parser which succeeds if the character passes a predicate.
     /// It consumes the read character only if the predicate is successfull
     /// </summary>
-    class SatisfyParser
+    internal class SatisfyParser
     {
         private static Dictionary<char, string> escapedChars = new Dictionary<char, string>()
         {

@@ -2,7 +2,7 @@
 
 namespace ParsecCore.ParsersHelp
 {
-    class Chainl1Parser
+    internal class Chainl1Parser
     {
         private static Parser<T, TInputToken> parseNextOpValue<T, TInputToken>(
             T left,

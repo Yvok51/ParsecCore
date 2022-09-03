@@ -1,6 +1,6 @@
 ﻿namespace JSONtoXML
 {
-    public struct ObjectKeyValuePair
+    internal struct ObjectKeyValuePair
     {
         public StringValue Key { get; init; }
         public JsonValue Value { get; init; }

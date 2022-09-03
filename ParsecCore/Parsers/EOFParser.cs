@@ -7,7 +7,7 @@ namespace ParsecCore.ParsersHelp
     /// Parser which parses the end of the file.
     /// Fails if any character is present
     /// </summary>
-    class EOFParser
+    internal class EOFParser
     {
         public static Parser<None, TInputToken> Parser<TInputToken>()
         {

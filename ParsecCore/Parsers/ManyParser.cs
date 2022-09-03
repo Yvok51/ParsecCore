@@ -9,7 +9,7 @@ namespace ParsecCore.ParsersHelp
     /// Used in the implementation of the Many method
     /// </summary>
     /// <typeparam name="T"> The type of parser return value </typeparam>
-    class ManyParser
+    internal class ManyParser
     {
         public static Parser<IReadOnlyList<T>, TInputToken> Parser<T, TInputToken>(Parser<T, TInputToken> parser)
         {
