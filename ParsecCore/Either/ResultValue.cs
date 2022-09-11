@@ -2,6 +2,11 @@
 
 namespace ParsecCore.EitherNS
 {
+    /// <summary>
+    /// A struct representing the result (non-error) case of the <see cref="IEither{TLeft, TRight}"/> interface
+    /// </summary>
+    /// <typeparam name="TError"> The type of the error value </typeparam>
+    /// <typeparam name="TResult"> The type of the result (noon-error) value. The one we hold </typeparam>
     internal struct ResultValue<TError, TResult> : IEither<TError, TResult>
     {
         public ResultValue(TResult result)
