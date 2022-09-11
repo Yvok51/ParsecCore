@@ -1,21 +1,28 @@
-﻿namespace ParsecCore.Input
+﻿using System;
+
+namespace ParsecCore.Input
 {
     public interface IParserInput<out T>
     {
         /// <summary>
-        /// Read and consume a single character from the input.
+        /// Reads and consumes a single symbol from the input.
+        /// If a symbol cannot be read (e.g. end of input),
+        /// then an <see cref="InvalidOperationException"/> is thrown
         /// </summary>
         /// <returns> The read character </returns>
         public T Read();
 
         /// <summary>
-        /// Read a single character from the input but don't consume it
+        /// Reads a single symbol from the input but does not consume it.
+        /// If a symbol cannot be read (e.g. end of input),
+        /// then an <see cref="InvalidOperationException"/> is thrown
         /// </summary>
         /// <returns> The read character </returns>
         public T Peek();
 
         /// <summary>
-        /// Seek to the given position
+        /// Seeks to the given position. 
+        /// Whether the position is whithin the bound of the input is not checked until the next attempt to read
         /// </summary>
         /// <param name="position"> Position to seek to </param>
         public void Seek(Position position);

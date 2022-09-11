@@ -52,6 +52,10 @@ namespace ParsecCore.Input
             return readChar;
         }
 
+        /// <summary>
+        /// Updates the position based on the read character
+        /// </summary>
+        /// <param name="readChar"> The read character </param>
         private void UpdatePosition(char readChar)
         {
             int offsetBy = _encoding.GetByteCount(new char[] { readChar });

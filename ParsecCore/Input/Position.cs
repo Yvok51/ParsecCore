@@ -4,6 +4,11 @@ namespace ParsecCore.Input
 {
     public struct Position : IEquatable<Position>
     {
+        /// <summary>
+        /// Get the default starting position
+        /// </summary>
+        /// <param name="offset"> Specify the offset the starting position starts at. By default 1 </param>
+        /// <returns> The default starting position </returns>
         public static Position Start(int offset = 0) => new Position(line: 1, column: 1, offset: offset);
 
         public Position(int line, int column, int offset)
