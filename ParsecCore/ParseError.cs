@@ -67,7 +67,7 @@ namespace ParsecCore
         /// <summary>
         /// Combine two errors.
         /// We take the error that is more exact - that is the one which parsed more of the input 
-        /// (its Position is more advanced).
+        /// (its <see cref="Input.Position"/> is more advanced).
         /// If both errors parsed the same amount of the input then we combine their error messages together
         /// </summary>
         /// <param name="secondError"> The error to combine with </param>

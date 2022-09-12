@@ -2,6 +2,10 @@
 
 namespace ParsecCore.MaybeNS
 {
+    /// <summary>
+    /// Represents a valid <see cref="IMaybe{T}"/> value
+    /// </summary>
+    /// <typeparam name="T"> The type of value held </typeparam>
     internal struct Just<T> : IMaybe<T>
     {
         public Just(T value)

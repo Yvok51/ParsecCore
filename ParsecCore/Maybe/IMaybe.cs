@@ -2,6 +2,10 @@
 
 namespace ParsecCore.MaybeNS
 {
+    /// <summary>
+    /// Interface representing a value which has a chance of not being valid.
+    /// </summary>
+    /// <typeparam name="T"> The type of the value </typeparam>
     public interface IMaybe<T>
     {
         /// <summary>

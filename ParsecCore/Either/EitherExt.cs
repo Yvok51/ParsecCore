@@ -6,8 +6,10 @@ namespace ParsecCore.EitherNS
     {
         /// <summary>
         /// Select is an exptension method used in LINQ expressions for a single `from ... in ...` statement
-        /// In context of IEither we use it to simulate the do notation of Haskell
-        /// Inspired by this blog post: https://tyrrrz.me/blog/monadic-comprehension-via-linq
+        /// In context of <see cref="IEither{TLeft, TRight}"/> we use it to simulate 
+        /// the list comprehension notation (weaker do notation) of Haskell.
+        /// Inspired by the paper "Encoding monadic computations in C# using iterators" by Tomáš Petříček
+        /// and <see href="https://tyrrrz.me/blog/monadic-comprehension-via-linq">this</see> blog post 
         /// </summary>
         /// <typeparam name="TLeft"> The left (error) type </typeparam>
         /// <typeparam name="TSource"> The result type of the source IEither object </typeparam>
@@ -27,8 +29,10 @@ namespace ParsecCore.EitherNS
 
         /// <summary>
         /// Select many is an extension method used in LINQ expressions to chain multiple `from ... in ...` statements together
-        /// In context of IEither we use it to simulate the do notation of Haskell
-        /// Inspired by this blog post: https://tyrrrz.me/blog/monadic-comprehension-via-linq
+        /// In context of <see cref="IEither{TLeft, TRight}"/> we use it to simulate 
+        /// the list comprehension notation (weaker do notation) of Haskell.
+        /// Inspired by the paper "Encoding monadic computations in C# using iterators" by Tomáš Petříček
+        /// and <see href="https://tyrrrz.me/blog/monadic-comprehension-via-linq">this</see> blog post 
         /// </summary>
         /// <typeparam name="TLeft"> The left (error) type - it is consistent throughout </typeparam>
         /// <typeparam name="TFirst"> The result value of the input IEither </typeparam>
@@ -57,13 +61,13 @@ namespace ParsecCore.EitherNS
         }
 
         /// <summary>
-        /// Combine two errors together.
+        /// Combines two errors together according to the method <see cref="ParseError.Combine(ParseError)"/>.
         /// Presumes both <c>IEither</c> are errors, throws <see cref="InvalidOperationException"/> otherwise
         /// </summary>
         /// <typeparam name="T">  The result type of the either </typeparam>
         /// <param name="left"> The first <c>IEither</c> </param>
         /// <param name="right"> The second <c>IEither</c> </param>
-        /// <returns></returns>
+        /// <returns> Error combining both input errors </returns>
         public static IEither<ParseError, T> CombineErrors<T>(
             this IEither<ParseError, T> left,
             IEither<ParseError, T> right

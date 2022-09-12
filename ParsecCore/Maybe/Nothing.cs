@@ -2,6 +2,10 @@
 
 namespace ParsecCore.MaybeNS
 {
+    /// <summary>
+    /// Represents the invalid <see cref="IMaybe{T}"/> value
+    /// </summary>
+    /// <typeparam name="T"> The type of value that would be held, if the value was valid </typeparam>
     internal struct Nothing<T> : IMaybe<T>
     {
         public bool IsEmpty => true;
