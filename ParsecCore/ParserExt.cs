@@ -51,8 +51,14 @@ namespace ParsecCore
         public static Parser<TResult, TInputToken> Select<TSource, TResult, TInputToken>(
             this Parser<TSource, TInputToken> parser,
             Func<TSource, TResult> projection
-        ) =>
-            MapParser.Parser(parser, projection);
+        )
+        {
+            return (input) =>
+            {
+                return from value in parser(input)
+                       select projection(value);
+            };
+        }
 
         /// <summary>
         /// Extension method enabling us to use the LINQ syntax for the parsers.
@@ -71,8 +77,15 @@ namespace ParsecCore
             this Parser<TFirst, TInputToken> first,
             Func<TFirst, Parser<TSecond, TInputToken>> getSecond,
             Func<TFirst, TSecond, TResult> getResult
-        ) =>
-            BindParser.Parser(first, getSecond, getResult);
+        )
+        {
+            return (input) =>
+            {
+                return from firstValue in first(input)
+                       from secondValue in getSecond(firstValue)(input)
+                       select getResult(firstValue, secondValue);
+            };
+        }
 
         /// <summary>
         /// Returns a parser which tries to parse according to the given parser as many times as possible.
