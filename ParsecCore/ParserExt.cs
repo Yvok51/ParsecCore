@@ -255,15 +255,30 @@ namespace ParsecCore
             };
         }
 
+        /// <summary>
+        /// Returns a parser which tries to apply the first parser and if it succeeds returns the result.
+        /// If it fails <strong>and does not consume any input</strong> then the second parser is tried.
+        /// If the first parser fails while consuming input, then the first parser's error is returned.
+        /// If both parsers fail then combines their errors, see: <see cref="ParseError.Combine(ParseError)"/>.
+        /// <para/>
+        /// Because the parser fails if the first parser fails while consuming input the lookahead is 1.
+        /// If there is need for parsing to continue in the case input is consumed, then consider modifying
+        /// the first parser with the <see cref="Try{T, TInputToken}(Parser{T, TInputToken})"/> method.
+        /// </summary>
+        /// <typeparam name="T"> The return type of the parser </typeparam>
+        /// <typeparam name="TInputToken"> The input type of the parser </typeparam>
+        /// <param name="firstparser"> First parser to try </param>
+        /// <param name="secondParser"> Second parser to try </param>
+        /// <returns> Parser whose result is the result of the first parser to succeed </returns>
         public static Parser<T, TInputToken> Or<T, TInputToken>(
-            this Parser<T, TInputToken> parser,
+            this Parser<T, TInputToken> firstparser,
             Parser<T, TInputToken> secondParser
         )
         {
             return (input) =>
             {
                 var initialPosition = input.Position;
-                var firstResult = parser(input);
+                var firstResult = firstparser(input);
                 if (firstResult.IsResult || (firstResult.IsError && initialPosition != input.Position))
                 {
                     return firstResult;

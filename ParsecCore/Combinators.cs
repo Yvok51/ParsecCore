@@ -11,8 +11,9 @@ namespace ParsecCore
         /// Returns a parser which tries to first apply the first parser and if it succeeds returns the result.
         /// If it fails <strong>and does not consume any input</strong> then the second parser is applied and so on.
         /// If any parser fails while consuming input, then the parser's error is returned.
-        /// If all parsers fail then returns the ParseError of tha last parser.
-        /// 
+        /// If all parsers fail then combines the errors of all the parser,
+        /// see: <see cref="ParseError.Combine(ParseError)"/>.
+        /// <para/>
         /// Because the parser fails if any parser fails while consuming input the lookahead is 1.
         /// If there is need for parsing to continue in the case input is consumed, then consider modifying
         /// the parsers with the <see cref="ParserExt.Try{T, TInputToken}(Parser{T, TInputToken})"/> method.
