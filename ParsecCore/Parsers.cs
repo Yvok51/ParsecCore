@@ -223,5 +223,29 @@ namespace ParsecCore
         /// <returns> Parser which parses exactly the given string and any whitespace afterwards </returns>
         public static Parser<string, char> Symbol(string stringToParse) =>
             Token(String(stringToParse));
+
+        /// <summary>
+        /// Make the creation of the parser indirect.
+        /// <param/>
+        /// Used when a circular compile time dependency occurs between the parsers. In such a case value of one of the
+        /// parsers is always initialized only after being used in another parser. The value is thus null and an error
+        /// occurs.
+        /// <param/>
+        /// We solve this by indirectly initializing one of the parsers, thus the value of the parser with whom
+        /// we are circularly dependent is taken after it has been initialized and thus everything works.
+        /// We do this by putting the parser into a lambda function. We postpone the creation of the parser to the
+        /// runtime and therefore the other parser on which we are dependent is already defined.
+        /// <param/>
+        /// Error will occur if the grammar with the circularly dependent parsers is left recursive. In that case
+        /// the indirection will go on until a stack overflow.
+        /// </summary>
+        /// <typeparam name="T"> The return type of the parser </typeparam>
+        /// <typeparam name="TInputToken"> The input type of the parser </typeparam>
+        /// <param name="getParser"> Function to get the parser from </param>
+        /// <returns> Same parser as returned by <paramref name="getParser"/> only behaving correctly </returns>
+        public static Parser<T, TInputToken> Indirect<T, TInputToken>(Func<Parser<T, TInputToken>> getParser)
+        {
+            return (input) => getParser()(input);
+        }
     }
 }

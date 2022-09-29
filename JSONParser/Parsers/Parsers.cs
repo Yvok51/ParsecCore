@@ -153,9 +153,7 @@ namespace JSONtoXML
          * is invoked the values are correct and not null
          */
         public static readonly Parser<JsonValue, char> JsonValue =
-            (input) =>
-            {
-                return Combinators.Between(
+            Parsers.Indirect(() => Combinators.Between(
                     whitespace,
                     Combinators.Choice<JsonValue, char>(
                         NullValue,
@@ -165,8 +163,7 @@ namespace JSONtoXML
                         ArrayValue,
                         ObjectValue
                     )
-                )(input);
-            };
+                ));
 
         ////////// ARRAY //////////
         private static Parser<T, char> betweenBrackets<T>(Parser<T, char> betweenParser) =>
