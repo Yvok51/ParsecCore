@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ParsecCore.Permutations
 {
-    internal static partial class Permutation
+    public static partial class Permutation
     {
         public static Parser<TR, TParserInput> Permute<TA, TParserInput, TR>(
             SplitParser<TA, TParserInput> splitParser,
