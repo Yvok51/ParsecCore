@@ -8,6 +8,32 @@ namespace ParsecCore.Permutations
 {
     public static partial class Permutation
     {
+        /// <summary>
+        /// <para>
+        /// Create a parser which parses a permutation phrase.
+        /// Permutation phrase is a sequence of elements in which each element occurs exactly once
+        /// and the order is irrelevant.
+        /// </para>
+        /// <para>
+        /// The created permutation parser will parse any combination of the given parsers,
+        /// but will pass the parsed values to the final transformation function <paramref name="f"/>
+        /// in the specified order.
+        /// </para>
+        /// <para>
+        /// The parsers passed to the function should not parse empty string, for such functionality see
+        /// <see cref="OptionalParser{T, TInput}(ParsecCore.Parser{T, TInput}, T)"/>.
+        /// If any of the parsers do accept an empty string then the parsing of the permutation phrase is ambiguous
+        /// and the result is not guaranteed to be correct.
+        /// </para>
+        /// </summary>
+        /// <typeparam name="TA"> The type of the parsed value </typeparam>
+        /// <typeparam name="TParserInput"> The input type of the parsers </typeparam>
+        /// <typeparam name="TR"> The return type of the created parser </typeparam>
+        /// <param name="splitParser"> The parser from which to construct the permutation parser </param>
+        /// <param name="f">
+        /// Final transformation function which takes all parsed values and creates the result value
+        /// </param>
+        /// <returns> Parser which parses a permutation phrase </returns>
         public static Parser<TR, TParserInput> Permute<TA, TParserInput, TR>(
             SplitParser<TA, TParserInput> splitParser,
             Func<TA, TR> f
@@ -29,6 +55,34 @@ namespace ParsecCore.Permutations
             return Combinators.Choice(branches);
         }
 
+        /// <summary>
+        /// <para>
+        /// Create a parser which parses a permutation phrase.
+        /// Permutation phrase is a sequence of elements in which each element occurs exactly once
+        /// and the order is irrelevant.
+        /// </para>
+        /// <para>
+        /// The created permutation parser will parse any combination of the given parsers,
+        /// but will pass the parsed values to the final transformation function <paramref name="f"/>
+        /// in the specified order.
+        /// </para>
+        /// <para>
+        /// The parsers passed to the function should not parse empty string, for such functionality see
+        /// <see cref="OptionalParser{T, TInput}(ParsecCore.Parser{T, TInput}, T)"/>.
+        /// If any of the parsers do accept an empty string then the parsing of the permutation phrase is ambiguous
+        /// and the result is not guaranteed to be correct.
+        /// </para>
+        /// </summary>
+        /// <typeparam name="TA"> The type of the first parsed value </typeparam>
+        /// <typeparam name="TB"> The type of the second parsed value </typeparam>
+        /// <typeparam name="TParserInput"> The input type of the parser </typeparam>
+        /// <typeparam name="TR"> The return type of the created parser </typeparam>
+        /// <param name="splitParserA"> The first parser from which to construct the permutation parser </param>
+        /// <param name="splitParserB"> The second parser from which to construct the permutation parser </param>
+        /// <param name="f">
+        /// Final transformation function which takes all parsed values and creates the result value
+        /// </param>
+        /// <returns> Parser which parses a permutation phrase </returns>
         public static Parser<TR, TParserInput> Permute<TA, TB, TParserInput, TR>(
             SplitParser<TA, TParserInput> splitParserA,
             SplitParser<TB, TParserInput> splitParserB,
@@ -57,6 +111,36 @@ namespace ParsecCore.Permutations
             return Combinators.Choice(branches);
         }
 
+        /// <summary>
+        /// <para>
+        /// Create a parser which parses a permutation phrase.
+        /// Permutation phrase is a sequence of elements in which each element occurs exactly once
+        /// and the order is irrelevant.
+        /// </para>
+        /// <para>
+        /// The created permutation parser will parse any combination of the given parsers,
+        /// but will pass the parsed values to the final transformation function <paramref name="f"/>
+        /// in the specified order.
+        /// </para>
+        /// <para>
+        /// The parsers passed to the function should not parse empty string, for such functionality see
+        /// <see cref="OptionalParser{T, TInput}(ParsecCore.Parser{T, TInput}, T)"/>.
+        /// If any of the parsers do accept an empty string then the parsing of the permutation phrase is ambiguous
+        /// and the result is not guaranteed to be correct.
+        /// </para>
+        /// </summary>
+        /// <typeparam name="TA"> The type of the first parsed value </typeparam>
+        /// <typeparam name="TB"> The type of the second parsed value </typeparam>
+        /// <typeparam name="TC"> The type of the third parsed value </typeparam>
+        /// <typeparam name="TParserInput"> The input type of the parser </typeparam>
+        /// <typeparam name="TR"> The return type of the created parser </typeparam>
+        /// <param name="splitParserA"> The first parser from which to construct the permutation parser </param>
+        /// <param name="splitParserB"> The second parser from which to construct the permutation parser </param>
+        /// <param name="splitParserC"> The third parser from which to construct the permutation parser </param>
+        /// <param name="f">
+        /// Final transformation function which takes all parsed values and creates the result value
+        /// </param>
+        /// <returns> Parser which parses a permutation phrase </returns>
         public static Parser<TR, TParserInput> Permute<TA, TB, TC, TParserInput, TR>(
             SplitParser<TA, TParserInput> splitParserA,
             SplitParser<TB, TParserInput> splitParserB,
@@ -64,7 +148,7 @@ namespace ParsecCore.Permutations
             Func<TA, TB, TC, TR> f
         )
         {
-            int branchCount = splitParserA.IsOptional && splitParserB.IsOptional && splitParserC.IsOptional ? 3 : 2;
+            int branchCount = splitParserA.IsOptional && splitParserB.IsOptional && splitParserC.IsOptional ? 4 : 3;
             List<Parser<TR, TParserInput>> branches = new(branchCount);
 
             branches.Add(
