@@ -4,14 +4,14 @@ using ParsecCore.MaybeNS;
 
 namespace ParsecCore.Permutations
 {
-    static class Permutation
+    public static partial class Permutation
     {
-        static SplitParser<T, TInput> OptionalParser<T, TInput>(Parser<T, TInput> parser, T defaultValue)
+        public static SplitParser<T, TInput> OptionalParser<T, TInput>(Parser<T, TInput> parser, T defaultValue)
         {
             return new SplitParser<T, TInput>(parser, Maybe.FromValue(defaultValue));
         }
 
-        static SplitParser<T, TInput> Parser<T, TInput>(Parser<T, TInput> parser)
+        public static SplitParser<T, TInput> Parser<T, TInput>(Parser<T, TInput> parser)
         {
             return new SplitParser<T, TInput>(parser, Maybe.Nothing<T>());
         }
