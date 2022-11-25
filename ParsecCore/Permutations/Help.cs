@@ -1,20 +1,42 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace ParsecCore.Permutations
 {
     static class Help
     {
-        internal static Func<TA, TR> Partial<TA, TB, TR>(this Func<TA, TB, TR> f, TB b) => (TA a) => f(a, b);
-        internal static Func<TB, TR> Partial<TA, TB, TR>(this Func<TA, TB, TR> f, TA a) => (TB b) => f(a, b);
+        internal static string Join<T>(IEnumerable<T> collection, Func<T, string> map, string seperator)
+        {
+            var mapped = collection.Select(map);
+            return string.Join(seperator, mapped);
+        }
 
-        internal static Func<TA, TB, TR> Partial<TA, TB, TC, TR>(this Func<TA, TB, TC, TR> f, TC c) => (a, b) => f(a, b, c);
-        internal static Func<TA, TC, TR> Partial<TA, TB, TC, TR>(this Func<TA, TB, TC, TR> f, TB b) => (a, c) => f(a, b, c);
-        internal static Func<TB, TC, TR> Partial<TA, TB, TC, TR>(this Func<TA, TB, TC, TR> f, TA a) => (b, c) => f(a, b, c);
+        /// <summary>
+        /// Generates a list of type names
+        /// </summary>
+        /// <param name="numberOfTypes"> Number of types to generate </param>
+        /// <returns> List of type names </returns>
+        public static IReadOnlyList<string> GetTypesList(int numberOfTypes)
+        {
+            List<string> types = new(numberOfTypes);
+            for (int i = 1; i <= numberOfTypes; i++)
+            {
+                types.Add($"T{i}");
+            }
+            return types;
+        }
 
-        internal static Func<TA, TB, TC, TR> Partial<TA, TB, TC, TD, TR>(this Func<TA, TB, TC, TD, TR> f, TD d) => (a, b, c) => f(a, b, c, d);
-        internal static Func<TA, TB, TD, TR> Partial<TA, TB, TC, TD, TR>(this Func<TA, TB, TC, TD, TR> f, TC c) => (a, b, d) => f(a, b, c, d);
-        internal static Func<TA, TC, TD, TR> Partial<TA, TB, TC, TD, TR>(this Func<TA, TB, TC, TD, TR> f, TB b) => (a, c, d) => f(a, b, c, d);
-        internal static Func<TB, TC, TD, TR> Partial<TA, TB, TC, TD, TR>(this Func<TA, TB, TC, TD, TR> f, TA a) => (b, c, d) => f(a, b, c, d);
-
+        public static IEnumerable<(T, IReadOnlyList<T>)> PickOneReturnRest<T>(this List<T> values) 
+        {
+            for (int i = 0; i < values.Count; i++)
+            {
+                var lhs = values.GetRange(0, i);
+                var rhs = values.GetRange(i + 1, values.Count - i - 1);
+                lhs.AddRange(rhs);
+                yield return (values[i], lhs);
+            }
+        }
     }
 }
