@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ParsecCore.Permutations
 {
@@ -40,12 +37,11 @@ namespace ParsecCore.Permutations
         )
         {
             int branchCount = splitParser.IsOptional ? 2 : 1;
-            List<Parser<TR, TParserInput>> branches = new(branchCount);
-
-            branches.Add(
+            List<Parser<TR, TParserInput>> branches = new(branchCount)
+            {
                 from a in splitParser.Parser
                 select f(a)
-            );
+            };
 
             if (splitParser.IsOptional)
             {
@@ -90,18 +86,15 @@ namespace ParsecCore.Permutations
         )
         {
             int branchCount = splitParserA.IsOptional && splitParserB.IsOptional ? 3 : 2;
-            List<Parser<TR, TParserInput>> branches = new(branchCount);
-
-            branches.Add(
+            List<Parser<TR, TParserInput>> branches = new(branchCount)
+            {
                 from a in splitParserA.Parser
                 from r in Permute(splitParserB, f.Partial(a))
-                select r
-            );
-            branches.Add(
+                select r,
                 from b in splitParserB.Parser
                 from r in Permute(splitParserA, f.Partial(b))
-                select r
-            );
+                select r,
+            };
 
             if (splitParserA.IsOptional && splitParserB.IsOptional)
             {
@@ -148,26 +141,22 @@ namespace ParsecCore.Permutations
             Func<TA, TB, TC, TR> f
         )
         {
-            int branchCount = splitParserA.IsOptional && splitParserB.IsOptional && splitParserC.IsOptional ? 4 : 3;
-            List<Parser<TR, TParserInput>> branches = new(branchCount);
-
-            branches.Add(
+            bool allParsersOptional = splitParserA.IsOptional && splitParserB.IsOptional && splitParserC.IsOptional;
+            int branchCount = allParsersOptional ? 4 : 3;
+            List<Parser<TR, TParserInput>> branches = new(branchCount)
+            {
                 from a in splitParserA.Parser
                 from r in Permute(splitParserB, splitParserC, f.Partial(a))
-                select r
-            );
-            branches.Add(
+                select r,
                 from b in splitParserB.Parser
                 from r in Permute(splitParserA, splitParserC, f.Partial(b))
-                select r
-            );
-            branches.Add(
+                select r,
                 from c in splitParserC.Parser
                 from r in Permute(splitParserA, splitParserB, f.Partial(c))
-                select r
-            );
+                select r,
+            };
 
-            if (splitParserA.IsOptional && splitParserB.IsOptional && splitParserC.IsOptional)
+            if (allParsersOptional)
             {
                 branches.Add(Parsers.Return<TR, TParserInput>(f(splitParserA.DefaultValue, splitParserB.DefaultValue, splitParserC.DefaultValue)));
             }
