@@ -8,14 +8,71 @@ namespace ParsecCore.Permutations
     [Generator]
     internal class PermuteSourceGenerator : ISourceGenerator
     {
+        private static int PREMADE_PERMUTE_FUNCTIONS = 3;
+        private static int PREMADE_PARTIAL_FUNCTIONS = 4;
+
         public void Execute(GeneratorExecutionContext context)
         {
+            string partialSource = GeneratePartialSourceDocument(PREMADE_PARTIAL_FUNCTIONS + 1, 5);
+            string permuteSource = GeneratePermuteSourceDocument(PREMADE_PERMUTE_FUNCTIONS + 1, 5);
 
+            context.AddSource("Partial.g.cs", partialSource);
+            context.AddSource("Permute.g.cs", permuteSource);
         }
 
         public void Initialize(GeneratorInitializationContext context)
         {
 
+        }
+
+        private static string GeneratePermuteSourceDocument(int from, int upTo)
+        {
+            if (from > upTo)
+            {
+                return string.Empty;
+            }
+
+            string header = @"
+using System;
+using System.Collections.Generic;
+
+namespace ParsecCore.Permutations
+{
+    public static partial class Permutation
+    {
+";
+            string footer = @"
+    }
+}";
+            StringBuilder builder = new StringBuilder(header);
+            for (int numOfParsers = from; numOfParsers <= upTo; numOfParsers++)
+            {
+                builder.Append(PermuteMethodGenerator.GeneratePermuteMethod(numOfParsers));
+            }
+            builder.AppendLine(footer);
+            return builder.ToString();
+        }
+
+        private static string GeneratePartialSourceDocument(int from, int upTo)
+        {
+            string header = @"
+using System;
+
+namespace ParsecCore.Permutations
+{
+    internal static partial class PartialExt
+    {
+";
+            string footer = @"
+    }
+}";
+            StringBuilder builder = new StringBuilder(header);
+            for (int numberOfTypes = from; numberOfTypes <= upTo; numberOfTypes++)
+            {
+                builder.Append(PartialFuncExtensionGenerator.GeneratePartialMethods(numberOfTypes));
+            }
+            builder.AppendLine(footer);
+            return builder.ToString();
         }
 
         private class PermuteMethodGenerator
