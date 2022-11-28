@@ -1,31 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.CodeAnalysis;
 
-namespace ParsecCore.Permutations
+namespace PermuteGenerator
 {
-    [Generator]
-    internal class PermuteSourceGenerator : ISourceGenerator
+    internal static class PermuteSourceGenerator
     {
-        private static int PREMADE_PERMUTE_FUNCTIONS = 3;
-        private static int PREMADE_PARTIAL_FUNCTIONS = 4;
+        public static readonly int PREMADE_PERMUTE_FUNCTIONS = 3;
+        public static readonly int PREMADE_PARTIAL_FUNCTIONS = 4;
 
-        public void Execute(GeneratorExecutionContext context)
-        {
-            string partialSource = GeneratePartialSourceDocument(PREMADE_PARTIAL_FUNCTIONS + 1, 5);
-            string permuteSource = GeneratePermuteSourceDocument(PREMADE_PERMUTE_FUNCTIONS + 1, 5);
-
-            context.AddSource("Partial.g.cs", partialSource);
-            context.AddSource("Permute.g.cs", permuteSource);
-        }
-
-        public void Initialize(GeneratorInitializationContext context)
-        {
-
-        }
-
-        private static string GeneratePermuteSourceDocument(int from, int upTo)
+        public static string GeneratePermuteSourceDocument(int from, int upTo)
         {
             if (from > upTo)
             {
@@ -53,7 +37,7 @@ namespace ParsecCore.Permutations
             return builder.ToString();
         }
 
-        private static string GeneratePartialSourceDocument(int from, int upTo)
+        public static string GeneratePartialSourceDocument(int from, int upTo)
         {
             string header = @"
 using System;
