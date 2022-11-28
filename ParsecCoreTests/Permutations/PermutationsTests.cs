@@ -14,7 +14,7 @@ namespace ParsecCoreTests.Permutations
         [InlineData("7", '7')]
         public void ParsingSingleMember(string inputString, char toParse)
         {
-            var parser = Permutation.Permute(Permutation.Parser(Parsers.Char(toParse)), (c) => c);
+            var parser = Permutation.Permute(Permutation.PermuteParser(Parsers.Char(toParse)), (c) => c);
             var input = ParserInput.Create(inputString);
 
             IEither<ParseError, char> result = parser(input);
@@ -29,7 +29,7 @@ namespace ParsecCoreTests.Permutations
         [InlineData("7 sins", '7')]
         public void ParsingSingleMemberFromLongerInput(string inputString, char toParse)
         {
-            var parser = Permutation.Permute(Permutation.Parser(Parsers.Char(toParse)), (c) => c);
+            var parser = Permutation.Permute(Permutation.PermuteParser(Parsers.Char(toParse)), (c) => c);
             var input = ParserInput.Create(inputString);
 
             IEither<ParseError, char> result = parser(input);
@@ -44,7 +44,7 @@ namespace ParsecCoreTests.Permutations
         [InlineData("7", '7', '8')]
         public void FinalTransformationFunctionIsAppliedOnSingleMember(string inputString, char toParse, char transformed)
         {
-            var parser = Permutation.Permute(Permutation.Parser(Parsers.Char(toParse)), (c) => (char)(c + 1));
+            var parser = Permutation.Permute(Permutation.PermuteParser(Parsers.Char(toParse)), (c) => (char)(c + 1));
             var input = ParserInput.Create(inputString);
 
             IEither<ParseError, char> result = parser(input);
@@ -63,9 +63,9 @@ namespace ParsecCoreTests.Permutations
         public void ParsingThreeMembers(string inputString)
         {
             var parser = Permutation.Permute(
-                Permutation.Parser(Parsers.Char('a')),
-                Permutation.Parser(Parsers.Char('b')),
-                Permutation.Parser(Parsers.Char('c')),
+                Parsers.Char('a').PermuteParser(),
+                Parsers.Char('b').PermuteParser(),
+                Parsers.Char('c').PermuteParser(),
                 (a, b, c) => (a, b, c));
             var input = ParserInput.Create(inputString);
 
@@ -88,9 +88,9 @@ namespace ParsecCoreTests.Permutations
         {
             bool optionalNotInInput = inputString.Length < 3;
             var parser = Permutation.Permute(
-                Permutation.Parser(Parsers.Char('a')),
-                Permutation.OptionalParser(Parsers.Char('b'), 'd'),
-                Permutation.Parser(Parsers.Char('c')),
+                Parsers.Char('a').PermuteParser(),
+                Parsers.Char('b').OptionalPermuteParser('d'),
+                Parsers.Char('c').PermuteParser(),
                 (a, b, c) => (a, b, c));
             var input = ParserInput.Create(inputString);
 

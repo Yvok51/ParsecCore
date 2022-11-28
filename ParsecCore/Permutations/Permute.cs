@@ -18,7 +18,7 @@ namespace ParsecCore.Permutations
         /// </para>
         /// <para>
         /// The parsers passed to the function should not parse empty string, for such functionality see
-        /// <see cref="OptionalParser{T, TInput}(ParsecCore.Parser{T, TInput}, T)"/>.
+        /// <see cref="OptionalPermuteParser{T, TInput}(ParsecCore.Parser{T, TInput}, T)"/>.
         /// If any of the parsers do accept an empty string then the parsing of the permutation phrase is ambiguous
         /// and the result is not guaranteed to be correct.
         /// </para>
@@ -64,7 +64,7 @@ namespace ParsecCore.Permutations
         /// </para>
         /// <para>
         /// The parsers passed to the function should not parse empty string, for such functionality see
-        /// <see cref="OptionalParser{T, TInput}(ParsecCore.Parser{T, TInput}, T)"/>.
+        /// <see cref="OptionalPermuteParser{T, TInput}(ParsecCore.Parser{T, TInput}, T)"/>.
         /// If any of the parsers do accept an empty string then the parsing of the permutation phrase is ambiguous
         /// and the result is not guaranteed to be correct.
         /// </para>
@@ -117,7 +117,7 @@ namespace ParsecCore.Permutations
         /// </para>
         /// <para>
         /// The parsers passed to the function should not parse empty string, for such functionality see
-        /// <see cref="OptionalParser{T, TInput}(ParsecCore.Parser{T, TInput}, T)"/>.
+        /// <see cref="OptionalPermuteParser{T, TInput}(ParsecCore.Parser{T, TInput}, T)"/>.
         /// If any of the parsers do accept an empty string then the parsing of the permutation phrase is ambiguous
         /// and the result is not guaranteed to be correct.
         /// </para>

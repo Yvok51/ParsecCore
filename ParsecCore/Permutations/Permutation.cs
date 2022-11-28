@@ -18,7 +18,7 @@ namespace ParsecCore.Permutations
         /// <param name="parser"> The parser to add to the permutation </param>
         /// <param name="defaultValue"> The default value to use in case the parsed member is not present </param>
         /// <returns> <see cref="SplitParser{T, TInput}"/> used in parsing permutations </returns>
-        public static SplitParser<T, TInput> OptionalParser<T, TInput>(Parser<T, TInput> parser, T defaultValue)
+        public static SplitParser<T, TInput> OptionalPermuteParser<T, TInput>(this Parser<T, TInput> parser, T defaultValue)
         {
             return new SplitParser<T, TInput>(parser, Maybe.FromValue(defaultValue));
         }
@@ -32,7 +32,7 @@ namespace ParsecCore.Permutations
         /// <typeparam name="TInput"> The input type of the parser </typeparam>
         /// <param name="parser"> The parser to add to the permutation </param>
         /// <returns> <see cref="SplitParser{T, TInput}"/> used in parsing permutations </returns>
-        public static SplitParser<T, TInput> Parser<T, TInput>(Parser<T, TInput> parser)
+        public static SplitParser<T, TInput> PermuteParser<T, TInput>(this Parser<T, TInput> parser)
         {
             return new SplitParser<T, TInput>(parser, Maybe.Nothing<T>());
         }
