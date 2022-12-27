@@ -15,7 +15,7 @@
         }
     }
 
-    internal  struct ExpectedMessage
+    internal struct ExpectedMessage
     {
         public ExpectedMessage(string expected)
         {

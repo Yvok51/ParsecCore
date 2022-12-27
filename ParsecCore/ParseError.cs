@@ -1,9 +1,8 @@
-﻿using System.Text;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-
-using ParsecCore.Input;
+using System.Text;
 using ParsecCore.Help;
+using ParsecCore.Input;
 
 namespace ParsecCore
 {
@@ -84,11 +83,11 @@ namespace ParsecCore
             }
             else
             {
-                List<EncounteredMessage> newEncountered = 
+                List<EncounteredMessage> newEncountered =
                     _encounteredErrors.Concat(secondError._encounteredErrors).Distinct().ToList();
-                List<ExpectedMessage> newExpected = 
+                List<ExpectedMessage> newExpected =
                     _expectedErrors.Concat(secondError._expectedErrors).Distinct().ToList();
-                List<GenericMessage> newGeneric = 
+                List<GenericMessage> newGeneric =
                     _genericErrors.Concat(secondError._genericErrors).Distinct().ToList();
 
                 return new ParseError(Position, newGeneric, newExpected, newEncountered);
