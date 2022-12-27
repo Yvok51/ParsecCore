@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using ParsecCore.MaybeNS;
 
 namespace ParsecCore.Permutations
