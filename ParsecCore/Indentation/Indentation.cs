@@ -107,6 +107,31 @@ namespace ParsecCore.Indentation
                    from res in parser
                    select res;
         }
+        
+        /// <summary>
+        /// Parser for line folding. The user creates a parser which receives a space consumer which consumes
+        /// whitespace between parts of the linefold and manually specifies how the statement can be folded.
+        /// </summary>
+        /// <typeparam name="T"> The return type of the line fold parser </typeparam>
+        /// <typeparam name="TSpace"> Type returned by the space consumer </typeparam>
+        /// <typeparam name="TInput"> Type of the input </typeparam>
+        /// <param name="spaceConsumer">
+        /// Parser which consumes whitespace between linefolds. Must consume newlines
+        /// </param>
+        /// <param name="linefoldParser">
+        /// User's parser for parsing parts of the linefold seperated by a space consumer
+        /// </param>
+        /// <returns> Parser for parsing line folded statements </returns>
+        public static Parser<T, TInput> LineFold<T, TSpace, TInput>(
+            Parser<TSpace, TInput> spaceConsumer,
+            Func<Parser<IndentLevel, TInput>, Parser<T, TInput>> linefoldParser
+        )
+        {
+            return from _ in spaceConsumer
+                   from indentLvl in Position<TInput>()
+                   from res in linefoldParser(IndentGuard(spaceConsumer, Relation.GT, indentLvl))
+                   select res;
+        }
 
         /// <summary>
         /// Returns a parser which parses zero or more items in subsequent lines.
