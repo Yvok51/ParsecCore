@@ -39,9 +39,9 @@
                 return;
             }
 
-            try 
+            try
             {
-                using (var permuteWriter = new StreamWriter(Path.Combine(path, permuteFilename))) 
+                using (var permuteWriter = new StreamWriter(Path.Combine(path, permuteFilename)))
                 using (var partialWriter = new StreamWriter(Path.Combine(path, partialFilename)))
                 {
                     permuteWriter.WriteLine(permuteSource);

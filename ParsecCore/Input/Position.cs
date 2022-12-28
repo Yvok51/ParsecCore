@@ -9,7 +9,7 @@ namespace ParsecCore.Input
         /// </summary>
         /// <param name="offset"> Specify the offset the starting position starts at. By default 1 </param>
         /// <returns> The default starting position </returns>
-        public static Position Start(int offset = 0) => new Position(line: 1, column: 1, offset: offset);
+        public static Position Start(int offset = 0) => new Position(line: 1, column: BeginningColumn, offset: offset);
 
         public Position(int line, int column, int offset)
         {
@@ -21,6 +21,8 @@ namespace ParsecCore.Input
         public int Line { get; init; }
         public int Column { get; init; }
         public int Offset { get; init; }
+
+        public static readonly int BeginningColumn = 1;
 
         /// <summary>
         /// Forward the position by a given amount of characters in the same row as before
@@ -49,7 +51,7 @@ namespace ParsecCore.Input
         /// <returns> The forwared position </returns>
         public Position WithNewLine(int lineIncrease = 1)
         {
-            return new Position(line: Line + lineIncrease, column: 1, offset: Offset);
+            return new Position(line: Line + lineIncrease, column: BeginningColumn, offset: Offset);
         }
 
         /// <summary>

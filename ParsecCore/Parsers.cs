@@ -17,6 +17,14 @@ namespace ParsecCore
         public static readonly Parser<None, char> EOF = EOFParser.Parser<char>();
 
         /// <summary>
+        /// Parser which answers whether we have reached the end of file.
+        /// It always succeeds and returns a boolean value signifying the answer
+        /// </summary>
+        public static readonly Parser<bool, char> IsEOF = 
+            from end in EOF.Optional()
+            select !end.IsEmpty;
+
+        /// <summary>
         /// Returns a parser which parses a char given it fulfills a predicate.
         /// Consumes the read character only if the character passes the predicate.
         /// </summary>
@@ -51,12 +59,12 @@ namespace ParsecCore
         };
 
         /// <summary>
-        /// Parses a single whitespace
+        /// Parses a single whitespace, uses <see cref="char.IsWhiteSpace(char)"/> to determine whitespace
         /// </summary>
         public static readonly Parser<char, char> Space = Satisfy(char.IsWhiteSpace, "whitespace");
 
         /// <summary>
-        /// Parses as much whitespace as possible
+        /// Parses as much whitespace as possible, uses <see cref="Space"/> to parse whitespace
         /// </summary>
         public static readonly Parser<string, char> Spaces = Space.Many();
 
@@ -78,6 +86,10 @@ namespace ParsecCore
             from lf in NewLine
             select '\n';
 
+        /// <summary>
+        /// Parses end of line ('\n' or '\r\n') and returns '\n'
+        /// </summary>
+        public static readonly Parser<char, char> EOL = CRLF.Or(NewLine);
 
         /// <summary>
         /// Parses a single digit
@@ -202,17 +214,39 @@ namespace ParsecCore
         }
 
         /// <summary>
-        /// Returns a parser which ignores any whitespace after the parsed value
+        /// Returns a parser which ignores any whitespace after the parsed value.
+        /// Uses the <see cref="Spaces"/> parser to parse subesquent whitespace.
         /// </summary>
         /// <typeparam name="T"> The type of parser </typeparam>
-        /// <param name="parser"> What value to parse between the whitespace </param>
+        /// <param name="parser"> What value to parse before the whitespace </param>
         /// <returns>
-        /// Parser which parses the same value as the input parser surrounded by an arbitrary amount of whitespace.
+        /// Parser which parses the same value as the input parser followed by an arbitrary amount of whitespace.
         /// </returns>
         public static Parser<T, char> Token<T>(Parser<T, char> parser)
         {
             return from x in parser
                    from _ in Spaces
+                   select x;
+        }
+
+        /// <summary>
+        /// Returns a parser which ignores any whitespace after the parsed value
+        /// </summary>
+        /// <typeparam name="T"> The type of parser </typeparam>
+        /// <typeparam name="TSpace"> The type returned by the whitespace parser </typeparam>
+        /// <typeparam name="TInput"> The type of the input </typeparam>
+        /// <param name="parser"> What value to parse between the whitespace </param>
+        /// <param name="spaceConsumer"> Parser for the whitespace to consume </param>
+        /// <returns>
+        /// Parser which parses the same value as the input parser followed by whitespace.
+        /// </returns>
+        public static Parser<T, TInput> Token<T, TSpace, TInput>(
+            Parser<T, TInput> parser,
+            Parser<TSpace, TInput> spaceConsumer
+        )
+        {
+            return from x in parser
+                   from _ in spaceConsumer
                    select x;
         }
 
@@ -226,16 +260,16 @@ namespace ParsecCore
 
         /// <summary>
         /// Make the creation of the parser indirect.
-        /// <param/>
+        /// <para/>
         /// Used when a circular compile time dependency occurs between the parsers. In such a case value of one of the
         /// parsers is always initialized only after being used in another parser. The value is thus null and an error
         /// occurs.
-        /// <param/>
+        /// <para/>
         /// We solve this by indirectly initializing one of the parsers, thus the value of the parser with whom
         /// we are circularly dependent is taken after it has been initialized and thus everything works.
         /// We do this by putting the parser into a lambda function. We postpone the creation of the parser to the
         /// runtime and therefore the other parser on which we are dependent is already defined.
-        /// <param/>
+        /// <para/>
         /// Error will occur if the grammar with the circularly dependent parsers is left recursive. In that case
         /// the indirection will go on until a stack overflow.
         /// </summary>

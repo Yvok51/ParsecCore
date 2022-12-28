@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 
 namespace PermuteGenerator
 {
@@ -99,8 +97,8 @@ namespace ParsecCore.Permutations
 
                 body.AppendLine(tabs + "List<Parser<TR, TParserInput>> branches = new(branchCount)");
                 body.AppendLine(tabs + "{");
-                foreach (var branch in GetAllBranches(parsers)) 
-                { 
+                foreach (var branch in GetAllBranches(parsers))
+                {
                     foreach (var line in branch)
                     {
                         body.AppendLine(indentedTabs + line);
@@ -210,7 +208,7 @@ namespace ParsecCore.Permutations
             }
         }
 
-        private class PartialFuncExtensionGenerator 
+        private class PartialFuncExtensionGenerator
         {
             /// <summary>
             /// Generate partial function application extension methods

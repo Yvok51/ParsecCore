@@ -1,6 +1,6 @@
 ﻿namespace ParsecCore.MaybeNS
 {
-    internal static class Maybe
+    public static class Maybe
     {
         /// <summary>
         /// Create a valid <see cref="IMaybe{T}"/> value
