@@ -29,8 +29,24 @@ namespace ParsecCoreTests.Indentation
         }
 
         [Theory]
+        [InlineData("")]
+        [InlineData("   ")]
+        [InlineData("\n  hey\n  hello\n  hi")]
+        public void SomeIndentBlockRejectsNoHead(string inputStr)
+        {
+            var input = ParserInput.Create(inputStr);
+            var parser = from list in ParsecCore.Indentation.Indentation.IndentBlockSome(
+                Parsers.Spaces, Parsers.String("def"), Maybe.Nothing<IndentLevel>(), (head, list) => list, Word)
+                         select list;
+            var res = parser(input);
+
+            Assert.True(res.IsError);
+        }
+
+        [Theory]
         [InlineData("def\n hey\n hello\n hi", "hey hello hi")]
         [InlineData("def\n  hey\n  hello\n  hi", "hey hello hi")]
+        [InlineData(" def\n  hey\n  hello\n  hi", "hey hello hi")]
         [InlineData("def\n\they\n\thello\n\thi", "hey hello hi")]
         public void SomeIndentBlockParsesSameIndentedItems(string inputStr, string parsedItems)
         {
