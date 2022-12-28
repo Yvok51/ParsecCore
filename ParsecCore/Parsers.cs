@@ -59,12 +59,12 @@ namespace ParsecCore
         };
 
         /// <summary>
-        /// Parses a single whitespace
+        /// Parses a single whitespace, uses <see cref="char.IsWhiteSpace(char)"/> to determine whitespace
         /// </summary>
         public static readonly Parser<char, char> Space = Satisfy(char.IsWhiteSpace, "whitespace");
 
         /// <summary>
-        /// Parses as much whitespace as possible
+        /// Parses as much whitespace as possible, uses <see cref="Space"/> to parse whitespace
         /// </summary>
         public static readonly Parser<string, char> Spaces = Space.Many();
 
