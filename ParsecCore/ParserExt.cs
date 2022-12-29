@@ -293,5 +293,13 @@ namespace ParsecCore
                 return secondResult;
             };
         }
+
+        public static Parser<None, TInputToken> Void<T, TInputToken>(
+            this Parser<T, TInputToken> parser
+        )
+        {
+            return from _ in parser
+                   select new None();
+        }
     }
 }
