@@ -14,8 +14,13 @@ namespace ParsecCore.Input
         /// The size of the tab in the input, by default 4 spaces. Used in error messages
         /// </param>
         /// <returns> Input for a parser </returns>
+        /// <exception cref="ArgumentNullException"> If input string is null </exception>
         public static IParserInput<char> Create(string inputString, int tabSize = 4)
-            => new StringParserInput(inputString, tabSize);
+        {
+            if (inputString is null) throw new ArgumentNullException(nameof(inputString));
+
+            return new StringParserInput(inputString, tabSize);
+        }
 
         /// <summary>
         /// Creates an input for the parser from a stream.     
@@ -29,8 +34,15 @@ namespace ParsecCore.Input
         /// The size of the tab in the input, by default 4 spaces. Used in error messages
         /// </param>
         /// <returns> Input for a parser </returns>
+        /// <exception cref="ArgumentNullException"> If any argument is null </exception>
+        /// <exception cref="ArgumentException"> If the stream is not readable and seekable </exception>
         public static IParserInput<char> Create(Stream stream, Encoding encoding, int tabSize = 4)
-            => new StreamParserInput(stream, encoding, tabSize);
+        {
+            if (stream is null) throw new ArgumentNullException(nameof(stream));
+            if (encoding is null) throw new ArgumentNullException(nameof(encoding));
+
+            return new StreamParserInput(stream, encoding, tabSize);
+        }
 
         /// <summary>
         /// Creates an input for the parser from a stream
@@ -44,7 +56,13 @@ namespace ParsecCore.Input
         /// The size of the tab in the input, by default 4 spaces. Used in error messages
         /// </param>
         /// <returns> Input for a parser </returns>
+        /// <exception cref="ArgumentNullException"> If reader is null </exception>
+        /// <exception cref="ArgumentException"> If the reader is not readable and seekable </exception>
         public static IParserInput<char> Create(StreamReader reader, int tabSize = 4)
-            => new StreamParserInput(reader, tabSize);
+        {
+            if (reader is null) throw new ArgumentNullException(nameof(reader));
+
+            return new StreamParserInput(reader, tabSize);
+        }
     }
 }

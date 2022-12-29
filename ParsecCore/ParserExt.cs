@@ -20,11 +20,15 @@ namespace ParsecCore
         /// <param name="parser"> The parser whose error message to change </param>
         /// <param name="newExpectedMessage"> The new expected error message </param>
         /// <returns> Parser which upon failure returns ParseError with modified error message </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
         public static Parser<T, TInputToken> FailWith<T, TInputToken>(
             this Parser<T, TInputToken> parser,
             string newExpectedMessage
         )
         {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+            if (newExpectedMessage is null) throw new ArgumentNullException(nameof(newExpectedMessage));
+
             return (input) =>
             {
                 var result = parser(input);
@@ -48,11 +52,15 @@ namespace ParsecCore
         /// <param name="parser"> The source parser </param>
         /// <param name="projection"> The funtion to map the result of the source parser with </param>
         /// <returns> Parser which maps the result of the source parser to a new value </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
         public static Parser<TResult, TInputToken> Select<TSource, TResult, TInputToken>(
             this Parser<TSource, TInputToken> parser,
             Func<TSource, TResult> projection
         )
         {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+            if (projection is null) throw new ArgumentNullException(nameof(projection));
+
             return (input) =>
             {
                 return from value in parser(input)
@@ -75,12 +83,17 @@ namespace ParsecCore
         /// <returns> 
         /// Parser which performs the source parser and afterwards the chained method in that order
         /// </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
         public static Parser<TResult, TInputToken> SelectMany<TFirst, TSecond, TResult, TInputToken>(
             this Parser<TFirst, TInputToken> first,
             Func<TFirst, Parser<TSecond, TInputToken>> getSecond,
             Func<TFirst, TSecond, TResult> getResult
         )
         {
+            if (first is null) throw new ArgumentNullException(nameof(first));
+            if (getSecond is null) throw new ArgumentNullException(nameof(getSecond));
+            if (getResult is null) throw new ArgumentNullException(nameof(getResult));
+
             return (input) =>
             {
                 return from firstValue in first(input)
@@ -100,10 +113,15 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of the parser </typeparam>
         /// <param name="parser"> The parser to apply </param>
         /// <returns> Parser which applies the given parser as many times as possible </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
         public static Parser<IReadOnlyList<T>, TInputToken> Many<T, TInputToken>(
             this Parser<T, TInputToken> parser
-        ) =>
-            ManyParser.Parser(parser);
+        )
+        {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+
+            return ManyParser.Parser(parser);
+        }
 
         /// <summary>
         /// Returns a parser which tries to parse according to the given parser as many times as possible.
@@ -116,10 +134,13 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of the parser </typeparam>
         /// <param name="parser"> The parser to apply </param>
         /// <returns> Parser which applies the given parser as many times as possible </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
         public static Parser<IReadOnlyList<T>, TInputToken> Many1<T, TInputToken>(
             this Parser<T, TInputToken> parser
         )
         {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+
             return from firstParse in parser
                    from restParses in parser.Many()
                    select restParses.Prepend(firstParse);
@@ -130,10 +151,13 @@ namespace ParsecCore
         /// </summary>
         /// <param name="parser"> The parser to apply as many times as possible </param>
         /// <returns> Parser which applies the given char parser as many times as possible </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
         public static Parser<string, TInputToken> Many<TInputToken>(
             this Parser<char, TInputToken> parser
         )
         {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+
             return from chars in parser.Many<char, TInputToken>()  // added explicit char to avoid recursion
                    select string.Concat(chars);
         }
@@ -143,10 +167,13 @@ namespace ParsecCore
         /// </summary>
         /// <param name="parser"> The parser to apply as many times as possible </param>
         /// <returns> Parser which applies the given char parser as many times as possible </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
         public static Parser<string, TInputToken> Many1<TInputToken>(
             this Parser<char, TInputToken> parser
         )
         {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+
             return from firstParse in parser
                    from restParses in parser.Many()
                    select firstParse.ToString() + restParses;
@@ -161,10 +188,15 @@ namespace ParsecCore
         /// <returns> 
         /// Parser which applies the given parser as many times as possible and then ignores its result.
         /// </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
         public static Parser<None, TInputToken> SkipMany<T, TInputToken>(
             this Parser<T, TInputToken> parser
-        ) =>
-            parser.Many().Void();
+        )
+        {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+
+            return parser.Many().Void();
+        }
 
         /// <summary>
         /// Applies the parser as many times as possible (but at least once) and ignores the result.
@@ -174,10 +206,15 @@ namespace ParsecCore
         /// <returns> 
         /// Parser which applies the given parser as many times as possible and then ignores its result.
         /// </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
         public static Parser<None, TInputToken> SkipMany1<T, TInputToken>(
             this Parser<T, TInputToken> parser
-        ) =>
-            parser.Many1().Void();
+        )
+        {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+
+            return parser.Many1().Void();
+        }
 
         /// <summary>
         /// Aplies the parser a given amount of times.
@@ -187,12 +224,17 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of parser to apply </typeparam>
         /// <param name="parser"> The parser to apply </param>
         /// <param name="count"> Number of times to apply the parser </param>
-        /// <returns></returns>
+        /// <returns> Parser which applies itself the given number of times </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
         public static Parser<IReadOnlyList<T>, TInputToken> Count<T, TInputToken>(
             this Parser<T, TInputToken> parser,
             int count
-        ) =>
-            CountParser.Parser(parser, count);
+        )
+        {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+
+            return CountParser.Parser(parser, count);
+        }
 
         /// <summary>
         /// Returns a parser which either parses its value or returns 
@@ -202,10 +244,15 @@ namespace ParsecCore
         /// <typeparam name="T"> The result type of the parser </typeparam>
         /// <param name="parser"> The parser to optionally apply </param>
         /// <returns> Parser which optionally applies the given parser </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
         public static Parser<IMaybe<T>, TInputToken> Optional<T, TInputToken>(
             this Parser<T, TInputToken> parser
-        ) =>
-            OptionalParser.Parser(parser);
+        )
+        {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+
+            return OptionalParser.Parser(parser);
+        }
 
         /// <summary>
         /// Tries to parse according to the given parser. If the parser succeeds, then returns the parser's result.
@@ -216,11 +263,15 @@ namespace ParsecCore
         /// <param name="parser"> The parser to modify </param>
         /// <param name="defaultValue"> The default value to return if the parser fails </param>
         /// <returns> Parser which returns a default value upon failure </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
         public static Parser<T, TInputToken> Option<T, TInputToken>(
             this Parser<T, TInputToken> parser,
             T defaultValue
         )
         {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+            if (defaultValue is null) throw new ArgumentNullException(nameof(defaultValue));
+
             return from opt in parser.Optional()
                    select opt.Else(defaultValue);
         }
@@ -231,10 +282,13 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of parser </typeparam>
         /// <param name="parser"> The parser to modify </param>
         /// <returns> Parser which does not consume any input on failure </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
         public static Parser<T, TInputToken> Try<T, TInputToken>(
             this Parser<T, TInputToken> parser
         )
         {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+
             return (input) =>
             {
                 var initialPosition = input.Position;
@@ -260,10 +314,13 @@ namespace ParsecCore
         /// <typeparam name="T"> The return type of the parser </typeparam>
         /// <param name="parser"> Parser to look ahead with </param>
         /// <returns> Parser which looks ahead (parses without consuming input) </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
         public static Parser<T, TInputToken> LookAhead<T, TInputToken>(
             this Parser<T, TInputToken> parser
         )
         {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+
             return (input) =>
             {
                 var initialPosition = input.Position;
@@ -289,18 +346,22 @@ namespace ParsecCore
         /// </summary>
         /// <typeparam name="T"> The return type of the parser </typeparam>
         /// <typeparam name="TInputToken"> The input type of the parser </typeparam>
-        /// <param name="firstparser"> First parser to try </param>
+        /// <param name="firstParser"> First parser to try </param>
         /// <param name="secondParser"> Second parser to try </param>
         /// <returns> Parser whose result is the result of the first parser to succeed </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
         public static Parser<T, TInputToken> Or<T, TInputToken>(
-            this Parser<T, TInputToken> firstparser,
+            this Parser<T, TInputToken> firstParser,
             Parser<T, TInputToken> secondParser
         )
         {
+            if (firstParser is null) throw new ArgumentNullException(nameof(firstParser));
+            if (secondParser is null) throw new ArgumentNullException(nameof(secondParser));
+
             return (input) =>
             {
                 var initialPosition = input.Position;
-                var firstResult = firstparser(input);
+                var firstResult = firstParser(input);
                 if (firstResult.IsResult || (firstResult.IsError && initialPosition != input.Position))
                 {
                     return firstResult;
@@ -323,10 +384,13 @@ namespace ParsecCore
         /// <typeparam name="TInputToken"> Type of the input stream </typeparam>
         /// <param name="parser"> Parser whose return value is ignored </param>
         /// <returns> Parser whose return value is ignored </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
         public static Parser<None, TInputToken> Void<T, TInputToken>(
             this Parser<T, TInputToken> parser
         )
         {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+
             return from _ in parser
                    select new None();
         }

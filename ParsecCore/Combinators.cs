@@ -23,8 +23,15 @@ namespace ParsecCore
         /// <returns>
         /// Parser which sequentally tries to apply the given parsers until one succeeds or all fails
         /// </returns>
-        public static Parser<T, TInputToken> Choice<T, TInputToken>(params Parser<T, TInputToken>[] parsers) =>
-            ChoiceParser.Parser(parsers);
+        /// <exception cref="ArgumentNullException"> If parser array is null </exception>
+        public static Parser<T, TInputToken> Choice<T, TInputToken>(
+            params Parser<T, TInputToken>[] parsers
+        )
+        {
+            if (parsers is null) throw new ArgumentNullException(nameof(parsers));
+
+            return ChoiceParser.Parser(parsers);
+        }
 
         /// <summary>
         /// Returns a parser which tries to first apply the first parser and if it succeeds returns the result.
@@ -41,8 +48,15 @@ namespace ParsecCore
         /// <returns>
         /// Parser which sequentially tries to apply the given parsers until one succeeds or all fails
         /// </returns>
-        public static Parser<T, TInputToken> Choice<T, TInputToken>(IEnumerable<Parser<T, TInputToken>> parsers) =>
-            ChoiceParser.Parser(parsers);
+        /// <exception cref="ArgumentNullException"> If parser array is null </exception>
+        public static Parser<T, TInputToken> Choice<T, TInputToken>(
+            IEnumerable<Parser<T, TInputToken>> parsers
+        )
+        {
+            if (parsers is null) throw new ArgumentNullException(nameof(parsers));
+
+            return ChoiceParser.Parser(parsers);
+        }
 
         /// <summary>
         /// Returns a parser which tries to parse all of the given parsers in a sequence.
@@ -52,10 +66,15 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of parsers </typeparam>
         /// <param name="parsers"> Parsers to sequentially apply </param>
         /// <returns> Parser which sequentially aplies all of the given parsers </returns>
+        /// <exception cref="ArgumentNullException"> If parser array is null </exception>
         public static Parser<IReadOnlyList<T>, TInputToken> All<T, TInputToken>(
             params Parser<T, TInputToken>[] parsers
-        ) =>
-            AllParser.Parser(parsers);
+        )
+        {
+            if (parsers is null) throw new ArgumentNullException(nameof(parsers));
+
+            return AllParser.Parser(parsers);
+        }
 
         /// <summary>
         /// Returns a parser which tries to parse all of the given parsers in a sequence.
@@ -65,10 +84,15 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of parsers </typeparam>
         /// <param name="parsers"> Parsers to sequentially apply </param>
         /// <returns> Parser which sequentially aplies all of the given parsers </returns>
+        /// <exception cref="ArgumentNullException"> If parser array is null </exception>
         public static Parser<IReadOnlyList<T>, TInputToken> All<T, TInputToken>(
             IEnumerable<Parser<T, TInputToken>> parsers
-        ) =>
-            AllParser.Parser(parsers);
+        )
+        {
+            if (parsers is null) throw new ArgumentNullException(nameof(parsers));
+            
+            return AllParser.Parser(parsers);
+        }
 
         /// <summary>
         /// Returns a parser which parses a value in between two other values
@@ -84,12 +108,17 @@ namespace ParsecCore
         /// Parser which parses the entire sequence of leftParse-betweenParser-rightParser but only
         /// returns the value parsed by the betweenParser
         /// </returns>
+        /// <exception cref="ArgumentNullException"> If any arguments are null </exception>
         public static Parser<TBetween, TInputToken> Between<TLeft, TBetween, TRight, TInputToken>(
             Parser<TLeft, TInputToken> leftParser,
             Parser<TBetween, TInputToken> betweenParser,
             Parser<TRight, TInputToken> rightParser
         )
         {
+            if (leftParser is null) throw new ArgumentNullException(nameof(leftParser));
+            if (betweenParser is null) throw new ArgumentNullException(nameof(betweenParser));
+            if (rightParser is null) throw new ArgumentNullException(nameof(rightParser));
+
             return from l in leftParser
                    from between in betweenParser
                    from r in rightParser
@@ -108,6 +137,7 @@ namespace ParsecCore
         /// Parser which parses the entire sequence of outsideParser-betweenParser-outsideParser but only
         /// returns the value parsed by the betweenParser
         /// </returns>
+        /// <exception cref="ArgumentNullException"> If any arguments are null </exception>
         public static Parser<TBetween, TInputToken> Between<TOutside, TBetween, TInputToken>(
             Parser<TOutside, TInputToken> outsideParser,
             Parser<TBetween, TInputToken> betweenParser
@@ -123,6 +153,7 @@ namespace ParsecCore
         /// <param name="valueParser"> Parser for the values </param>
         /// <param name="separatorParser"> Parser for the seperators </param>
         /// <returns> Parser which returns a list of parsed values </returns>
+        /// <exception cref="ArgumentNullException"> If any arguments are null </exception>
         public static Parser<IReadOnlyList<TValue>, TInputToken> SepBy<TValue, TSeparator, TInputToken>(
             Parser<TValue, TInputToken> valueParser,
             Parser<TSeparator, TInputToken> separatorParser
@@ -142,11 +173,15 @@ namespace ParsecCore
         /// <param name="valueParser"> Parser for the values </param>
         /// <param name="separatorParser"> Parser for the seperators </param>
         /// <returns> Parser which returns a list of parsed values </returns>
+        /// <exception cref="ArgumentNullException"> If any arguments are null </exception>
         public static Parser<IReadOnlyList<TValue>, TInputToken> SepBy1<TValue, TSeparator, TInputToken>(
             Parser<TValue, TInputToken> valueParser,
             Parser<TSeparator, TInputToken> separatorParser
         )
         {
+            if (valueParser is null) throw new ArgumentNullException(nameof(valueParser));
+            if (separatorParser is null) throw new ArgumentNullException(nameof(separatorParser));
+
             var sepValueParser = from sep in separatorParser
                                  from val in valueParser
                                  select val;
@@ -165,11 +200,15 @@ namespace ParsecCore
         /// <param name="valueParser"> The parser for the values </param>
         /// <param name="separatorParser"> The parser for the separators </param>
         /// <returns> Parser which returns a list of parsed values </returns>
+        /// <exception cref="ArgumentNullException"> If any arguments are null </exception>
         public static Parser<IReadOnlyList<TValue>, TInputToken> EndBy<TValue, TSeparator, TInputToken>(
             Parser<TValue, TInputToken> valueParser,
             Parser<TSeparator, TInputToken> separatorParser
         )
         {
+            if (valueParser is null) throw new ArgumentNullException(nameof(valueParser));
+            if (separatorParser is null) throw new ArgumentNullException(nameof(separatorParser));
+
             return (from val in valueParser
                     from sep in separatorParser
                     select val).Many();
@@ -185,11 +224,15 @@ namespace ParsecCore
         /// <param name="valueParser"> The parser for the values </param>
         /// <param name="separatorParser"> The parser for the separators </param>
         /// <returns> Parser which returns a list of parsed values </returns>
+        /// <exception cref="ArgumentNullException"> If any arguments are null </exception>
         public static Parser<IReadOnlyList<TValue>, TInputToken> EndBy1<TValue, TSeparator, TInputToken>(
             Parser<TValue, TInputToken> valueParser,
             Parser<TSeparator, TInputToken> separatorParser
         )
         {
+            if (valueParser is null) throw new ArgumentNullException(nameof(valueParser));
+            if (separatorParser is null) throw new ArgumentNullException(nameof(separatorParser));
+
             return (from val in valueParser
                     from sep in separatorParser
                     select val).Many1();
@@ -203,6 +246,7 @@ namespace ParsecCore
         /// <param name="valueParser"> The parser for the values </param>
         /// <param name="separatorParser"> The parser for the separators </param>
         /// <returns> Parser which returns a list of parsed values </returns>
+        /// <exception cref="ArgumentNullException"> If any arguments are null </exception>
         public static Parser<IReadOnlyList<TValue>, TInputToken> SepEndBy<TValue, TSeparator, TInputToken>(
             Parser<TValue, TInputToken> valueParser,
             Parser<TSeparator, TInputToken> separatorParser
@@ -218,6 +262,7 @@ namespace ParsecCore
         /// <param name="valueParser"> The parser for the values </param>
         /// <param name="separatorParser"> The parser for the separators </param>
         /// <returns> Parser which returns a list of parsed values </returns>
+        /// <exception cref="ArgumentNullException"> If any arguments are null </exception>
         public static Parser<IReadOnlyList<TValue>, TInputToken> SepEndBy1<TValue, TSeparator, TInputToken>(
             Parser<TValue, TInputToken> valueParser,
             Parser<TSeparator, TInputToken> separatorParser
@@ -237,6 +282,7 @@ namespace ParsecCore
         /// Parser which returns a value obtained by the left-associative application of the functions 
         /// given by <c>op</c> on values returned by <c>value</c>
         /// </returns>
+        /// <exception cref="ArgumentNullException"> If any arguments are null </exception>
         public static Parser<T, TInputToken> ChainL<T, TInputToken>(
             Parser<T, TInputToken> value,
             Parser<Func<T, T, T>, TInputToken> op,
@@ -257,11 +303,17 @@ namespace ParsecCore
         /// Parser which returns a value obtained by the left-associative application of the functions 
         /// given by <c>op</c> on values returned by <c>value</c>
         /// </returns>
+        /// <exception cref="ArgumentNullException"> If any arguments are null </exception>
         public static Parser<T, TInputToken> ChainL1<T, TInputToken>(
             Parser<T, TInputToken> value,
             Parser<Func<T, T, T>, TInputToken> op
-        ) =>
-            Chainl1Parser.Parser(value, op);
+        )
+        {
+            if (value is null) throw new ArgumentNullException(nameof(value));
+            if (op is null) throw new ArgumentNullException(nameof(op));
+
+            return Chainl1Parser.Parser(value, op);
+        }
 
         /// <summary>
         /// Parses zero or more occurences of the given values seperated by operators
@@ -276,6 +328,7 @@ namespace ParsecCore
         /// Parser which returns a value obtained by the right-associative application of the functions 
         /// given by <c>op</c> on values returned by <c>value</c>
         /// </returns>
+        /// <exception cref="ArgumentNullException"> If any arguments are null </exception>
         public static Parser<T, TInputToken> ChainR<T, TInputToken>(
             Parser<T, TInputToken> value,
             Parser<Func<T, T, T>, TInputToken> op,
@@ -295,11 +348,17 @@ namespace ParsecCore
         /// Parser which returns a value obtained by the right-associative application of the functions 
         /// given by <c>op</c> on values returned by <c>value</c>
         /// </returns>
+        /// <exception cref="ArgumentNullException"> If any arguments are null </exception>
         public static Parser<T, TInputToken> ChainR1<T, TInputToken>(
             Parser<T, TInputToken> value,
             Parser<Func<T, T, T>, TInputToken> op
-        ) =>
-            Chainr1Parser.Parser(value, op);
+        )
+        {
+            if (value is null) throw new ArgumentNullException(nameof(value));
+            if (op is null) throw new ArgumentNullException(nameof(op));
+
+            return Chainr1Parser.Parser(value, op);
+        }
 
         /// <summary>
         /// This parser fails if <c>parser</c> succeeds. It does not consume any input.
@@ -308,11 +367,15 @@ namespace ParsecCore
         /// <param name="parser"> Parser which should not succeed </param>
         /// <param name="msgIfParsed"> The error message to use if <c>parser</c> succeeds </param>
         /// <returns> Parser which fails if <c>parser</c> succeeds </returns>
+        /// <exception cref="ArgumentNullException"> If any arguments are null </exception>
         public static Parser<None, TInputToken> NotFollowedBy<T, TInputToken>(
             Parser<T, TInputToken> parser,
             string msgIfParsed
         )
         {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+            if (msgIfParsed is null) throw new ArgumentNullException(nameof(msgIfParsed));
+
             var failParser = from _ in parser.Try()
                              from fail in Parsers.Fail<None, TInputToken>(msgIfParsed)
                              select fail;
@@ -328,10 +391,16 @@ namespace ParsecCore
         /// <param name="parser"> The value parser </param>
         /// <param name="till"> The end parser </param>
         /// <returns> Parser which applies <c>parser</c> untill <c>till</c> succeeds </returns>
+        /// <exception cref="ArgumentNullException"> If any arguments are null </exception>
         public static Parser<IReadOnlyList<T>, TInputToken> ManyTill<T, TEnd, TInputToken>(
             Parser<T, TInputToken> parser,
             Parser<TEnd, TInputToken> till
-        ) =>
-            ManyTillParser.Parser(parser, till);
+        )
+        {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+            if (till is null) throw new ArgumentNullException(nameof(till));
+
+            return ManyTillParser.Parser(parser, till);
+        }
     }
 }

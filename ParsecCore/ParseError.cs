@@ -24,7 +24,7 @@ namespace ParsecCore
             _encounteredErrors = encounteredMessages;
         }
 
-        public ParseError(string errorMessage, Position position)
+        internal ParseError(string errorMessage, Position position)
         {
             Position = position;
             _genericErrors = new();
@@ -33,7 +33,7 @@ namespace ParsecCore
             _genericErrors.Add(new GenericMessage(errorMessage));
         }
 
-        public ParseError(string expected, string encoutered, Position position)
+        internal ParseError(string expected, string encoutered, Position position)
         {
             Position = position;
             _genericErrors = new();
@@ -55,7 +55,7 @@ namespace ParsecCore
         /// </summary>
         /// <param name="errorMsg"> The new error message </param>
         /// <returns> ParseError with a new error message </returns>
-        public ParseError WithExpectedMessage(string expected)
+        internal ParseError WithExpectedMessage(string expected)
         {
             List<ExpectedMessage> expectedErrors = new();
             expectedErrors.Add(new ExpectedMessage(expected));
@@ -71,7 +71,7 @@ namespace ParsecCore
         /// </summary>
         /// <param name="secondError"> The error to combine with </param>
         /// <returns> The combined error </returns>
-        public ParseError Combine(ParseError secondError)
+        internal ParseError Combine(ParseError secondError)
         {
             if (Position < secondError.Position)
             {

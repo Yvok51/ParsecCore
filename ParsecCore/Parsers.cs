@@ -31,11 +31,17 @@ namespace ParsecCore
         /// <param name="predicate"> The predicate the character must fulfill </param>
         /// <param name="description"> Description of the expected character for error messages </param>
         /// <returns> Parser which parses a character given it fulfills a predicate </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
         public static Parser<char, char> Satisfy(
-            Predicate<char> predicate, 
+            Predicate<char> predicate,
             string description
-        ) =>
-            SatisfyParser.Parser(predicate, description);
+        )
+        {
+            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
+            if (description is null) throw new ArgumentNullException(nameof(description));
+
+            return SatisfyParser.Parser(predicate, description);
+        }
 
         /// <summary>
         /// Parser which parses any character
@@ -158,8 +164,11 @@ namespace ParsecCore
         /// </summary>
         /// <param name="chars"> Possible characters to parse </param>
         /// <returns> Parser which only parses one of the given characters </returns>
+        /// <exception cref="ArgumentNullException"> If provided array is null </exception>
         public static Parser<char, char> OneOf(params char[] chars)
         {
+            if (chars is null) throw new ArgumentNullException(nameof(chars));
+
             return Satisfy(c =>
             {
                 foreach (char includedChar in chars)
@@ -179,8 +188,11 @@ namespace ParsecCore
         /// </summary>
         /// <param name="chars"> The list of characters the read character must not be in </param>
         /// <returns> Parser which parses a character only if it is not included in the given list </returns>
+        /// <exception cref="ArgumentNullException"> If provided array is null </exception>
         public static Parser<char, char> NoneOf(params char[] chars)
         {
+            if (chars is null) throw new ArgumentNullException(nameof(chars));
+
             return Satisfy(c =>
             {
                 foreach (char excludedChar in chars)
@@ -211,16 +223,24 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of parser </typeparam>
         /// <param name="msg"> The message to fail with </param>
         /// <returns> Parser which always fails with the given message </returns>
-        public static Parser<T, TInputToken> Fail<T, TInputToken>(string msg) =>
-            (input) => Either.Error<ParseError, T>(new ParseError(msg, input.Position));
+        /// <exception cref="ArgumentNullException"> If provided message is null </exception>
+        public static Parser<T, TInputToken> Fail<T, TInputToken>(string msg)
+        {
+            if (msg is null) throw new ArgumentNullException(nameof(msg));
+
+            return (input) => Either.Error<ParseError, T>(new ParseError(msg, input.Position));
+        }
 
         /// <summary>
         /// Returns a parser which parses exactly the string given
         /// </summary>
         /// <param name="stringToParse"> The string for the parser to parse </param>
         /// <returns> Parser which parses exactly the given string </returns>
+        /// <exception cref="ArgumentNullException"> If provided string is null </exception>
         public static Parser<string, char> String(string stringToParse)
         {
+            if (stringToParse is null) throw new ArgumentNullException(nameof(stringToParse));
+
             return from chars in AllParser.Parser(ToCharParsers(stringToParse))
                    select string.Concat(chars);
         }
@@ -234,8 +254,11 @@ namespace ParsecCore
         /// <returns>
         /// Parser which parses the same value as the input parser followed by an arbitrary amount of whitespace.
         /// </returns>
+        /// <exception cref="ArgumentNullException"> If parser is null </exception>
         public static Parser<T, char> Token<T>(Parser<T, char> parser)
         {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+
             return from x in parser
                    from _ in Spaces
                    select x;
@@ -252,11 +275,15 @@ namespace ParsecCore
         /// <returns>
         /// Parser which parses the same value as the input parser followed by whitespace.
         /// </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
         public static Parser<T, TInput> Token<T, TSpace, TInput>(
             Parser<T, TInput> parser,
             Parser<TSpace, TInput> spaceConsumer
         )
         {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+            if (spaceConsumer is null) throw new ArgumentNullException(nameof(spaceConsumer));
+
             return from x in parser
                    from _ in spaceConsumer
                    select x;
@@ -267,8 +294,13 @@ namespace ParsecCore
         /// </summary>
         /// <param name="stringToParse"> The string for the parser to parse </param>
         /// <returns> Parser which parses exactly the given string and any whitespace afterwards </returns>
-        public static Parser<string, char> Symbol(string stringToParse) =>
-            Token(String(stringToParse));
+        /// <exception cref="ArgumentNullException"> If the provided string is null </exception>
+        public static Parser<string, char> Symbol(string stringToParse)
+        {
+            if (stringToParse is null) throw new ArgumentNullException(nameof(stringToParse));
+
+            return Token(String(stringToParse));
+        }
 
         /// <summary>
         /// Make the creation of the parser indirect.
@@ -289,10 +321,13 @@ namespace ParsecCore
         /// <typeparam name="TInputToken"> The input type of the parser </typeparam>
         /// <param name="getParser"> Function to get the parser from </param>
         /// <returns> Same parser as returned by <paramref name="getParser"/> only behaving correctly </returns>
+        /// <exception cref="ArgumentNullException"> If provided function is null </exception>
         public static Parser<T, TInputToken> Indirect<T, TInputToken>(
             Func<Parser<T, TInputToken>> getParser
         )
         {
+            if (getParser is null) throw new ArgumentNullException(nameof(getParser));
+
             return (input) => getParser()(input);
         }
     }
