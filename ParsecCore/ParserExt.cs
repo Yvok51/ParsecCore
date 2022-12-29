@@ -72,7 +72,9 @@ namespace ParsecCore
         /// <param name="first"> The source parser </param>
         /// <param name="getSecond"> The function to chain to the result of the source parser </param>
         /// <param name="getResult"> Callback which combines the two results together </param>
-        /// <returns> Parser which performs the source parser and afterwards the chained method in that order </returns>
+        /// <returns> 
+        /// Parser which performs the source parser and afterwards the chained method in that order
+        /// </returns>
         public static Parser<TResult, TInputToken> SelectMany<TFirst, TSecond, TResult, TInputToken>(
             this Parser<TFirst, TInputToken> first,
             Func<TFirst, Parser<TSecond, TInputToken>> getSecond,
@@ -98,7 +100,9 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of the parser </typeparam>
         /// <param name="parser"> The parser to apply </param>
         /// <returns> Parser which applies the given parser as many times as possible </returns>
-        public static Parser<IReadOnlyList<T>, TInputToken> Many<T, TInputToken>(this Parser<T, TInputToken> parser) =>
+        public static Parser<IReadOnlyList<T>, TInputToken> Many<T, TInputToken>(
+            this Parser<T, TInputToken> parser
+        ) =>
             ManyParser.Parser(parser);
 
         /// <summary>
@@ -112,7 +116,9 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of the parser </typeparam>
         /// <param name="parser"> The parser to apply </param>
         /// <returns> Parser which applies the given parser as many times as possible </returns>
-        public static Parser<IReadOnlyList<T>, TInputToken> Many1<T, TInputToken>(this Parser<T, TInputToken> parser)
+        public static Parser<IReadOnlyList<T>, TInputToken> Many1<T, TInputToken>(
+            this Parser<T, TInputToken> parser
+        )
         {
             return from firstParse in parser
                    from restParses in parser.Many()
@@ -124,7 +130,9 @@ namespace ParsecCore
         /// </summary>
         /// <param name="parser"> The parser to apply as many times as possible </param>
         /// <returns> Parser which applies the given char parser as many times as possible </returns>
-        public static Parser<string, TInputToken> Many<TInputToken>(this Parser<char, TInputToken> parser)
+        public static Parser<string, TInputToken> Many<TInputToken>(
+            this Parser<char, TInputToken> parser
+        )
         {
             return from chars in parser.Many<char, TInputToken>()  // added explicit char to avoid recursion
                    select string.Concat(chars);
@@ -135,7 +143,9 @@ namespace ParsecCore
         /// </summary>
         /// <param name="parser"> The parser to apply as many times as possible </param>
         /// <returns> Parser which applies the given char parser as many times as possible </returns>
-        public static Parser<string, TInputToken> Many1<TInputToken>(this Parser<char, TInputToken> parser)
+        public static Parser<string, TInputToken> Many1<TInputToken>(
+            this Parser<char, TInputToken> parser
+        )
         {
             return from firstParse in parser
                    from restParses in parser.Many()
@@ -151,7 +161,9 @@ namespace ParsecCore
         /// <returns> 
         /// Parser which applies the given parser as many times as possible and then ignores its result.
         /// </returns>
-        public static Parser<None, TInputToken> SkipMany<T, TInputToken>(this Parser<T, TInputToken> parser)
+        public static Parser<None, TInputToken> SkipMany<T, TInputToken>(
+            this Parser<T, TInputToken> parser
+        )
         {
             return from _ in parser.Many()
                    select new None();
@@ -165,7 +177,9 @@ namespace ParsecCore
         /// <returns> 
         /// Parser which applies the given parser as many times as possible and then ignores its result.
         /// </returns>
-        public static Parser<None, TInputToken> SkipMany1<T, TInputToken>(this Parser<T, TInputToken> parser)
+        public static Parser<None, TInputToken> SkipMany1<T, TInputToken>(
+            this Parser<T, TInputToken> parser
+        )
         {
             return from _ in parser.Many1()
                    select new None();
@@ -180,7 +194,10 @@ namespace ParsecCore
         /// <param name="parser"> The parser to apply </param>
         /// <param name="count"> Number of times to apply the parser </param>
         /// <returns></returns>
-        public static Parser<IReadOnlyList<T>, TInputToken> Count<T, TInputToken>(this Parser<T, TInputToken> parser, int count) =>
+        public static Parser<IReadOnlyList<T>, TInputToken> Count<T, TInputToken>(
+            this Parser<T, TInputToken> parser,
+            int count
+        ) =>
             CountParser.Parser(parser, count);
 
         /// <summary>
@@ -191,7 +208,9 @@ namespace ParsecCore
         /// <typeparam name="T"> The result type of the parser </typeparam>
         /// <param name="parser"> The parser to optionally apply </param>
         /// <returns> Parser which optionally applies the given parser </returns>
-        public static Parser<IMaybe<T>, TInputToken> Optional<T, TInputToken>(this Parser<T, TInputToken> parser) =>
+        public static Parser<IMaybe<T>, TInputToken> Optional<T, TInputToken>(
+            this Parser<T, TInputToken> parser
+        ) =>
             OptionalParser.Parser(parser);
 
         /// <summary>
@@ -203,7 +222,10 @@ namespace ParsecCore
         /// <param name="parser"> The parser to modify </param>
         /// <param name="defaultValue"> The default value to return if the parser fails </param>
         /// <returns> Parser which returns a default value upon failure </returns>
-        public static Parser<T, TInputToken> Option<T, TInputToken>(this Parser<T, TInputToken> parser, T defaultValue)
+        public static Parser<T, TInputToken> Option<T, TInputToken>(
+            this Parser<T, TInputToken> parser,
+            T defaultValue
+        )
         {
             return from opt in parser.Optional()
                    select opt.Else(defaultValue);
@@ -215,8 +237,11 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of parser </typeparam>
         /// <param name="parser"> The parser to modify </param>
         /// <returns> Parser which does not consume any input on failure </returns>
-        public static Parser<T, TInputToken> Try<T, TInputToken>(this Parser<T, TInputToken> parser) =>
-            (input) =>
+        public static Parser<T, TInputToken> Try<T, TInputToken>(
+            this Parser<T, TInputToken> parser
+        )
+        {
+            return (input) =>
             {
                 var initialPosition = input.Position;
                 var result = parser(input);
@@ -231,6 +256,7 @@ namespace ParsecCore
                 }
                 return result;
             };
+        }
 
         /// <summary>
         /// Parses <c>parser</c> without consuming input.
@@ -240,7 +266,9 @@ namespace ParsecCore
         /// <typeparam name="T"> The return type of the parser </typeparam>
         /// <param name="parser"> Parser to look ahead with </param>
         /// <returns> Parser which looks ahead (parses without consuming input) </returns>
-        public static Parser<T, TInputToken> LookAhead<T, TInputToken>(this Parser<T, TInputToken> parser)
+        public static Parser<T, TInputToken> LookAhead<T, TInputToken>(
+            this Parser<T, TInputToken> parser
+        )
         {
             return (input) =>
             {
