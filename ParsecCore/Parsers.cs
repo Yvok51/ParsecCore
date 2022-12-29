@@ -158,8 +158,9 @@ namespace ParsecCore
         /// </summary>
         /// <param name="chars"> Possible characters to parse </param>
         /// <returns> Parser which only parses one of the given characters </returns>
-        public static Parser<char, char> OneOf(char[] chars) =>
-            Satisfy(c =>
+        public static Parser<char, char> OneOf(params char[] chars)
+        {
+            return Satisfy(c =>
             {
                 foreach (char includedChar in chars)
                 {
@@ -171,14 +172,16 @@ namespace ParsecCore
                 return false;
             },
             $"one of {chars.ToPrettyString()}");
+        }
 
         /// <summary>
         /// Parses a character if it is not equal to any of the given characters
         /// </summary>
         /// <param name="chars"> The list of characters the read character must not be in </param>
         /// <returns> Parser which parses a character only if it is not included in the given list </returns>
-        public static Parser<char, char> NoneOf(char[] chars) =>
-            Satisfy(c =>
+        public static Parser<char, char> NoneOf(params char[] chars)
+        {
+            return Satisfy(c =>
             {
                 foreach (char excludedChar in chars)
                 {
@@ -190,6 +193,7 @@ namespace ParsecCore
                 return true;
             },
             $"none of {chars.ToPrettyString()}");
+        }
 
         /// <summary>
         /// Return a parser which does not consume any input and only returns the value given
