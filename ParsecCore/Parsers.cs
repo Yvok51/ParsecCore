@@ -87,9 +87,14 @@ namespace ParsecCore
             select '\n';
 
         /// <summary>
-        /// Parses end of line ('\n' or '\r\n') and returns '\n'
+        /// Parses end of line ('\n', '\r' or '\r\n') and returns '\n'
         /// </summary>
-        public static readonly Parser<char, char> EOL = CRLF.Or(NewLine);
+        public static readonly Parser<char, char> EOL = // made so that we don't need lookahead
+            NewLine.Or(
+                from cr in Char('\r')
+                from lf in NewLine.Or(Return<char, char>('\n'))
+                select lf
+            );
 
         /// <summary>
         /// Parses a single digit
