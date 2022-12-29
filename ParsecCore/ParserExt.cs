@@ -163,11 +163,8 @@ namespace ParsecCore
         /// </returns>
         public static Parser<None, TInputToken> SkipMany<T, TInputToken>(
             this Parser<T, TInputToken> parser
-        )
-        {
-            return from _ in parser.Many()
-                   select new None();
-        }
+        ) =>
+            parser.Many().Void();
 
         /// <summary>
         /// Applies the parser as many times as possible (but at least once) and ignores the result.
@@ -179,11 +176,8 @@ namespace ParsecCore
         /// </returns>
         public static Parser<None, TInputToken> SkipMany1<T, TInputToken>(
             this Parser<T, TInputToken> parser
-        )
-        {
-            return from _ in parser.Many1()
-                   select new None();
-        }
+        ) =>
+            parser.Many1().Void();
 
         /// <summary>
         /// Aplies the parser a given amount of times.
@@ -322,6 +316,13 @@ namespace ParsecCore
             };
         }
 
+        /// <summary>
+        /// Ignore the parsers return value and instead return <see cref="None"/>
+        /// </summary>
+        /// <typeparam name="T"> Type returned by the input parser </typeparam>
+        /// <typeparam name="TInputToken"> Type of the input stream </typeparam>
+        /// <param name="parser"> Parser whose return value is ignored </param>
+        /// <returns> Parser whose return value is ignored </returns>
         public static Parser<None, TInputToken> Void<T, TInputToken>(
             this Parser<T, TInputToken> parser
         )
