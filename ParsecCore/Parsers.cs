@@ -31,7 +31,10 @@ namespace ParsecCore
         /// <param name="predicate"> The predicate the character must fulfill </param>
         /// <param name="description"> Description of the expected character for error messages </param>
         /// <returns> Parser which parses a character given it fulfills a predicate </returns>
-        public static Parser<char, char> Satisfy(Predicate<char> predicate, string description) =>
+        public static Parser<char, char> Satisfy(
+            Predicate<char> predicate, 
+            string description
+        ) =>
             SatisfyParser.Parser(predicate, description);
 
         /// <summary>
@@ -266,9 +269,9 @@ namespace ParsecCore
         /// <summary>
         /// Make the creation of the parser indirect.
         /// <para/>
-        /// Used when a circular compile time dependency occurs between the parsers. In such a case value of one of the
-        /// parsers is always initialized only after being used in another parser. The value is thus null and an error
-        /// occurs.
+        /// Used when a circular compile time dependency occurs between the parsers. 
+        /// In such a case value of one of the parsers is always initialized only after being used in another parser.
+        /// The value is thus null and an error occurs.
         /// <para/>
         /// We solve this by indirectly initializing one of the parsers, thus the value of the parser with whom
         /// we are circularly dependent is taken after it has been initialized and thus everything works.
@@ -282,7 +285,9 @@ namespace ParsecCore
         /// <typeparam name="TInputToken"> The input type of the parser </typeparam>
         /// <param name="getParser"> Function to get the parser from </param>
         /// <returns> Same parser as returned by <paramref name="getParser"/> only behaving correctly </returns>
-        public static Parser<T, TInputToken> Indirect<T, TInputToken>(Func<Parser<T, TInputToken>> getParser)
+        public static Parser<T, TInputToken> Indirect<T, TInputToken>(
+            Func<Parser<T, TInputToken>> getParser
+        )
         {
             return (input) => getParser()(input);
         }
