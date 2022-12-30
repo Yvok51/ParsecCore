@@ -83,24 +83,29 @@ namespace ParsecCore
         public static readonly Parser<char, char> Tab = Satisfy(c => c == '\t', "horizontal tab");
 
         /// <summary>
-        /// Parses a newline (line feed) character
+        /// Parses a newline (line feed, '\n') character
         /// </summary>
         public static readonly Parser<char, char> NewLine = Satisfy(c => c == '\n', "newline");
+
+        /// <summary>
+        /// Parses a carriage return ('\r') character
+        /// </summary>
+        public static readonly Parser<char, char> CarriageReturn = Satisfy(c => c == '\r', "carriage return");
 
         /// <summary>
         /// Parses carriage return folled by line feed (\r\n), returns only line feed (\n)
         /// </summary>
         public static readonly Parser<char, char> CRLF =
-            from cr in Satisfy(c => c == '\r', "carriage return")
+            from cr in CarriageReturn
             from lf in NewLine
-            select '\n';
+            select lf;
 
         /// <summary>
         /// Parses end of line ('\n', '\r' or '\r\n') and returns '\n'
         /// </summary>
         public static readonly Parser<char, char> EOL = // made so that we don't need lookahead
             NewLine.Or(
-                from cr in Char('\r')
+                from cr in CarriageReturn
                 from lf in NewLine.Or(Return<char, char>('\n'))
                 select lf
             );
