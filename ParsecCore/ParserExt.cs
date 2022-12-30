@@ -392,7 +392,7 @@ namespace ParsecCore
             if (parser is null) throw new ArgumentNullException(nameof(parser));
 
             return from _ in parser
-                   select new None();
+                   select None.Instance;
         }
     }
 }

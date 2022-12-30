@@ -15,7 +15,7 @@ namespace ParsecCore.ParsersHelp
             {
                 if (input.EndOfInput)
                 {
-                    return new ResultValue<ParseError, None>(new None());
+                    return new ResultValue<ParseError, None>(None.Instance);
                 }
 
                 return Either.Error<ParseError, None>(

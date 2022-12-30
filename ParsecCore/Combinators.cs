@@ -361,7 +361,7 @@ namespace ParsecCore
         }
 
         /// <summary>
-        /// This parser fails if <c>parser</c> succeeds. It does not consume any input.
+        /// This parser fails if <paramref name="parser"/> succeeds. It does not consume any input.
         /// </summary>
         /// <typeparam name="T"> The return type of parser </typeparam>
         /// <param name="parser"> Parser which should not succeed </param>
@@ -379,7 +379,7 @@ namespace ParsecCore
             var failParser = from _ in parser.Try()
                              from fail in Parsers.Fail<None, TInputToken>(msgIfParsed)
                              select fail;
-            return Choice(failParser, Parsers.Return<None, TInputToken>(new None())).Try();
+            return Choice(failParser, Parsers.Return<None, TInputToken>(None.Instance)).Try();
         }
 
         /// <summary>

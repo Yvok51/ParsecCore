@@ -7,5 +7,6 @@
     /// </summary>
     public struct None
     {
+        public static readonly None Instance = new();
     }
 }
