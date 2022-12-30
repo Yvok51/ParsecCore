@@ -89,9 +89,10 @@ namespace JSONtoXML
         private static readonly Parser<char, char> escape = Parsers.Char('\\');
 
         private static readonly Parser<char, char> hexadecimalDigit = Parsers.Satisfy(
-            c => char.IsDigit(c) || c == 'A' || c == 'B' || c == 'C' || c == 'D' || c == 'E' || c == 'F',
+            c => char.IsDigit(c) || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f'),
             "hexadecimal digit"
         );
+
         private static readonly Parser<char, char> hexEncoded =
             from _ in escape
             from __ in Parsers.Char('u')
@@ -105,7 +106,7 @@ namespace JSONtoXML
             );
 
         private static readonly Parser<char, char> insideStringChar =
-            Parsers.Satisfy(c => c != '"' && c != '\n', "non-quote/non-CRLF character");
+            Parsers.Satisfy(c => c != '"' && c != '\n' && c != '\r', "non-quote/non-CRLF character");
 
         private static readonly Dictionary<char, char> toEscaped = new Dictionary<char, char>
         {
