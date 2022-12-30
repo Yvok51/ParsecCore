@@ -394,5 +394,26 @@ namespace ParsecCore
             return from _ in parser
                    select None.Instance;
         }
+
+        /// <summary>
+        /// Map the result of the parser
+        /// </summary>
+        /// <typeparam name="T"> Type of the parsing result </typeparam>
+        /// <typeparam name="TResult"> Type returned by the new parser </typeparam>
+        /// <typeparam name="TInput"> Type of the input </typeparam>
+        /// <param name="parser"> Parser whose result to map </param>
+        /// <param name="map"> Mapping function for the result of the parsing </param>
+        /// <returns> Parser with its result mapped according to <paramref name="map"/> </returns>
+        /// <exception cref="ArgumentNullException"> If any arguments are null </exception>
+        public static Parser<TResult, TInput> Map<T, TResult, TInput>(
+            this Parser<T, TInput> parser,
+            Func<T, TResult> map
+        )
+        {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+            if (map is null) throw new ArgumentNullException(nameof(map));
+
+            return from r in parser select map(r);
+        }
     }
 }
