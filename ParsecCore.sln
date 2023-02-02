@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSONtoXML", "JSONParser\JSO
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSONtoXMLTests", "JSONtoXMLTests\JSONtoXMLTests.csproj", "{F89F7393-08AD-4EDA-811B-05A2A4CE8027}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PermuteGenerator", "PermuteGenerator\PermuteGenerator.csproj", "{31A6B3BE-C103-41EB-8000-899F865A7E88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PermuteGenerator", "PermuteGenerator\PermuteGenerator.csproj", "{31A6B3BE-C103-41EB-8000-899F865A7E88}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PythonParser", "PythonParser\PythonParser.csproj", "{08A660C6-8B48-4340-B6E4-E64EBCDEFCF1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{31A6B3BE-C103-41EB-8000-899F865A7E88}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31A6B3BE-C103-41EB-8000-899F865A7E88}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{31A6B3BE-C103-41EB-8000-899F865A7E88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08A660C6-8B48-4340-B6E4-E64EBCDEFCF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08A660C6-8B48-4340-B6E4-E64EBCDEFCF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08A660C6-8B48-4340-B6E4-E64EBCDEFCF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08A660C6-8B48-4340-B6E4-E64EBCDEFCF1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
