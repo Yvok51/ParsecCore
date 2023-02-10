@@ -110,7 +110,7 @@ namespace PythonParser.Parser
         //        )
         //    );
 
-        private static Parser<StringLiteral, char> String = 
+        internal static Parser<StringLiteral, char> String = 
             from prefix in stringPrefix.Option("")
             from value in shortString
             select new StringLiteral(prefix, value);
@@ -161,7 +161,7 @@ namespace PythonParser.Parser
             from integer in zero.Or(otherBaseIntegers)
             select integer;
 
-        private static Parser<IntegerLiteral, char> Integer = 
+        internal static Parser<IntegerLiteral, char> Integer = 
             from num in nonZeroInteger.Or(factoredZeroAndOtherBase)
             select new IntegerLiteral(num);
 
@@ -191,7 +191,7 @@ namespace PythonParser.Parser
             from exponentPart in exponent
             select basePart + exponentPart;
 
-        private static Parser<FloatLiteral, char> Float =
+        internal static Parser<FloatLiteral, char> Float =
             from floatNumber in pointFloat.Try().Or(exponentFloat)
             select new FloatLiteral(double.Parse(floatNumber, CultureInfo.InvariantCulture.NumberFormat));
 
