@@ -13,9 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSONtoXMLTests", "JSONtoXML
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PermuteGenerator", "PermuteGenerator\PermuteGenerator.csproj", "{31A6B3BE-C103-41EB-8000-899F865A7E88}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PythonParser", "PythonParser\PythonParser.csproj", "{08A660C6-8B48-4340-B6E4-E64EBCDEFCF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PythonParser", "PythonParser\PythonParser.csproj", "{08A660C6-8B48-4340-B6E4-E64EBCDEFCF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PythonParserTests", "PythonParserTests\PythonParserTests.csproj", "{08E1AE91-70DB-4A7D-8B94-93B351781211}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PythonParserTests", "PythonParserTests\PythonParserTests.csproj", "{08E1AE91-70DB-4A7D-8B94-93B351781211}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
