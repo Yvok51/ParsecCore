@@ -61,9 +61,10 @@ namespace PythonParser.Parser
         public static Parser<char, char> Plus = Lexeme.Create(Parsers.Char('+'));
         public static Parser<char, char> Minus = Lexeme.Create(Parsers.Char('-'));
         public static Parser<char, char> Asterisk = Lexeme.Create(Parsers.Char('*'));
-        public static Parser<char, char> FowardSlash = Lexeme.Create(Parsers.Char('/'));
+        public static Parser<char, char> Slash = Lexeme.Create(Parsers.Char('/'));
         public static Parser<char, char> Modulo = Lexeme.Create(Parsers.Char('%'));
         public static Parser<string, char> DoubleAsterisk = Lexeme.Create(Parsers.String("**")).Try();
+        public static Parser<string, char> DoubleSlash = Lexeme.Create(Parsers.String("//")).Try();
 
         public static Parser<char, char> OpenParan = Lexeme.Create(Parsers.Char('('));
         public static Parser<char, char> CloseParan = Lexeme.Create(Parsers.Char(')'));
