@@ -1,5 +1,6 @@
 ﻿using ParsecCore;
 using ParsecCore.Help;
+using PythonParser.Structures;
 
 namespace PythonParser.Parser
 {
@@ -82,9 +83,33 @@ namespace PythonParser.Parser
         public static Parser<char, char> At = Lexeme.Create(Parsers.Char('@'));
         public static Parser<char, char> Assign = Lexeme.Create(Parsers.Char('='));
 
+        public static Parser<string, char> Equal = Lexeme.Create(Parsers.String("==")).Try();
+        public static Parser<string, char> NotEqual = Lexeme.Create(Parsers.String("!=")).Try();
+        public static Parser<string, char> LE = Lexeme.Create(Parsers.String("<=")).Try();
+        public static Parser<string, char> GE = Lexeme.Create(Parsers.String(">=")).Try();
+        public static Parser<char, char> LT = Lexeme.Create(Parsers.Char('<'));
+        public static Parser<char, char> GT = Lexeme.Create(Parsers.Char('>'));
+
         public static Parser<string, char> Keyword(string keyword) =>
             from word in Parsers.String(keyword)
             from _ in Combinators.NotFollowedBy(Literals.IdentifierContinue, $"keyword {keyword} expected")
             select word;
+
+        public static Parser<string, char> Not = Lexeme.Create(Keyword("not")).Try();
+
+        public static Parser<BinaryOperator, char> Is = Lexeme.Create(Keyword("is")).Try().Map(_ => BinaryOperator.Is);
+        public static Parser<BinaryOperator, char> IsNot =
+            (from _ in Is
+            from not in Not
+            select BinaryOperator.IsNot).Try();
+
+        public static Parser<BinaryOperator, char> In = Lexeme.Create(Keyword("in")).Try().Map(_ => BinaryOperator.Is);
+        public static Parser<BinaryOperator, char> NotIn =
+            (from not in Not
+            from _ in In
+            select BinaryOperator.IsNot).Try();
+
+        public static Parser<string, char> And = Lexeme.Create(Keyword("and")).Try();
+        public static Parser<string, char> Or = Lexeme.Create(Keyword("or")).Try();
     }
 }

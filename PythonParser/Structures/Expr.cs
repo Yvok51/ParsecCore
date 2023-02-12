@@ -7,12 +7,17 @@ using System.Threading.Tasks;
 
 namespace PythonParser.Structures
 {
-    internal enum Operator
+    internal enum BinaryOperator
     {
         Minus, Plus, Slash, Star, DoubleStar, DoubleSlash, Modulo,
         LT, LE, GT, GE, Equal, NotEqual,
         Is, IsNot, In, NotIn,
         Or, And
+    }
+
+    internal enum UnaryOperator
+    {
+        Minus, Plus, Not
     }
 
     internal interface ExprVisitor<T>
@@ -292,7 +297,7 @@ namespace PythonParser.Structures
 
     internal class Unary : Expr
     {
-        public Unary(Expr expression, Operator op)
+        public Unary(Expr expression, UnaryOperator op)
         {
             Expression = expression;
             Operator = op;
@@ -304,12 +309,12 @@ namespace PythonParser.Structures
         }
 
         public Expr Expression { get; init; }
-        public Operator Operator { get; init; }
+        public UnaryOperator Operator { get; init; }
     }
 
     internal class Binary : Expr
     {
-        public Binary(Expr left, Operator op, Expr right)
+        public Binary(Expr left, BinaryOperator op, Expr right)
         {
             Left = left;
             Right = right;
@@ -323,6 +328,6 @@ namespace PythonParser.Structures
 
         public Expr Left { get; init; }
         public Expr Right { get; init; }
-        public Operator Operator { get; init; }
+        public BinaryOperator Operator { get; init; }
     }
 }

@@ -6,8 +6,7 @@ namespace PythonParser.Parser
 {
     internal static class Expressions
     {
-        private static Parser<Expr, char> placeholder = null;
-        public static Parser<Expr, char> Expression = Control.Lexeme.Create(placeholder);
+        public static Parser<Expr, char> Expression = Control.Lexeme.Create(Parsers.Indirect(() => OrTest));
 
         private static Parser<IReadOnlyList<Expr>, char> expressionList =
             Combinators.SepEndBy1(Expression, Control.Comma);
@@ -195,16 +194,20 @@ namespace PythonParser.Parser
             from left in Primary
             from op in Control.DoubleAsterisk
             from right in Parsers.Indirect(() => UExpr)
-            select new Binary(left, Operator.DoubleStar, right);
+            select new Binary(left, BinaryOperator.DoubleStar, right);
 
         private static readonly Parser<Expr, char> UExpr =
             Combinators.Choice<Expr, char>(
                 Power,
-                from op in Control.Minus from expr in Parsers.Indirect(() => UExpr) select new Unary(expr, Operator.Minus),
-                from op in Control.Plus from expr in Parsers.Indirect(() => UExpr) select new Unary(expr, Operator.Plus)
+                from op in Control.Minus
+                from expr in Parsers.Indirect(() => UExpr)
+                select new Unary(expr, UnaryOperator.Minus),
+                from op in Control.Plus
+                from expr in Parsers.Indirect(() => UExpr)
+                select new Unary(expr, UnaryOperator.Plus)
             );
 
-        private static Parser<Func<Expr, Expr>, char> RightBinary<Op>(Parser<Expr, char> right, Parser<Op, char> operatorParser, Operator op)
+        private static Parser<Func<Expr, Expr>, char> RightBinary<Op>(Parser<Expr, char> right, Parser<Op, char> operatorParser, BinaryOperator op)
         {
             return from _ in operatorParser
                    from rightExpr in right
@@ -214,20 +217,62 @@ namespace PythonParser.Parser
         private static readonly Parser<Expr, char> MExpr =
             from unary in UExpr
             from rest in Combinators.Choice(
-                RightBinary(UExpr, Control.Asterisk, Operator.Star),
-                RightBinary(UExpr, Control.DoubleSlash, Operator.DoubleSlash),
-                RightBinary(UExpr, Control.Slash, Operator.Slash),
-                RightBinary(UExpr, Control.Modulo, Operator.Modulo)
+                RightBinary(UExpr, Control.Asterisk, BinaryOperator.Star),
+                RightBinary(UExpr, Control.DoubleSlash, BinaryOperator.DoubleSlash),
+                RightBinary(UExpr, Control.Slash, BinaryOperator.Slash),
+                RightBinary(UExpr, Control.Modulo, BinaryOperator.Modulo)
             ).Many()
             select Foldl(rest, unary);
 
         private static readonly Parser<Expr, char> AExpr =
             from multiplative in MExpr
             from rest in Combinators.Choice(
-                RightBinary(MExpr, Control.Plus, Operator.Plus),
-                RightBinary(MExpr, Control.Minus, Operator.Minus)
+                RightBinary(MExpr, Control.Plus, BinaryOperator.Plus),
+                RightBinary(MExpr, Control.Minus, BinaryOperator.Minus)
             ).Many()
             select Foldl(rest, multiplative);
 
+        // Leaves out shifting and bitwise operations
+
+        private static readonly Parser<Expr, char> OrExpr = AExpr;
+
+        private static readonly Parser<Expr, char> Comparison =
+            from or in OrExpr
+            from rest in Combinators.Choice(
+                RightBinary(OrExpr, Control.IsNot, BinaryOperator.IsNot),
+                RightBinary(OrExpr, Control.Is, BinaryOperator.Is),
+                RightBinary(OrExpr, Control.In, BinaryOperator.In),
+                RightBinary(OrExpr, Control.NotIn, BinaryOperator.NotIn),
+                RightBinary(OrExpr, Control.Equal, BinaryOperator.Equal),
+                RightBinary(OrExpr, Control.NotEqual, BinaryOperator.NotEqual),
+                RightBinary(OrExpr, Control.LE, BinaryOperator.LE),
+                RightBinary(OrExpr, Control.GE, BinaryOperator.GE),
+                RightBinary(OrExpr, Control.LT, BinaryOperator.LT),
+                RightBinary(OrExpr, Control.GT, BinaryOperator.GT)
+            ).Many()
+            select Foldl(rest, or);
+
+        private static readonly Parser<Expr, char> NotTest =
+            Comparison.Or(
+                from not in Control.Not
+                from comp in Parsers.Indirect(() => NotTest)
+                select new Unary(comp, UnaryOperator.Not)
+            );
+
+        private static readonly Parser<Expr, char> AndTest =
+            Combinators.ChainL1(
+                NotTest,
+                from op in Control.And
+                select new Func<Expr, Expr, Expr>((left, right) => new Binary(left, BinaryOperator.And, right))
+            );
+
+        private static readonly Parser<Expr, char> OrTest =
+            Combinators.ChainL1(
+                AndTest,
+                from op in Control.Or
+                select new Func<Expr, Expr, Expr>((left, right) => new Binary(left, BinaryOperator.Or, right))
+            );
+
+        // Does not have conditional expression and lambdas
     }
 }
