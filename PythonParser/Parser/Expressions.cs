@@ -6,41 +6,41 @@ namespace PythonParser.Parser
 {
     internal static class Expressions
     {
-        public static Parser<Expr, char> Expression = Control.Lexeme.Create(Parsers.Indirect(() => OrTest));
+        public static readonly Parser<Expr, char> Expression = Control.Lexeme.Create(Parsers.Indirect(() => OrTest));
 
-        private static Parser<IReadOnlyList<Expr>, char> expressionList =
+        public static readonly Parser<IReadOnlyList<Expr>, char> ExpressionList =
             Combinators.SepEndBy1(Expression, Control.Comma);
 
         private static Parser<ParenthForm, char> parenthForm =
-            Combinators.Between(Control.OpenParan, expressionList, Control.CloseParan)
+            Combinators.Between(Control.OpenParan, ExpressionList, Control.CloseParan)
             .Map(list => new ParenthForm(list));
 
         // Does not include comprehensions
 
-        private static Parser<ListDisplay, char> listDisplay =
-            Combinators.Between(Control.OpenBracket, expressionList, Control.CloseBracket)
+        private static readonly Parser<ListDisplay, char> listDisplay =
+            Combinators.Between(Control.OpenBracket, ExpressionList, Control.CloseBracket)
             .Map(list => new ListDisplay(list));
 
-        private static Parser<SetDisplay, char> setDisplay =
-            Combinators.Between(Control.OpenBracket, expressionList, Control.CloseBracket)
+        private static readonly Parser<SetDisplay, char> setDisplay =
+            Combinators.Between(Control.OpenBracket, ExpressionList, Control.CloseBracket)
             .Map(list => new SetDisplay(list));
 
-        private static Parser<KeyDatum, char> keyDatum = 
+        private static readonly Parser<KeyDatum, char> keyDatum = 
             from key in Expression
             from sep in Control.Colon
             from val in Expression
             select new KeyDatum(key, val);
 
-        private static Parser<IReadOnlyList<KeyDatum>, char> keyDatumList =
+        private static readonly Parser<IReadOnlyList<KeyDatum>, char> keyDatumList =
             Combinators.SepEndBy1(keyDatum, Control.Comma);
 
-        private static Parser<DictDisplay, char> dictDisplay =
+        private static readonly Parser<DictDisplay, char> dictDisplay =
             Combinators.Between(Control.OpenBrace, keyDatumList, Control.CloseBrace)
             .Map(data => new DictDisplay(data));
 
         // Does not include yield and generator expressions
 
-        private static Parser<Expr, char> enclosure =
+        private static readonly Parser<Expr, char> enclosure =
             Combinators.Choice<Expr, char>(
                 parenthForm,
                 listDisplay,
@@ -48,7 +48,7 @@ namespace PythonParser.Parser
                 setDisplay
             );
 
-        public static Parser<Expr, char> Atom = 
+        public static readonly Parser<Expr, char> Atom = 
             Combinators.Choice(
                 Literals.Identifier,
                 Literals.Literal,
@@ -65,26 +65,26 @@ namespace PythonParser.Parser
             return curr;
         }
 
-        private static Parser<SliceItem, char> properSlice =
+        private static readonly Parser<SliceItem, char> properSlice =
             from lower in Expression.Optional()
             from colon in Control.Colon
             from upper in Expression.Optional()
             from stride in (from _ in Control.Colon from stride in Expression select stride).Optional()
             select new SliceItem(upper, lower, stride);
 
-        private static Parser<IReadOnlyList<Expr>, char> sliceList =
+        private static readonly Parser<IReadOnlyList<Expr>, char> sliceList =
             Combinators.SepEndBy1(properSlice.Try().Or(Expression), Control.Comma);
 
-        private static Parser<KeywordArgument, char> keywordItem =
+        private static readonly Parser<KeywordArgument, char> keywordItem =
             from id in Literals.Identifier
             from assign in Control.Assign
             from exp in Expression
             select new KeywordArgument(id, exp);
 
-        private static Parser<IReadOnlyList<KeywordArgument>, char> keywordArguments =
+        private static readonly Parser<IReadOnlyList<KeywordArgument>, char> keywordArguments =
             Combinators.SepBy1(keywordItem, Control.Comma);
 
-        private static Parser<IReadOnlyList<Expr>, char> positionalArguments =
+        private static readonly Parser<IReadOnlyList<Expr>, char> positionalArguments =
             Combinators.SepBy1(Expression, Control.Comma);
 
         private static Parser<IMaybe<T>, char> OptionalArgument<T>(Parser<T, char> p) =>
@@ -92,15 +92,15 @@ namespace PythonParser.Parser
             from parsed in p
             select parsed).Try().Optional();
 
-        private static Parser<IMaybe<Expr>, char> OptionalSequenceArg =
+        private static readonly Parser<IMaybe<Expr>, char> OptionalSequenceArg =
             OptionalArgument(from sa in Control.Asterisk from seq in Expression select seq);
-        private static Parser<IMaybe<Expr>, char> OptionalMappingArg =
+        private static readonly Parser<IMaybe<Expr>, char> OptionalMappingArg =
             OptionalArgument(from da in Control.DoubleAsterisk from map in Expression select map);
-        private static Parser<IMaybe<IReadOnlyList<KeywordArgument>>, char> OptionalKeywords =
+        private static readonly Parser<IMaybe<IReadOnlyList<KeywordArgument>>, char> OptionalKeywords =
             OptionalArgument(keywordArguments);
 
 
-        private static Parser<
+        private static readonly Parser<
             (
                 IMaybe<IReadOnlyList<Expr>>,
                 IMaybe<IReadOnlyList<KeywordArgument>>,
@@ -164,14 +164,14 @@ namespace PythonParser.Parser
                 );
 
 
-        private static Parser<Expr, char> Primary =
+        private static readonly Parser<Expr, char> Primary =
             from atom in Atom
             from rest in Combinators.Choice<Func<Expr, Expr>, char>
             (
                 from dot in Control.Dot
                 from id in Literals.Identifier
                 select new Func<Expr, Expr>((Expr expr) => new AttributeRef(expr, id)),
-                (from subscript in Combinators.Between(Control.OpenBracket, expressionList, Control.CloseBracket)
+                (from subscript in Combinators.Between(Control.OpenBracket, ExpressionList, Control.CloseBracket)
                 select new Func<Expr, Expr>((Expr expr) => new Subscription(expr, subscript))
                 ).Try(),
                 from slice in Combinators.Between(Control.OpenBracket, sliceList, Control.CloseBracket)
