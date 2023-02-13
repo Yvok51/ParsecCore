@@ -91,25 +91,25 @@ namespace PythonParser.Parser
         public static Parser<char, char> GT = Lexeme.Create(Parsers.Char('>'));
 
         public static Parser<string, char> Keyword(string keyword) =>
-            from word in Parsers.String(keyword)
+            Lexeme.Create(from word in Parsers.String(keyword)
             from _ in Combinators.NotFollowedBy(Literals.IdentifierContinue, $"keyword {keyword} expected")
-            select word;
+            select word).Try();
 
-        public static Parser<string, char> Not = Lexeme.Create(Keyword("not")).Try();
+        public static Parser<string, char> Not = Keyword("not").Try();
 
-        public static Parser<BinaryOperator, char> Is = Lexeme.Create(Keyword("is")).Try().Map(_ => BinaryOperator.Is);
+        public static Parser<BinaryOperator, char> Is = Keyword("is").Try().Map(_ => BinaryOperator.Is);
         public static Parser<BinaryOperator, char> IsNot =
             (from _ in Is
             from not in Not
             select BinaryOperator.IsNot).Try();
 
-        public static Parser<BinaryOperator, char> In = Lexeme.Create(Keyword("in")).Try().Map(_ => BinaryOperator.Is);
+        public static Parser<BinaryOperator, char> In = Keyword("in").Try().Map(_ => BinaryOperator.Is);
         public static Parser<BinaryOperator, char> NotIn =
             (from not in Not
             from _ in In
             select BinaryOperator.IsNot).Try();
 
-        public static Parser<string, char> And = Lexeme.Create(Keyword("and")).Try();
-        public static Parser<string, char> Or = Lexeme.Create(Keyword("or")).Try();
+        public static Parser<string, char> And = Keyword("and").Try();
+        public static Parser<string, char> Or = Keyword("or").Try();
     }
 }
