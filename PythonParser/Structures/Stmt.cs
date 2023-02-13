@@ -43,7 +43,7 @@ namespace PythonParser.Structures
 
     internal class Assignment : Stmt
     {
-        public Assignment(IReadOnlyList<Expr> targetList, IReadOnlyList<Expr> expressions)
+        public Assignment(IReadOnlyList<IReadOnlyList<Expr>> targetList, IReadOnlyList<Expr> expressions)
         {
             TargetList = targetList;
             Expressions = expressions;
@@ -54,7 +54,7 @@ namespace PythonParser.Structures
             return visitor.VisitAssignment(this);
         }
 
-        public IReadOnlyList<Expr> TargetList { get; init; }
+        public IReadOnlyList<IReadOnlyList<Expr>> TargetList { get; init; }
         public IReadOnlyList<Expr> Expressions { get; init; }
     }
 
