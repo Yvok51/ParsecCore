@@ -164,7 +164,7 @@ namespace PythonParser.Parser
                 );
 
 
-        private static readonly Parser<Expr, char> Primary =
+        public static readonly Parser<Expr, char> Primary =
             from atom in Atom
             from rest in Combinators.Choice<Func<Expr, Expr>, char>
             (
