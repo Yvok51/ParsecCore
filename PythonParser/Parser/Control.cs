@@ -23,10 +23,10 @@ namespace PythonParser.Parser
         private static readonly Parser<None, char> TabConsumer =
             Parsers.Satisfy(c => c == '\t' || c == '\f', "tab").Many().Void();
 
-        public static readonly Parser<None, char> WhitespaceConsumer =
-            from feeds in Parsers.Char('\f').Many()
-            from nonMixedRest in SpaceConsumer.Or(TabConsumer)
-            select None.Instance;
+        //public static readonly Parser<None, char> WhitespaceConsumer =
+        //    from feeds in Parsers.Char('\f').Many()
+        //    from nonMixedRest in SpaceConsumer.Or(TabConsumer)
+        //    select None.Instance;
 
         public static IReadOnlySet<string> Keywords = new HashSet<string>()
         {
@@ -56,7 +56,7 @@ namespace PythonParser.Parser
             private Parser<None, char> _spaceConsumer;
         }
 
-        public static readonly LexemeFactory Lexeme = new LexemeImpl(WhitespaceConsumer);
+        public static readonly LexemeFactory Lexeme = new LexemeImpl(Whitespace);
 
         public static readonly Parser<char, char> Plus = Lexeme.Create(Parsers.Char('+'));
         public static readonly Parser<char, char> Minus = Lexeme.Create(Parsers.Char('-'));
