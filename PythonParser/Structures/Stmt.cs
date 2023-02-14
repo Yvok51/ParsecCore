@@ -11,7 +11,8 @@ namespace PythonParser.Structures
         T VisitBreak(Break @break);
         T VisitContinue(Continue @continue);
         T VisitImport(ImportModule import);
-        T VisitSpecificImport(ImportSpecific import);
+        T VisitImportSpecific(ImportSpecific import);
+        T VisitImportSpecificAll(ImportSpecificAll import);
         T VisitSuite(Suite suite);
         T VisitIf(If ifStatement);
         T VisitWhile(While ifStatement);
@@ -111,9 +112,9 @@ namespace PythonParser.Structures
 
     internal class ImportModule : Stmt
     {
-        public ImportModule(IdentifierLiteral module, IMaybe<IdentifierLiteral> alias)
+        public ImportModule(IReadOnlyList<IdentifierLiteral> modulePath, IMaybe<IdentifierLiteral> alias)
         {
-            Module = module;
+            ModulePath = modulePath;
             Alias = alias;
         }
 
@@ -122,27 +123,46 @@ namespace PythonParser.Structures
             return visitor.VisitImport(this);
         }
 
-        public IdentifierLiteral Module { get; init; }
+        public IReadOnlyList<IdentifierLiteral> ModulePath { get; init; }
         public IMaybe<IdentifierLiteral> Alias { get; init; }
     }
 
     internal class ImportSpecific : Stmt
     {
-        public ImportSpecific(IdentifierLiteral module, IdentifierLiteral specific, IMaybe<IdentifierLiteral> alias)
+        public ImportSpecific(
+            IReadOnlyList<IdentifierLiteral> modulePath,
+            IdentifierLiteral specific,
+            IMaybe<IdentifierLiteral> alias
+        )
         {
-            Module = module;
+            ModulePath = modulePath;
             Specific = specific;
             Alias = alias;
         }
 
         public override T Accept<T>(StmtVisitor<T> visitor)
         {
-            return visitor.VisitSpecificImport(this);
+            return visitor.VisitImportSpecific(this);
         }
 
-        public IdentifierLiteral Module { get; init; }
+        public IReadOnlyList<IdentifierLiteral> ModulePath { get; init; }
         public IdentifierLiteral Specific { get; init; }
         public IMaybe<IdentifierLiteral> Alias { get; init; }
+    }
+
+    internal class ImportSpecificAll : Stmt
+    {
+        public ImportSpecificAll(IReadOnlyList<IdentifierLiteral> modulePath)
+        {
+            ModulePath = modulePath;
+        }
+
+        public override T Accept<T>(StmtVisitor<T> visitor)
+        {
+            return visitor.VisitImportSpecificAll(this);
+        }
+
+        public IReadOnlyList<IdentifierLiteral> ModulePath { get; init; }
     }
 
     #endregion
