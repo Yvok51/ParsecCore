@@ -17,16 +17,9 @@ namespace PythonParser.Parser
             Parsers.Satisfy(c => c == ' ' || c == '\t' || c == '\f', "whitespace").Void()
             .Or(from escape in Parsers.Char('\\') from eol in EOL select None.Instance);
 
-        private static readonly Parser<None, char> SpaceConsumer =
-            Parsers.Satisfy(c => c == ' ' || c == '\f', "space").Many().Void();
+        public static readonly Parser<None, char> EOLWhitespace =
+            Whitespace.Or(EOL.Void());
 
-        private static readonly Parser<None, char> TabConsumer =
-            Parsers.Satisfy(c => c == '\t' || c == '\f', "tab").Many().Void();
-
-        //public static readonly Parser<None, char> WhitespaceConsumer =
-        //    from feeds in Parsers.Char('\f').Many()
-        //    from nonMixedRest in SpaceConsumer.Or(TabConsumer)
-        //    select None.Instance;
 
         public static IReadOnlySet<string> Keywords = new HashSet<string>()
         {
