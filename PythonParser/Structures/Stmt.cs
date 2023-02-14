@@ -227,7 +227,7 @@ namespace PythonParser.Structures
     internal class For : Stmt
     {
         public For(
-            IReadOnlyList<IdentifierLiteral> targets,
+            IReadOnlyList<Expr> targets,
             IReadOnlyList<Expr> expressions,
             Suite body,
             IMaybe<Suite> elseBranch
@@ -244,7 +244,7 @@ namespace PythonParser.Structures
             return visitor.VisitFor(this);
         }
 
-        public IReadOnlyList<IdentifierLiteral> Targets { get; init; }
+        public IReadOnlyList<Expr> Targets { get; init; }
         public IReadOnlyList<Expr> Expressions { get; init; }
         public Suite Body { get; init; }
         public IMaybe<Suite> ElseBranch { get; init; }
