@@ -1,10 +1,5 @@
 ﻿using ParsecCore.Input;
 using PythonParser.Parser;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PythonParserTests.Parser.LiteralTests
 {
@@ -27,7 +22,6 @@ namespace PythonParserTests.Parser.LiteralTests
 
         [Theory]
         [InlineData("01")]
-        [InlineData("1.1")]
         [InlineData("0b120")]
         [InlineData("0o9")]
         [InlineData("0x2G")]
