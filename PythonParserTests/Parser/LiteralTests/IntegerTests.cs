@@ -11,7 +11,7 @@ namespace PythonParserTests.Parser.LiteralTests
         [InlineData("0xA", 10)]
         [InlineData("0o11", 9)]
         [InlineData("0b1010", 10)]
-        public void ParsedCorrectly(string inputString, double expected)
+        public void ParsedCorrectly(string inputString, int expected)
         {
             var input = ParserInput.Create(inputString);
             var result = Literals.Integer(input);
