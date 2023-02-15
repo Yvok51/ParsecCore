@@ -62,7 +62,7 @@ namespace PythonParser.Parser
             { 't', '\t' },
             { 'v', '\v' },
         };
-        private static readonly Parser<char, char> charToEscape = 
+        private static readonly Parser<char, char> charToEscape =
             Combinators.Choice(toEscaped.Keys.Select(c => Parsers.Char(c)));
         private static readonly Parser<char, char> escape = Parsers.Char('\\');
         private static readonly Parser<char, char> escapedChar =
@@ -110,7 +110,7 @@ namespace PythonParser.Parser
         //        )
         //    );
 
-        internal static Parser<StringLiteral, char> String = 
+        internal static Parser<StringLiteral, char> String =
             from prefix in stringPrefix.Option("")
             from value in shortString
             select new StringLiteral(prefix, value);
@@ -163,8 +163,9 @@ namespace PythonParser.Parser
             from integer in otherBaseIntegers.Or(zero)
             select integer;
 
-        internal static Parser<IntegerLiteral, char> Integer = 
+        internal static Parser<IntegerLiteral, char> Integer =
             from num in nonZeroInteger.Or(factoredZeroAndOtherBase)
+            from alphaNumGuard in Combinators.NotFollowedBy(Parsers.AlphaNum, "Invalid character in number")
             select new IntegerLiteral(num);
 
         private static Parser<string, char> digitPart =
@@ -189,13 +190,17 @@ namespace PythonParser.Parser
             from fractionPart in isFractionPartOptional(digits)
             select digits.Else("0") + fractionPart;
         private static Parser<string, char> exponentFloat =
-            from basePart in digitPart.Try().Or(pointFloat)
+            from basePart in pointFloat.Try().Or(digitPart)
             from exponentPart in exponent
             select basePart + exponentPart;
 
         internal static Parser<FloatLiteral, char> Float =
-            from floatNumber in pointFloat.Try().Or(exponentFloat)
-            select new FloatLiteral(double.Parse(floatNumber, CultureInfo.InvariantCulture.NumberFormat));
+            from floatNumber in exponentFloat.Try().Or(pointFloat)
+            from alphaNumGuard in Combinators.NotFollowedBy(Parsers.AlphaNum, "Invalid character in number")
+            select new FloatLiteral(
+                double.Parse(StripUnderscores(floatNumber),
+                CultureInfo.InvariantCulture.NumberFormat)
+            );
 
         ////
         // Does not support imaginary and thus complex numbers
