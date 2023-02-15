@@ -144,7 +144,7 @@ namespace PythonParser.Parser
             select Convert.ToInt32(StripUnderscores(integer), 8);
         private static Parser<int, char> hexInteger =
             from prefix in Parsers.Char('x').Or(Parsers.Char('X'))
-            from integer in biDigit.Or(Parsers.Char('_')).Many1()
+            from integer in hexDigit.Or(Parsers.Char('_')).Many1()
             select Convert.ToInt32(StripUnderscores(integer), 16);
         private static Parser<int, char> otherBaseIntegers =
             from integer in Combinators.Choice(biInteger, octInteger, hexInteger)
@@ -160,7 +160,7 @@ namespace PythonParser.Parser
         // Factor out common leading zero from parser for zero and the other bases => do not have to backtrack
         private static Parser<int, char> factoredZeroAndOtherBase =
             from leadingZero in Parsers.Char('0')
-            from integer in zero.Or(otherBaseIntegers)
+            from integer in otherBaseIntegers.Or(zero)
             select integer;
 
         internal static Parser<IntegerLiteral, char> Integer = 
@@ -179,7 +179,7 @@ namespace PythonParser.Parser
             from e in Parsers.Char('e').Or(Parsers.Char('E'))
             from sign in Parsers.Char('+').Or(Parsers.Char('-')).Option('+')
             from digits in digitPart
-            select e + sign + digits;
+            select "E" + sign + digits;
         private static Parser<string, char> isFractionPartOptional(IMaybe<string> digits)
             => digits.IsEmpty ? fraction : (from dot in Parsers.Char('.')
                                             from fractionDigits in digitPart.Option("0")
