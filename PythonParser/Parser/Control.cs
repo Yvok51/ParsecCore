@@ -6,7 +6,7 @@ namespace PythonParser.Parser
 {
     internal static class Control
     {
-        public static readonly Parser<char, char> EOL = Parsers.EOL;
+        public static readonly Parser<None, char> EOL = Parsers.EOL.Void();
 
         public static readonly Parser<None, char> Comment =
             from start in Parsers.Char('#')
@@ -15,10 +15,10 @@ namespace PythonParser.Parser
 
         private static readonly Parser<None, char> Whitespace =
             Parsers.Satisfy(c => c == ' ' || c == '\t' || c == '\f', "whitespace").Void()
-            .Or(from escape in Parsers.Char('\\') from eol in EOL select None.Instance);
+            .Or(from escape in Parsers.Char('\\') from eol in EOL select None.Instance).Many().Void();
 
         public static readonly Parser<None, char> EOLWhitespace =
-            Whitespace.Or(EOL.Void());
+            Whitespace.Or(EOL).Many().Void();
 
 
         public static IReadOnlySet<string> Keywords = new HashSet<string>()
