@@ -132,18 +132,20 @@ namespace PythonParser.Parser
             "hexadecimal digit"
         );
 
+        private static string StripUnderscores(string str) => str.Replace("_", "");
+
         private static Parser<int, char> biInteger =
             from prefix in Parsers.Char('b').Or(Parsers.Char('B'))
             from integer in biDigit.Or(Parsers.Char('_')).Many1()
-            select Convert.ToInt32(integer.Replace("_", ""), 2);
+            select Convert.ToInt32(StripUnderscores(integer), 2);
         private static Parser<int, char> octInteger =
             from prefix in Parsers.Char('o').Or(Parsers.Char('O'))
             from integer in octDigit.Or(Parsers.Char('_')).Many1()
-            select Convert.ToInt32(integer.Replace("_", ""), 8);
+            select Convert.ToInt32(StripUnderscores(integer), 8);
         private static Parser<int, char> hexInteger =
             from prefix in Parsers.Char('x').Or(Parsers.Char('X'))
             from integer in biDigit.Or(Parsers.Char('_')).Many1()
-            select Convert.ToInt32(integer.Replace("_", ""), 16);
+            select Convert.ToInt32(StripUnderscores(integer), 16);
         private static Parser<int, char> otherBaseIntegers =
             from integer in Combinators.Choice(biInteger, octInteger, hexInteger)
             select integer;
@@ -151,7 +153,7 @@ namespace PythonParser.Parser
         private static Parser<int, char> nonZeroInteger =
             from first in nonZeroDigit
             from rest in digit.Or(Parsers.Char('_')).Many()
-            select int.Parse((first + rest).Replace("_", ""));
+            select int.Parse(StripUnderscores(first + rest));
         private static Parser<int, char> zero =
             from _ in Parsers.Char('0').Or(Parsers.Char('_')).Many()
             select 0;
