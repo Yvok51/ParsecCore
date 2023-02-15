@@ -6,7 +6,7 @@ namespace PythonParser.Parser
 {
     internal static class Control
     {
-        private static readonly Parser<char, char> EOL = Parsers.EOL;
+        public static readonly Parser<char, char> EOL = Parsers.EOL;
 
         public static readonly Parser<None, char> Comment =
             from start in Parsers.Char('#')
