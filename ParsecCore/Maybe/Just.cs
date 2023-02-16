@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq.Expressions;
+using System.Linq;
 
 namespace ParsecCore.MaybeNS
 {
@@ -6,7 +8,7 @@ namespace ParsecCore.MaybeNS
     /// Represents a valid <see cref="IMaybe{T}"/> value
     /// </summary>
     /// <typeparam name="T"> The type of value held </typeparam>
-    internal struct Just<T> : IMaybe<T>
+    internal struct Just<T> : IMaybe<T>, IEquatable<Just<T>>
     {
         public Just(T value)
         {
@@ -25,6 +27,21 @@ namespace ParsecCore.MaybeNS
         public TNew Match<TNew>(Func<T, TNew> just, Func<TNew> nothing)
         {
             return just(_value);
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is Just<T> other && Equals(other);
+        }
+
+        public bool Equals(Just<T> other)
+        {
+            return _value != null && _value.Equals(_value);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_value);
         }
 
         private readonly T _value;
