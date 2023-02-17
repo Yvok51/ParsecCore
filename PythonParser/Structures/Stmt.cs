@@ -1,4 +1,6 @@
 ﻿using ParsecCore.MaybeNS;
+using PythonParser.Parser;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace PythonParser.Structures
 {
@@ -27,7 +29,7 @@ namespace PythonParser.Structures
 
     #region Simple Statements
 
-    internal class ExpressionStmt : Stmt
+    internal class ExpressionStmt : Stmt, IEquatable<ExpressionStmt>
     {
         public ExpressionStmt(IReadOnlyList<Expr> expressions)
         {
@@ -39,10 +41,25 @@ namespace PythonParser.Structures
             return visitor.VisitExpression(this);
         }
 
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as ExpressionStmt);
+        }
+
+        public bool Equals(ExpressionStmt? other)
+        {
+            return other != null && Enumerable.SequenceEqual(Expressions, other.Expressions);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Expressions);
+        }
+
         public IReadOnlyList<Expr> Expressions { get; init; }
     }
 
-    internal class Assignment : Stmt
+    internal class Assignment : Stmt, IEquatable<Assignment>
     {
         public Assignment(IReadOnlyList<IReadOnlyList<Expr>> targetList, IReadOnlyList<Expr> expressions)
         {
@@ -55,11 +72,28 @@ namespace PythonParser.Structures
             return visitor.VisitAssignment(this);
         }
 
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as Assignment);
+        }
+
+        public bool Equals(Assignment? other)
+        {
+            return other != null 
+                && Enumerable.SequenceEqual(TargetList, other.TargetList)
+                && Enumerable.SequenceEqual(Expressions, other.Expressions);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(TargetList, Expressions);
+        }
+
         public IReadOnlyList<IReadOnlyList<Expr>> TargetList { get; init; }
         public IReadOnlyList<Expr> Expressions { get; init; }
     }
 
-    internal class Pass : Stmt
+    internal class Pass : Stmt, IEquatable<Pass>
     {
         public Pass()
         {
@@ -69,9 +103,24 @@ namespace PythonParser.Structures
         {
             return visitor.VisitPass(this);
         }
+
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as Pass);
+        }
+
+        public bool Equals(Pass? other)
+        {
+            return other != null;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 
-    internal class Return : Stmt
+    internal class Return : Stmt, IEquatable<Return>
     {
         public Return(IMaybe<IReadOnlyList<Expr>> expressions) 
         {
@@ -83,10 +132,25 @@ namespace PythonParser.Structures
             return visitor.VisitReturn(this);
         }
 
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as Return);
+        }
+
+        public bool Equals(Return? other)
+        {
+            return other != null && Expressions.Equals(other.Expressions);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Expressions);
+        }
+
         public IMaybe<IReadOnlyList<Expr>> Expressions { get; init; }
     }
 
-    internal class Break : Stmt
+    internal class Break : Stmt, IEquatable<Break>
     {
         public Break()
         {
@@ -96,9 +160,24 @@ namespace PythonParser.Structures
         {
             return visitor.VisitBreak(this);
         }
+
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as Break);
+        }
+
+        public bool Equals(Break? other)
+        {
+            return other != null;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 
-    internal class Continue : Stmt
+    internal class Continue : Stmt, IEquatable<Continue>
     {
         public Continue()
         {
@@ -108,9 +187,24 @@ namespace PythonParser.Structures
         {
             return visitor.VisitContinue(this);
         }
+
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as Continue);
+        }
+
+        public bool Equals(Continue? other)
+        {
+            return other != null;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 
-    internal class ImportModule : Stmt
+    internal class ImportModule : Stmt, IEquatable<ImportModule>
     {
         public ImportModule(IReadOnlyList<IdentifierLiteral> modulePath, IMaybe<IdentifierLiteral> alias)
         {
@@ -123,11 +217,28 @@ namespace PythonParser.Structures
             return visitor.VisitImport(this);
         }
 
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as ImportModule);
+        }
+
+        public bool Equals(ImportModule? other)
+        {
+            return other != null
+                && Enumerable.SequenceEqual(ModulePath, other.ModulePath)
+                && Alias.Equals(other.Alias);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(ModulePath, Alias);
+        }
+
         public IReadOnlyList<IdentifierLiteral> ModulePath { get; init; }
         public IMaybe<IdentifierLiteral> Alias { get; init; }
     }
 
-    internal class ImportSpecific : Stmt
+    internal class ImportSpecific : Stmt, IEquatable<ImportSpecific>
     {
         public ImportSpecific(
             IReadOnlyList<IdentifierLiteral> modulePath,
@@ -145,12 +256,30 @@ namespace PythonParser.Structures
             return visitor.VisitImportSpecific(this);
         }
 
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as ImportSpecific);
+        }
+
+        public bool Equals(ImportSpecific? other)
+        {
+            return other != null
+                && Enumerable.SequenceEqual(ModulePath, other.ModulePath)
+                && Specific.Equals(other.Specific)
+                && Alias.Equals(other.Alias);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(ModulePath, Alias);
+        }
+
         public IReadOnlyList<IdentifierLiteral> ModulePath { get; init; }
         public IdentifierLiteral Specific { get; init; }
         public IMaybe<IdentifierLiteral> Alias { get; init; }
     }
 
-    internal class ImportSpecificAll : Stmt
+    internal class ImportSpecificAll : Stmt, IEquatable<ImportSpecificAll>
     {
         public ImportSpecificAll(IReadOnlyList<IdentifierLiteral> modulePath)
         {
@@ -162,6 +291,21 @@ namespace PythonParser.Structures
             return visitor.VisitImportSpecificAll(this);
         }
 
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as ImportSpecificAll);
+        }
+
+        public bool Equals(ImportSpecificAll? other)
+        {
+            return other != null && Enumerable.SequenceEqual(ModulePath, other.ModulePath);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(ModulePath);
+        }
+
         public IReadOnlyList<IdentifierLiteral> ModulePath { get; init; }
     }
 
@@ -169,7 +313,7 @@ namespace PythonParser.Structures
 
     #region Compound Statement
 
-    internal class Suite : Stmt
+    internal class Suite : Stmt, IEquatable<Suite>
     {
         public Suite(IReadOnlyList<Stmt> statements)
         {
@@ -181,10 +325,25 @@ namespace PythonParser.Structures
             return visitor.VisitSuite(this);
         }
 
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as Suite);
+        }
+
+        public bool Equals(Suite? other)
+        {
+            return other != null && Enumerable.SequenceEqual(Statements, other.Statements);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Statements);
+        }
+
         public IReadOnlyList<Stmt> Statements { get; init; }
     }
 
-    internal class If : Stmt
+    internal class If : Stmt, IEquatable<If>
     {
         public If(Expr test, Suite thenBranch, IReadOnlyList<(Expr, Suite)> elifs, IMaybe<Suite> elseBranch)
         {
@@ -199,13 +358,32 @@ namespace PythonParser.Structures
             return visitor.VisitIf(this);
         }
 
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as If);
+        }
+
+        public bool Equals(If? other)
+        {
+            return other != null
+                && Test.Equals(other.Test)
+                && ThenBranch.Equals(other.ThenBranch)
+                && Enumerable.SequenceEqual(Elifs, other.Elifs)
+                && ElseBranch.Equals(other.ElseBranch);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Test, ThenBranch, Elifs, ElseBranch);
+        }
+
         public Expr Test { get; init; }
         public Suite ThenBranch { get; init; }
         public IReadOnlyList<(Expr, Suite)> Elifs { get; init; }
         public IMaybe<Suite> ElseBranch { get; init; }
     }
 
-    internal class While : Stmt
+    internal class While : Stmt, IEquatable<While>
     {
         public While(Expr test, Suite body, IMaybe<Suite> elseBranch)
         {
@@ -219,12 +397,30 @@ namespace PythonParser.Structures
             return visitor.VisitWhile(this);
         }
 
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as While);
+        }
+
+        public bool Equals(While? other)
+        {
+            return other != null
+                && Test.Equals(other.Test)
+                && Body.Equals(other.Body)
+                && ElseBranch.Equals(other.ElseBranch);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Test, Body, ElseBranch);
+        }
+
         public Expr Test { get; init; }
         public Suite Body { get; init; }
         public IMaybe<Suite> ElseBranch { get; init; }
     }
 
-    internal class For : Stmt
+    internal class For : Stmt, IEquatable<For>
     {
         public For(
             IReadOnlyList<Expr> targets,
@@ -244,13 +440,32 @@ namespace PythonParser.Structures
             return visitor.VisitFor(this);
         }
 
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as For);
+        }
+
+        public bool Equals(For? other)
+        {
+            return other != null
+                && Enumerable.SequenceEqual(Targets, other.Targets)
+                && Enumerable.SequenceEqual(Expressions, other.Expressions)
+                && Body.Equals(other.Body)
+                && ElseBranch.Equals(other.ElseBranch);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Targets, Expressions, Body, ElseBranch);
+        }
+
         public IReadOnlyList<Expr> Targets { get; init; }
         public IReadOnlyList<Expr> Expressions { get; init; }
         public Suite Body { get; init; }
         public IMaybe<Suite> ElseBranch { get; init; }
     }
 
-    internal class Function : Stmt
+    internal class Function : Stmt, IEquatable<Function>
     {
         public Function(
             IdentifierLiteral name,
@@ -269,6 +484,26 @@ namespace PythonParser.Structures
         {
             return visitor.VisitFunction(this);
         }
+
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as Function);
+        }
+
+        public bool Equals(Function? other)
+        {
+            return other != null
+                && Name.Equals(other.Name)
+                && Enumerable.SequenceEqual(Parameters, other.Parameters)
+                && Enumerable.SequenceEqual(DefaultParameters, other.DefaultParameters)
+                && Body.Equals(other.Body);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Name, Parameters, DefaultParameters, Body);
+        }
+
 
         public IdentifierLiteral Name { get; init; }
         public IReadOnlyList<IdentifierLiteral> Parameters { get; init; }
