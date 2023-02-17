@@ -580,7 +580,7 @@ namespace PythonParser.Structures
 
         public override bool Equals(object? obj)
         {
-            return Equals(obj as StringLiteral);
+            return Equals(obj as Binary);
         }
 
         public bool Equals(Binary? other)
