@@ -80,7 +80,7 @@ namespace PythonParser.Structures
         public bool Equals(Assignment? other)
         {
             return other != null 
-                && Enumerable.SequenceEqual(TargetList, other.TargetList)
+                && TargetList.Zip(other.TargetList).All(tuple => Enumerable.SequenceEqual(tuple.First, tuple.Second))
                 && Enumerable.SequenceEqual(Expressions, other.Expressions);
         }
 
