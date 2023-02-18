@@ -18,7 +18,7 @@ namespace PythonParser.Parser
         // Does not include comprehensions
 
         private static readonly Parser<ListDisplay, char> ListDisplay =
-            Combinators.Between(Control.OpenBracket, ExpressionList, Control.CloseBracket)
+            Combinators.Between(Control.OpenBracket, ExpressionList.Option(Array.Empty<Expr>()), Control.CloseBracket)
             .Map(list => new ListDisplay(list));
 
         private static readonly Parser<SetDisplay, char> SetDisplay =
@@ -35,7 +35,7 @@ namespace PythonParser.Parser
             Combinators.SepEndBy1(KeyDatum, Control.Comma);
 
         private static readonly Parser<DictDisplay, char> DictDisplay =
-            Combinators.Between(Control.OpenBrace, KeyDatumList, Control.CloseBrace)
+            Combinators.Between(Control.OpenBrace, KeyDatumList.Option(Array.Empty<KeyDatum>()), Control.CloseBrace)
             .Map(data => new DictDisplay(data));
 
         // Does not include yield and generator expressions
