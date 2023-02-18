@@ -6,19 +6,22 @@ namespace PythonParser.Parser
 {
     internal static class Control
     {
-        public static readonly Parser<None, char> EOL = Parsers.EOL.Void();
+        public static readonly Parser<char, char> EOL = Parsers.EOL;
 
         public static readonly Parser<None, char> Comment =
             from start in Parsers.Char('#')
             from content in Parsers.NoneOf('\n', '\r').Many()
             select None.Instance;
 
-        private static readonly Parser<None, char> Whitespace =
-            Parsers.Satisfy(c => c == ' ' || c == '\t' || c == '\f', "whitespace").Void()
-            .Or(from escape in Parsers.Char('\\') from eol in EOL select None.Instance).Many().Void();
+        private static readonly Parser<char, char> WhitespaceChar =
+            Parsers.Satisfy(c => c == ' ' || c == '\t' || c == '\f', "whitespace")
+            .Or(from escape in Parsers.Char('\\') from eol in EOL select eol);
 
-        public static readonly Parser<None, char> EOLWhitespace =
-            Whitespace.Or(EOL).Many().Void();
+        private static readonly Parser<string, char> Whitespace =
+            WhitespaceChar.Many();
+
+        public static readonly Parser<string, char> EOLWhitespace =
+            WhitespaceChar.Or(EOL).Many();
 
 
         public static IReadOnlySet<string> Keywords = new HashSet<string>()
@@ -49,59 +52,69 @@ namespace PythonParser.Parser
             private Parser<None, char> _spaceConsumer;
         }
 
-        public static readonly LexemeFactory Lexeme = new LexemeImpl(Whitespace);
+        public static readonly LexemeFactory Lexeme = new LexemeImpl(Whitespace.Void());
+        public static readonly LexemeFactory EOLLexeme = new LexemeImpl(EOLWhitespace.Void());
 
-        public static readonly Parser<char, char> Plus = Lexeme.Create(Parsers.Char('+'));
-        public static readonly Parser<char, char> Minus = Lexeme.Create(Parsers.Char('-'));
-        public static readonly Parser<char, char> Asterisk = Lexeme.Create(Parsers.Char('*'));
-        public static readonly Parser<char, char> Slash = Lexeme.Create(Parsers.Char('/'));
-        public static readonly Parser<char, char> Modulo = Lexeme.Create(Parsers.Char('%'));
-        public static readonly Parser<string, char> DoubleAsterisk = Lexeme.Create(Parsers.String("**")).Try();
-        public static readonly Parser<string, char> DoubleSlash = Lexeme.Create(Parsers.String("//")).Try();
+        public static Parser<char, char> Plus(LexemeFactory lexeme) => lexeme.Create(Parsers.Char('+'));
+        public static Parser<char, char> Minus(LexemeFactory lexeme) => lexeme.Create(Parsers.Char('-'));
+        public static Parser<char, char> Asterisk(LexemeFactory lexeme) => lexeme.Create(Parsers.Char('*'));
+        public static Parser<char, char> Slash(LexemeFactory lexeme) => lexeme.Create(Parsers.Char('/'));
+        public static Parser<char, char> Modulo(LexemeFactory lexeme) => lexeme.Create(Parsers.Char('%'));
+        public static Parser<string, char> DoubleAsterisk(LexemeFactory lexeme)
+            => lexeme.Create(Parsers.String("**")).Try();
+        public static Parser<string, char> DoubleSlash(LexemeFactory lexeme)
+            => lexeme.Create(Parsers.String("//")).Try();
 
-        public static readonly Parser<char, char> OpenParan = Lexeme.Create(Parsers.Char('('));
-        public static readonly Parser<char, char> CloseParan = Lexeme.Create(Parsers.Char(')'));
+        public static Parser<char, char> OpenParan(LexemeFactory lexeme) => lexeme.Create(Parsers.Char('('));
+        public static Parser<char, char> CloseParan(LexemeFactory lexeme) => lexeme.Create(Parsers.Char(')'));
 
-        public static readonly Parser<char, char> OpenBracket = Lexeme.Create(Parsers.Char('['));
-        public static readonly Parser<char, char> CloseBracket = Lexeme.Create(Parsers.Char(']'));
+        public static Parser<char, char> OpenBracket(LexemeFactory lexeme) => lexeme.Create(Parsers.Char('['));
+        public static Parser<char, char> CloseBracket(LexemeFactory lexeme) => lexeme.Create(Parsers.Char(']'));
 
-        public static readonly Parser<char, char> OpenBrace = Lexeme.Create(Parsers.Char('{'));
-        public static readonly Parser<char, char> CloseBrace = Lexeme.Create(Parsers.Char('}'));
+        public static Parser<char, char> OpenBrace(LexemeFactory lexeme) => lexeme.Create(Parsers.Char('{'));
+        public static Parser<char, char> CloseBrace(LexemeFactory lexeme) => lexeme.Create(Parsers.Char('}'));
 
-        public static readonly Parser<char, char> Comma = Lexeme.Create(Parsers.Char(','));
-        public static readonly Parser<char, char> Colon = Lexeme.Create(Parsers.Char(':'));
-        public static readonly Parser<char, char> Dot = Lexeme.Create(Parsers.Char('.'));
-        public static readonly Parser<char, char> Semicolon = Lexeme.Create(Parsers.Char(';'));
-        public static readonly Parser<char, char> At = Lexeme.Create(Parsers.Char('@'));
-        public static readonly Parser<char, char> Assign = Lexeme.Create(Parsers.Char('='));
+        public static Parser<char, char> Comma(LexemeFactory lexeme) => lexeme.Create(Parsers.Char(','));
+        public static Parser<char, char> Colon(LexemeFactory lexeme) => lexeme.Create(Parsers.Char(':'));
+        public static Parser<char, char> Dot(LexemeFactory lexeme) => lexeme.Create(Parsers.Char('.'));
+        public static Parser<char, char> Semicolon(LexemeFactory lexeme) => lexeme.Create(Parsers.Char(';'));
+        public static Parser<char, char> At(LexemeFactory lexeme) => lexeme.Create(Parsers.Char('@'));
+        public static Parser<char, char> Assign(LexemeFactory lexeme) => lexeme.Create(Parsers.Char('='));
  
-        public static readonly Parser<string, char> Equal = Lexeme.Create(Parsers.String("==")).Try();
-        public static readonly Parser<string, char> NotEqual = Lexeme.Create(Parsers.String("!=")).Try();
-        public static readonly Parser<string, char> LE = Lexeme.Create(Parsers.String("<=")).Try();
-        public static readonly Parser<string, char> GE = Lexeme.Create(Parsers.String(">=")).Try();
-        public static readonly Parser<char, char> LT = Lexeme.Create(Parsers.Char('<'));
-        public static readonly Parser<char, char> GT = Lexeme.Create(Parsers.Char('>'));
+        public static Parser<string, char> Equal(LexemeFactory lexeme) => lexeme.Create(Parsers.String("==")).Try();
+        public static Parser<string, char> NotEqual(LexemeFactory lexeme)
+            => lexeme.Create(Parsers.String("!=")).Try();
+        public static Parser<string, char> LE(LexemeFactory lexeme) => lexeme.Create(Parsers.String("<=")).Try();
+        public static Parser<string, char> GE(LexemeFactory lexeme) => lexeme.Create(Parsers.String(">=")).Try();
+        public static Parser<char, char> LT(LexemeFactory lexeme) => lexeme.Create(Parsers.Char('<'));
+        public static Parser<char, char> GT(LexemeFactory lexeme) => lexeme.Create(Parsers.Char('>'));
 
-        public static Parser<string, char> Keyword(string keyword) =>
-            Lexeme.Create(from word in Parsers.String(keyword)
-            from _ in Combinators.NotFollowedBy(Literals.IdentifierContinue, $"keyword {keyword} expected")
-            select word).Try();
+        public static Parser<string, char> Keyword(string keyword) => Keyword(keyword, Lexeme);
 
-        public static readonly Parser<string, char> Not = Keyword("not").Try();
+        public static Parser<string, char> Keyword(string keyword, LexemeFactory lexeme)
+            => lexeme.Create(
+                from word in Parsers.String(keyword)
+                from _ in Combinators.NotFollowedBy(Literals.IdentifierContinue, $"keyword {keyword} expected")
+                select word
+               ).Try();
 
-        public static readonly Parser<BinaryOperator, char> Is = Keyword("is").Try().Map(_ => BinaryOperator.Is);
-        public static readonly Parser<BinaryOperator, char> IsNot =
-            (from _ in Is
-            from not in Not
-            select BinaryOperator.IsNot).Try();
+        public static Parser<string, char> Not(LexemeFactory lexeme) => Keyword("not", lexeme).Try();
 
-        public static readonly Parser<BinaryOperator, char> In = Keyword("in").Try().Map(_ => BinaryOperator.Is);
-        public static readonly Parser<BinaryOperator, char> NotIn =
-            (from not in Not
-            from _ in In
-            select BinaryOperator.IsNot).Try();
+        public static Parser<BinaryOperator, char> Is(LexemeFactory lexeme)
+            => Keyword("is", lexeme).Try().Map(_ => BinaryOperator.Is);
+        public static Parser<BinaryOperator, char> IsNot(LexemeFactory lexeme)
+            => (from _ in Is(lexeme)
+                from not in Not(lexeme)
+                select BinaryOperator.IsNot).Try();
 
-        public static readonly Parser<string, char> And = Keyword("and").Try();
-        public static readonly Parser<string, char> Or = Keyword("or").Try();
+        public static Parser<BinaryOperator, char> In(LexemeFactory lexeme)
+            => Keyword("in", lexeme).Try().Map(_ => BinaryOperator.Is);
+        public static Parser<BinaryOperator, char> NotIn(LexemeFactory lexeme)
+            => (from not in Not(lexeme)
+                from _ in In(lexeme)
+                select BinaryOperator.NotIn).Try();
+
+        public static Parser<string, char> And(LexemeFactory lexeme) => Keyword("and", lexeme).Try();
+        public static Parser<string, char> Or(LexemeFactory lexeme) => Keyword("or", lexeme).Try();
     }
 }

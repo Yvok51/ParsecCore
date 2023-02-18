@@ -215,8 +215,8 @@ namespace PythonParser.Parser
         public static Parser<char, char> IdentifierContinue =
             Parsers.Satisfy(c => char.IsLetterOrDigit(c) || c == '_', "identifier character");
 
-        public static Parser<IdentifierLiteral, char> Identifier =
-            Control.Lexeme.Create(
+        public static Parser<IdentifierLiteral, char> Identifier(Control.LexemeFactory lexeme) 
+            => lexeme.Create(
                 from start in IdentifierStart
                 from rest in IdentifierContinue.Many()
                 select new IdentifierLiteral(start + rest)
@@ -224,8 +224,8 @@ namespace PythonParser.Parser
 
         #endregion
 
-        public static Parser<Expr, char> Literal =
-            Control.Lexeme.Create(
+        public static Parser<Expr, char> Literal(Control.LexemeFactory lexeme) 
+            => lexeme.Create(
                 Combinators.Choice<Expr, char>(
                     String,
                     Integer.Try(),

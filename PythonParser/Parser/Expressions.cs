@@ -6,53 +6,66 @@ namespace PythonParser.Parser
 {
     internal static class Expressions
     {
-        public static readonly Parser<Expr, char> Expression = Control.Lexeme.Create(Parsers.Indirect(() => OrTest));
+        public static Parser<Expr, char> Expression(Control.LexemeFactory lexeme)
+            => lexeme.Create(Parsers.Indirect(() => OrTest(lexeme)));
 
-        public static readonly Parser<IReadOnlyList<Expr>, char> ExpressionList =
-            Combinators.SepEndBy1(Expression, Control.Comma);
+        public static Parser<IReadOnlyList<Expr>, char> ExpressionList(Control.LexemeFactory lexeme)
+            => Combinators.SepEndBy1(Expression(lexeme), Control.Comma(lexeme));
 
-        private static Parser<ParenthForm, char> ParenthForm =
-            Combinators.Between(Control.OpenParan, ExpressionList, Control.CloseParan)
-            .Map(list => new ParenthForm(list));
+        private static Parser<ParenthForm, char> ParenthForm(Control.LexemeFactory lexeme) 
+            => Combinators.Between(
+                Control.OpenParan(Control.EOLLexeme),
+                ExpressionList(Control.EOLLexeme),
+                Control.CloseParan(lexeme)
+            ).Map(list => new ParenthForm(list));
 
         // Does not include comprehensions
 
-        private static readonly Parser<ListDisplay, char> ListDisplay =
-            Combinators.Between(Control.OpenBracket, ExpressionList.Option(Array.Empty<Expr>()), Control.CloseBracket)
-            .Map(list => new ListDisplay(list));
+        private static Parser<ListDisplay, char> ListDisplay(Control.LexemeFactory lexeme) 
+            => Combinators.Between(
+                Control.OpenBracket(Control.EOLLexeme),
+                ExpressionList(Control.EOLLexeme).Option(Array.Empty<Expr>()),
+                Control.CloseBracket(lexeme)
+            ).Map(list => new ListDisplay(list));
 
-        private static readonly Parser<SetDisplay, char> SetDisplay =
-            Combinators.Between(Control.OpenBracket, ExpressionList, Control.CloseBracket)
-            .Map(list => new SetDisplay(list));
+        private static Parser<SetDisplay, char> SetDisplay(Control.LexemeFactory lexeme) 
+            => Combinators.Between(
+                Control.OpenBracket(Control.EOLLexeme),
+                ExpressionList(Control.EOLLexeme),
+                Control.CloseBracket(lexeme)
+            ).Map(list => new SetDisplay(list));
 
-        private static readonly Parser<KeyDatum, char> KeyDatum = 
-            from key in Expression
-            from sep in Control.Colon
-            from val in Expression
-            select new KeyDatum(key, val);
+        private static Parser<KeyDatum, char> KeyDatum(Control.LexemeFactory lexeme) 
+            => from key in Expression(lexeme)
+               from sep in Control.Colon(lexeme)
+               from val in Expression(lexeme)
+               select new KeyDatum(key, val);
 
-        private static readonly Parser<IReadOnlyList<KeyDatum>, char> KeyDatumList =
-            Combinators.SepEndBy1(KeyDatum, Control.Comma);
+        private static Parser<IReadOnlyList<KeyDatum>, char> KeyDatumList(Control.LexemeFactory lexeme)
+            => Combinators.SepEndBy1(KeyDatum(lexeme), Control.Comma(lexeme));
 
-        private static readonly Parser<DictDisplay, char> DictDisplay =
-            Combinators.Between(Control.OpenBrace, KeyDatumList.Option(Array.Empty<KeyDatum>()), Control.CloseBrace)
-            .Map(data => new DictDisplay(data));
+        private static Parser<DictDisplay, char> DictDisplay(Control.LexemeFactory lexeme) 
+            => Combinators.Between(
+                Control.OpenBrace(lexeme),
+                KeyDatumList(lexeme).Option(Array.Empty<KeyDatum>()),
+                Control.CloseBrace(lexeme)
+            ).Map(data => new DictDisplay(data));
 
         // Does not include yield and generator expressions
 
-        private static readonly Parser<Expr, char> Enclosure =
-            Combinators.Choice<Expr, char>(
-                ParenthForm,
-                ListDisplay,
-                DictDisplay.Try(),
-                SetDisplay
+        private static Parser<Expr, char> Enclosure(Control.LexemeFactory lexeme)
+            => Combinators.Choice<Expr, char>(
+                ParenthForm(lexeme),
+                ListDisplay(lexeme),
+                DictDisplay(lexeme).Try(),
+                SetDisplay(lexeme)
             );
 
-        public static readonly Parser<Expr, char> Atom = 
-            Combinators.Choice(
-                Literals.Identifier,
-                Literals.Literal,
-                Enclosure
+        public static Parser<Expr, char> Atom(Control.LexemeFactory lexeme)
+            => Combinators.Choice(
+                Literals.Identifier(lexeme),
+                Literals.Literal(lexeme),
+                Enclosure(lexeme)
             );
 
         private static T Foldl<T>(IReadOnlyList<Func<T, T>> ts, T start)
@@ -66,39 +79,44 @@ namespace PythonParser.Parser
         }
 
         private static readonly Parser<SliceItem, char> ProperSlice =
-            from lower in Expression.Optional()
-            from colon in Control.Colon
-            from upper in Expression.Optional()
-            from stride in (from _ in Control.Colon from stride in Expression select stride).Optional()
+            from lower in Expression(Control.EOLLexeme).Optional()
+            from colon in Control.Colon(Control.EOLLexeme)
+            from upper in Expression(Control.EOLLexeme).Optional()
+            from stride in (from _ in Control.Colon(Control.EOLLexeme)
+                            from stride in Expression(Control.EOLLexeme)
+                            select stride).Optional()
             select new SliceItem(upper, lower, stride);
 
         internal static readonly Parser<IReadOnlyList<Expr>, char> SliceList =
-            Combinators.SepEndBy1(ProperSlice.Try().Or(Expression), Control.Comma);
+            Combinators.SepEndBy1(ProperSlice.Try().Or(Expression(Control.EOLLexeme)), Control.Comma(Control.EOLLexeme));
 
         private static readonly Parser<KeywordArgument, char> keywordItem =
-            from id in Literals.Identifier
-            from assign in Control.Assign
-            from exp in Expression
+            from id in Literals.Identifier(Control.EOLLexeme)
+            from assign in Control.Assign(Control.EOLLexeme)
+            from exp in Expression(Control.EOLLexeme)
             select new KeywordArgument(id, exp);
 
         private static readonly Parser<IReadOnlyList<KeywordArgument>, char> KeywordArguments =
-            Combinators.SepBy1(keywordItem, Control.Comma);
+            Combinators.SepBy1(keywordItem, Control.Comma(Control.EOLLexeme));
 
         private static readonly Parser<IReadOnlyList<Expr>, char> PositionalArguments =
-            Combinators.SepBy1(Expression, Control.Comma);
+            Combinators.SepBy1(Expression(Control.EOLLexeme), Control.Comma(Control.EOLLexeme));
 
         private static Parser<IMaybe<T>, char> OptionalArgument<T>(Parser<T, char> p) =>
-            (from _ in Control.Comma
+            (from _ in Control.Comma(Control.EOLLexeme)
             from parsed in p
             select parsed).Try().Optional();
 
         private static readonly Parser<IMaybe<Expr>, char> OptionalSequenceArg =
-            OptionalArgument(from sa in Control.Asterisk from seq in Expression select seq);
+            OptionalArgument(from sa in Control.Asterisk(Control.EOLLexeme)
+                             from seq in Expression(Control.EOLLexeme)
+                             select seq);
         private static readonly Parser<IMaybe<Expr>, char> OptionalMappingArg =
-            OptionalArgument(from da in Control.DoubleAsterisk from map in Expression select map);
+            OptionalArgument(from da in Control.DoubleAsterisk(Control.EOLLexeme)
+                             from map in Expression(Control.EOLLexeme)
+                             select map);
         private static readonly Parser<IMaybe<IReadOnlyList<KeywordArgument>>, char> OptionalKeywords =
             OptionalArgument(KeywordArguments);
-
 
         private static readonly Parser<
             (
@@ -114,16 +132,16 @@ namespace PythonParser.Parser
                 IMaybe<Expr>,
                 IMaybe<Expr>
             ), char>(
-                    (from da in Control.DoubleAsterisk
-                    from map in Expression
+                    (from da in Control.DoubleAsterisk(Control.EOLLexeme)
+                    from map in Expression(Control.EOLLexeme)
                     select (
                         Maybe.Nothing<IReadOnlyList<Expr>>(),
                         Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
                         Maybe.Nothing<Expr>(),
                         Maybe.FromValue(map)
                     )).Try(),
-                    (from sa in Control.Asterisk
-                    from sequence in Expression
+                    (from sa in Control.Asterisk(Control.EOLLexeme)
+                    from sequence in Expression(Control.EOLLexeme)
                     from keywordArgs in OptionalKeywords
                     from map in OptionalMappingArg
                     select (
@@ -164,50 +182,58 @@ namespace PythonParser.Parser
                 );
 
 
-        public static readonly Parser<Expr, char> Primary =
-            from atom in Atom
-            from rest in Combinators.Choice<Func<Expr, Expr>, char>
-            (
-                from dot in Control.Dot
-                from id in Literals.Identifier
-                select new Func<Expr, Expr>((Expr expr) => new AttributeRef(expr, id)),
-                (from subscript in Combinators.Between(Control.OpenBracket, ExpressionList, Control.CloseBracket)
-                select new Func<Expr, Expr>((Expr expr) => new Subscription(expr, subscript))
-                ).Try(),
-                from slice in Combinators.Between(Control.OpenBracket, SliceList, Control.CloseBracket)
-                select new Func<Expr, Expr>((Expr expr) => new Slice(expr, slice)),
-                from args in Combinators.Between(
-                    Control.OpenParan,
-                    ArgumentList.Option((
-                        Maybe.Nothing<IReadOnlyList<Expr>>(),
-                        Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
-                        Maybe.Nothing<Expr>(),
-                        Maybe.Nothing<Expr>())
-                    ),
-                    Control.CloseParan
-                )
-                select new Func<Expr, Expr>((callee) => new Call(callee, args.Item1, args.Item2, args.Item3, args.Item4))
-            ).Many()
-            select Foldl(rest, atom);
+        public static Parser<Expr, char> Primary(Control.LexemeFactory lexeme) 
+            => from atom in Atom(lexeme)
+               from rest in Combinators.Choice<Func<Expr, Expr>, char>
+               (
+                   from dot in Control.Dot(lexeme)
+                   from id in Literals.Identifier(lexeme)
+                   select new Func<Expr, Expr>((Expr expr) => new AttributeRef(expr, id)),
+                   (from subscript in Combinators.Between(
+                       Control.OpenBracket(Control.EOLLexeme),
+                       ExpressionList(Control.EOLLexeme),
+                       Control.CloseBracket(lexeme)
+                   )
+                   select new Func<Expr, Expr>((Expr expr) => new Subscription(expr, subscript))
+                   ).Try(),
+                   from slice in Combinators.Between(
+                       Control.OpenBracket(Control.EOLLexeme),
+                       SliceList,
+                       Control.CloseBracket(lexeme)
+                   )
+                   select new Func<Expr, Expr>((Expr expr) => new Slice(expr, slice)),
+                   from args in Combinators.Between(
+                       Control.OpenParan(Control.EOLLexeme),
+                       ArgumentList.Option((
+                           Maybe.Nothing<IReadOnlyList<Expr>>(),
+                           Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
+                           Maybe.Nothing<Expr>(),
+                           Maybe.Nothing<Expr>())
+                       ),
+                       Control.CloseParan(lexeme)
+                   )
+                   select new Func<Expr, Expr>((callee) => new Call(callee, args.Item1, args.Item2, args.Item3, args.Item4))
+               ).Many()
+               select Foldl(rest, atom);
 
-        private static readonly Parser<Expr, char> Power =
-            from left in Primary
-            from right in (from op in Control.DoubleAsterisk
-                           from right in Parsers.Indirect(() => UExpr)
-                           select right).Optional()
-            select right.Match(
-                just: (val) => new Binary(left, BinaryOperator.DoubleStar, val),
-                nothing: () => left
-            );
+        private static Parser<Expr, char> Power(Control.LexemeFactory lexeme) 
+            => from left in Primary(lexeme)
+               from right in (from op in Control.DoubleAsterisk(lexeme)
+                              from right in Parsers.Indirect(() => UExpr(lexeme))
+                              select right).Optional()
+               select right.Match(
+                   just: (val) => new Binary(left, BinaryOperator.DoubleStar, val),
+                   nothing: () => left
+               );
 
-        private static readonly Parser<Expr, char> UExpr =
-            Combinators.Choice<Expr, char>(
-                Power,
-                from op in Control.Minus
-                from expr in Parsers.Indirect(() => UExpr)
+        private static Parser<Expr, char> UExpr(Control.LexemeFactory lexeme) 
+            => Combinators.Choice<Expr, char>(
+                Power(lexeme),
+                from op in Control.Minus(lexeme)
+                from expr in Parsers.Indirect(() => UExpr(lexeme))
                 select new Unary(expr, UnaryOperator.Minus),
-                from op in Control.Plus
-                from expr in Parsers.Indirect(() => UExpr)
+                from op in Control.Plus(lexeme)
+                from expr in Parsers.Indirect(() => UExpr(lexeme))
                 select new Unary(expr, UnaryOperator.Plus)
             );
 
@@ -218,62 +244,62 @@ namespace PythonParser.Parser
                    select new Func<Expr, Expr>(left => new Binary(left, op, rightExpr));
         }
 
-        private static readonly Parser<Expr, char> MExpr =
-            from unary in UExpr
-            from rest in Combinators.Choice(
-                RightBinary(UExpr, Control.Asterisk, BinaryOperator.Star),
-                RightBinary(UExpr, Control.DoubleSlash, BinaryOperator.DoubleSlash),
-                RightBinary(UExpr, Control.Slash, BinaryOperator.Slash),
-                RightBinary(UExpr, Control.Modulo, BinaryOperator.Modulo)
-            ).Many()
-            select Foldl(rest, unary);
+        private static Parser<Expr, char> MExpr(Control.LexemeFactory lexeme) 
+            => from unary in UExpr(lexeme)
+               from rest in Combinators.Choice(
+                   RightBinary(UExpr(lexeme), Control.Asterisk(lexeme), BinaryOperator.Star),
+                   RightBinary(UExpr(lexeme), Control.DoubleSlash(lexeme), BinaryOperator.DoubleSlash),
+                   RightBinary(UExpr(lexeme), Control.Slash(lexeme), BinaryOperator.Slash),
+                   RightBinary(UExpr(lexeme), Control.Modulo(lexeme), BinaryOperator.Modulo)
+               ).Many()
+               select Foldl(rest, unary);
 
-        private static readonly Parser<Expr, char> AExpr =
-            from multiplative in MExpr
-            from rest in Combinators.Choice(
-                RightBinary(MExpr, Control.Plus, BinaryOperator.Plus),
-                RightBinary(MExpr, Control.Minus, BinaryOperator.Minus)
-            ).Many()
-            select Foldl(rest, multiplative);
+        private static Parser<Expr, char> AExpr(Control.LexemeFactory lexeme) 
+            => from multiplative in MExpr(lexeme)
+               from rest in Combinators.Choice(
+                   RightBinary(MExpr(lexeme), Control.Plus(lexeme), BinaryOperator.Plus),
+                   RightBinary(MExpr(lexeme), Control.Minus(lexeme), BinaryOperator.Minus)
+               ).Many()
+               select Foldl(rest, multiplative);
 
         // Leaves out shifting and bitwise operations
 
-        private static readonly Parser<Expr, char> OrExpr = AExpr;
+        private static Parser<Expr, char> OrExpr(Control.LexemeFactory lexeme) => AExpr(lexeme);
 
-        private static readonly Parser<Expr, char> Comparison =
-            from or in OrExpr
-            from rest in Combinators.Choice(
-                RightBinary(OrExpr, Control.IsNot, BinaryOperator.IsNot),
-                RightBinary(OrExpr, Control.Is, BinaryOperator.Is),
-                RightBinary(OrExpr, Control.In, BinaryOperator.In),
-                RightBinary(OrExpr, Control.NotIn, BinaryOperator.NotIn),
-                RightBinary(OrExpr, Control.Equal, BinaryOperator.Equal),
-                RightBinary(OrExpr, Control.NotEqual, BinaryOperator.NotEqual),
-                RightBinary(OrExpr, Control.LE, BinaryOperator.LE),
-                RightBinary(OrExpr, Control.GE, BinaryOperator.GE),
-                RightBinary(OrExpr, Control.LT, BinaryOperator.LT),
-                RightBinary(OrExpr, Control.GT, BinaryOperator.GT)
-            ).Many()
-            select Foldl(rest, or);
+        private static Parser<Expr, char> Comparison(Control.LexemeFactory lexeme)
+            => from or in OrExpr(lexeme)
+               from rest in Combinators.Choice(
+                   RightBinary(OrExpr(lexeme), Control.IsNot(lexeme), BinaryOperator.IsNot),
+                   RightBinary(OrExpr(lexeme), Control.Is(lexeme), BinaryOperator.Is),
+                   RightBinary(OrExpr(lexeme), Control.In(lexeme), BinaryOperator.In),
+                   RightBinary(OrExpr(lexeme), Control.NotIn(lexeme), BinaryOperator.NotIn),
+                   RightBinary(OrExpr(lexeme), Control.Equal(lexeme), BinaryOperator.Equal),
+                   RightBinary(OrExpr(lexeme), Control.NotEqual(lexeme), BinaryOperator.NotEqual),
+                   RightBinary(OrExpr(lexeme), Control.LE(lexeme), BinaryOperator.LE),
+                   RightBinary(OrExpr(lexeme), Control.GE(lexeme), BinaryOperator.GE),
+                   RightBinary(OrExpr(lexeme), Control.LT(lexeme), BinaryOperator.LT),
+                   RightBinary(OrExpr(lexeme), Control.GT(lexeme), BinaryOperator.GT)
+               ).Many()
+               select Foldl(rest, or);
 
-        private static readonly Parser<Expr, char> NotTest =
-            Comparison.Or(
-                from not in Control.Not
-                from comp in Parsers.Indirect(() => NotTest)
+        private static Parser<Expr, char> NotTest(Control.LexemeFactory lexeme) 
+            => Comparison(lexeme).Or(
+                from not in Control.Not(lexeme)
+                from comp in Parsers.Indirect(() => NotTest(lexeme))
                 select new Unary(comp, UnaryOperator.Not)
             );
 
-        private static readonly Parser<Expr, char> AndTest =
-            Combinators.ChainL1(
-                NotTest,
-                from op in Control.And
+        private static Parser<Expr, char> AndTest(Control.LexemeFactory lexeme)
+            => Combinators.ChainL1(
+                NotTest(lexeme),
+                from op in Control.And(lexeme)
                 select new Func<Expr, Expr, Expr>((left, right) => new Binary(left, BinaryOperator.And, right))
             );
 
-        private static readonly Parser<Expr, char> OrTest =
-            Combinators.ChainL1(
-                AndTest,
-                from op in Control.Or
+        private static Parser<Expr, char> OrTest(Control.LexemeFactory lexeme) 
+            => Combinators.ChainL1(
+                AndTest(lexeme),
+                from op in Control.Or(lexeme)
                 select new Func<Expr, Expr, Expr>((left, right) => new Binary(left, BinaryOperator.Or, right))
             );
 

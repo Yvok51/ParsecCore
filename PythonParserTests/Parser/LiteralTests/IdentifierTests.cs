@@ -15,7 +15,7 @@ namespace PythonParserTests.Parser.LiteralTests
         public void ParsedCorrectly(string inputString, string expected)
         {
             var input = ParserInput.Create(inputString);
-            var result = Literals.Identifier(input);
+            var result = Literals.Identifier(Control.Lexeme)(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(expected, result.Result.Name);
@@ -29,7 +29,7 @@ namespace PythonParserTests.Parser.LiteralTests
         public void ParsingFails(string inputString)
         {
             var input = ParserInput.Create(inputString);
-            var result = Literals.Identifier(input);
+            var result = Literals.Identifier(Control.Lexeme)(input);
 
             Assert.True(result.IsError);
         }

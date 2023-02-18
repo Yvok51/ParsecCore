@@ -12,18 +12,26 @@ namespace PythonParser.Parser
         #region Simple Statement
 
         private static readonly Parser<ExpressionStmt, char> ExpressionStatement =
-            Expressions.ExpressionList.Map(exprs => new ExpressionStmt(exprs));
+            Expressions.ExpressionList(Control.Lexeme).Map(exprs => new ExpressionStmt(exprs));
 
         private static readonly Parser<Expr, char> ComplexTarget =
-            from primary in Expressions.Primary
+            from primary in Expressions.Primary(Control.Lexeme)
             from rest in Combinators.Choice(
-                from dot in Control.Dot
-                from id in Literals.Identifier
+                from dot in Control.Dot(Control.Lexeme)
+                from id in Literals.Identifier(Control.Lexeme)
                 select new Func<Expr, Expr>((Expr expr) => new AttributeRef(expr, id)),
-                (from subscript in Combinators.Between(Control.OpenBracket, Expressions.ExpressionList, Control.CloseBracket)
+                (from subscript in Combinators.Between(
+                    Control.OpenBracket(Control.EOLLexeme),
+                    Expressions.ExpressionList(Control.EOLLexeme),
+                    Control.CloseBracket(Control.Lexeme)
+                 )
                  select new Func<Expr, Expr>((Expr expr) => new Subscription(expr, subscript))
                 ).Try(),
-                from slice in Combinators.Between(Control.OpenBracket, Expressions.SliceList, Control.CloseBracket)
+                from slice in Combinators.Between(
+                    Control.OpenBracket(Control.EOLLexeme),
+                    Expressions.SliceList,
+                    Control.CloseBracket(Control.Lexeme)
+                )
                 select new Func<Expr, Expr>((Expr expr) => new Slice(expr, slice))
             )
             select rest(primary);
@@ -31,17 +39,17 @@ namespace PythonParser.Parser
         private static readonly Parser<Expr, char> Target =
             Combinators.Choice(
                     ComplexTarget.Try(),
-                    Literals.Identifier
+                    Literals.Identifier(Control.Lexeme)
                 );
 
         private static readonly Parser<IReadOnlyList<Expr>, char> TargetList =
-            Combinators.SepEndBy1(Target, Control.Comma);
+            Combinators.SepEndBy1(Target, Control.Comma(Control.Lexeme));
 
         private static readonly Parser<Assignment, char> Assignment =
             from targetLists in (from targets in TargetList
-                                 from eq in Control.Equal
+                                 from eq in Control.Equal(Control.Lexeme)
                                  select targets).Many1()
-            from exprs in Expressions.ExpressionList
+            from exprs in Expressions.ExpressionList(Control.Lexeme)
             select new Assignment(targetLists, exprs);
 
         private static readonly Parser<Pass, char> Pass =
@@ -49,23 +57,23 @@ namespace PythonParser.Parser
 
         private static readonly Parser<Return, char> Return =
             from ret in Control.Lexeme.Create(Control.Keyword("return"))
-            from exprs in Expressions.ExpressionList.Optional()
+            from exprs in Expressions.ExpressionList(Control.Lexeme).Optional()
             select new Return(exprs);
 
         private static readonly Parser<Pass, char> Break =
-            Control.Lexeme.Create(Control.Keyword("break")).Map(_ => new Pass());
+            Control.Keyword("break").Map(_ => new Pass());
 
         private static readonly Parser<Pass, char> Continue =
-            Control.Lexeme.Create(Control.Keyword("continue")).Map(_ => new Pass());
+            Control.Keyword("continue").Map(_ => new Pass());
 
         private static readonly Parser<IReadOnlyList<IdentifierLiteral>, char> ModulePath =
-            Combinators.SepBy1(Literals.Identifier, Control.Dot);
+            Combinators.SepBy1(Literals.Identifier(Control.Lexeme), Control.Dot(Control.Lexeme));
 
         private static readonly Parser<ImportModule, char> ImportModule =
             from import in Control.Keyword("import")
             from modulePath in ModulePath
             from alias in (from _ in Control.Keyword("as")
-                           from name in Literals.Identifier
+                           from name in Literals.Identifier(Control.Lexeme)
                            select name).Optional()
             select new ImportModule(modulePath, alias);
 
@@ -73,9 +81,9 @@ namespace PythonParser.Parser
             from _ in Control.Keyword("from")
             from modulePath in ModulePath
             from __ in Control.Keyword("import")
-            from name in Literals.Identifier
+            from name in Literals.Identifier(Control.Lexeme)
             from alias in (from _ in Control.Keyword("as")
-                           from name in Literals.Identifier
+                           from name in Literals.Identifier(Control.Lexeme)
                            select name).Optional()
             select new ImportSpecific(modulePath, name, alias);
 
@@ -83,7 +91,7 @@ namespace PythonParser.Parser
             from _ in Control.Keyword("from")
             from modulePath in ModulePath
             from __ in Control.Keyword("import")
-            from star in Control.Asterisk
+            from star in Control.Asterisk(Control.Lexeme)
             select new ImportSpecificAll(modulePath);
 
         private static readonly Parser<Stmt, char> Import =
@@ -109,7 +117,7 @@ namespace PythonParser.Parser
         #region Compound Statement
 
         private static readonly Parser<IReadOnlyList<Stmt>, char> StatementList =
-            Combinators.SepEndBy1(SimpleStatement, Control.Semicolon);
+            Combinators.SepEndBy1(SimpleStatement, Control.Semicolon(Control.Lexeme));
 
         private static readonly Parser<Stmt, char> Statement =
             (from list in StatementList
@@ -119,8 +127,8 @@ namespace PythonParser.Parser
 
         private static Parser<Expr, char> ConditionHead(string keyword) =>
             from _ in Control.Keyword(keyword)
-            from test in Expressions.Expression
-            from __ in Control.Colon
+            from test in Expressions.Expression(Control.Lexeme)
+            from __ in Control.Colon(Control.Lexeme)
             select test;
 
         private static readonly Parser<(Expr, Suite), char> If =
@@ -144,7 +152,7 @@ namespace PythonParser.Parser
         private static readonly Parser<Suite, char> Else =
             Indentation.IndentBlockSome(
                 Control.EOLWhitespace,
-                from _ in Control.Keyword("else") from __ in Control.Colon select None.Instance,
+                from _ in Control.Keyword("else") from __ in Control.Colon(Control.Lexeme) select None.Instance,
                 Maybe.Nothing<IndentLevel>(),
                 (_, stmts) => new Suite(new List<Stmt>(stmts)),
                 Statement
@@ -176,8 +184,8 @@ namespace PythonParser.Parser
             from _ in Control.Keyword("for")
             from targets in TargetList
             from __ in Control.Keyword("in")
-            from exprs in Expressions.ExpressionList
-            from ___ in Control.Colon
+            from exprs in Expressions.ExpressionList(Control.Lexeme)
+            from ___ in Control.Colon(Control.Lexeme)
             select (targets, exprs);
 
         private static readonly Parser<(IReadOnlyList<Expr>, IReadOnlyList<Expr>, Suite), char> For =
@@ -195,13 +203,17 @@ namespace PythonParser.Parser
             select new For(@for.Item1, @for.Item2, @for.Item3, @else);
 
         private static readonly Parser<IReadOnlyList<IdentifierLiteral>, char> ParameterList =
-            Combinators.SepBy(Literals.Identifier, Control.Comma);
+            Combinators.SepBy(Literals.Identifier(Control.EOLLexeme), Control.Comma(Control.EOLLexeme));
 
         private static readonly Parser<(IdentifierLiteral, IReadOnlyList<IdentifierLiteral>), char> FuncHead =
             from _ in Control.Keyword("def")
-            from funcname in Literals.Identifier
-            from parameterList in Combinators.Between(Control.OpenParan, ParameterList, Control.CloseParan)
-            from __ in Control.Colon
+            from funcname in Literals.Identifier(Control.Lexeme)
+            from parameterList in Combinators.Between(
+                Control.OpenParan(Control.EOLLexeme),
+                ParameterList,
+                Control.CloseParan(Control.Lexeme)
+            )
+            from __ in Control.Colon(Control.Lexeme)
             select (funcname, parameterList);
 
         private static readonly Parser<Function, char> FuncDefStatement =
