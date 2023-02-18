@@ -514,8 +514,17 @@ namespace PythonParser.Structures
         {
             return other != null 
                 && CalledExpr.Equals(other.CalledExpr)
-                && ArgumentList.Equals(other.ArgumentList)
-                && KeywordArguments.Equals(other.KeywordArguments)
+                && ArgumentList.Match(
+                    just: (list) 
+                        => !other.ArgumentList.IsEmpty && Enumerable.SequenceEqual(list, other.ArgumentList.Value),
+                    nothing: () => other.ArgumentList.IsEmpty
+                )
+                && KeywordArguments.Match(
+                    just: (list)
+                        => !other.KeywordArguments.IsEmpty 
+                        && Enumerable.SequenceEqual(list, other.KeywordArguments.Value),
+                    nothing: () => other.KeywordArguments.IsEmpty
+                )
                 && SequenceExpr.Equals(other.SequenceExpr)
                 && MappingExpr.Equals(other.MappingExpr);
         }

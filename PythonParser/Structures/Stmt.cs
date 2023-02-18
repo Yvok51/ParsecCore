@@ -139,7 +139,10 @@ namespace PythonParser.Structures
 
         public bool Equals(Return? other)
         {
-            return other != null && Expressions.Equals(other.Expressions);
+            return other != null && Expressions.Match(
+                just: (list) => !other.Expressions.IsEmpty && Enumerable.SequenceEqual(list, other.Expressions.Value),
+                nothing: () => other.Expressions.IsEmpty
+            );
         }
 
         public override int GetHashCode()
