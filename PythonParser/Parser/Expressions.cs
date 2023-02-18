@@ -190,11 +190,15 @@ namespace PythonParser.Parser
             ).Many()
             select Foldl(rest, atom);
 
-        private static readonly Parser<Binary, char> Power =
+        private static readonly Parser<Expr, char> Power =
             from left in Primary
-            from op in Control.DoubleAsterisk
-            from right in Parsers.Indirect(() => UExpr)
-            select new Binary(left, BinaryOperator.DoubleStar, right);
+            from right in (from op in Control.DoubleAsterisk
+                           from right in Parsers.Indirect(() => UExpr)
+                           select right).Optional()
+            select right.Match(
+                just: (val) => new Binary(left, BinaryOperator.DoubleStar, val),
+                nothing: () => left
+            );
 
         private static readonly Parser<Expr, char> UExpr =
             Combinators.Choice<Expr, char>(
