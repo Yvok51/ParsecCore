@@ -63,12 +63,12 @@ namespace PythonParser.Parser
 
         public static Parser<Expr, char> Atom(Control.LexemeFactory lexeme)
             => Combinators.Choice(
+                Control.Keyword("True", lexeme).Map(_ => new BooleanLiteral(true)).Try(),
+                Control.Keyword("False", lexeme).Map(_ => new BooleanLiteral(false)).Try(),
+                Control.Keyword("None", lexeme).Map(_ => new NoneLiteral()).Try(),
                 Literals.Identifier(lexeme),
                 Literals.Literal(lexeme),
-                Enclosure(lexeme),
-                Control.Keyword("True", lexeme).Map(_ => new BooleanLiteral(true)),
-                Control.Keyword("False", lexeme).Map(_ => new BooleanLiteral(false)),
-                Control.Keyword("None", lexeme).Map(_ => new NoneLiteral())
+                Enclosure(lexeme)
             );
 
         private static T Foldl<T>(IReadOnlyList<Func<T, T>> ts, T start)
