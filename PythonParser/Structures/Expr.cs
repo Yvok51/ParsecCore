@@ -274,7 +274,7 @@ namespace PythonParser.Structures
 
         public bool Equals(KeyDatum? other)
         {
-            return other != null && Key == other.Key && Value == other.Value;
+            return other != null && Key.Equals(other.Key) && Value.Equals(other.Value);
         }
 
         public override int GetHashCode()
