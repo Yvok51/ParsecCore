@@ -21,6 +21,8 @@ namespace PythonParser.Structures
         T VisitStringLiteral(StringLiteral literal);
         T VisitIntegerLiteral(IntegerLiteral literal);
         T VisitFloatLiteral(FloatLiteral literal);
+        T VisitBooleanLiteral(BooleanLiteral literal);
+        T VisitNoneLiteral(NoneLiteral literal);
         T VisitIdentifierLiteral(IdentifierLiteral literal);
         T VisitParenthForm(ParenthForm parenthForm);
         T VisitListDisplay(ListDisplay listDisplay);
@@ -132,6 +134,63 @@ namespace PythonParser.Structures
         }
 
         public double Value { get; init; }
+    }
+
+    internal class BooleanLiteral : Expr
+    {
+        public BooleanLiteral(bool value)
+        {
+            Value = value;
+        }
+
+        public override T Accept<T>(ExprVisitor<T> visitor)
+        {
+            return visitor.VisitBooleanLiteral(this);
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as BooleanLiteral);
+        }
+
+        public bool Equals(BooleanLiteral? other)
+        {
+            return other != null && Value == other.Value;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Value);
+        }
+
+        public bool Value { get; init; }
+    }
+
+    internal class NoneLiteral : Expr
+    {
+        public NoneLiteral()
+        {
+        }
+
+        public override T Accept<T>(ExprVisitor<T> visitor)
+        {
+            return visitor.VisitNoneLiteral(this);
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return Equals(obj as NoneLiteral);
+        }
+
+        public bool Equals(NoneLiteral? other)
+        {
+            return other != null;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 
     internal class IdentifierLiteral : Expr, IEquatable<IdentifierLiteral>

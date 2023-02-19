@@ -65,7 +65,10 @@ namespace PythonParser.Parser
             => Combinators.Choice(
                 Literals.Identifier(lexeme),
                 Literals.Literal(lexeme),
-                Enclosure(lexeme)
+                Enclosure(lexeme),
+                Control.Keyword("True", lexeme).Map(_ => new BooleanLiteral(true)),
+                Control.Keyword("False", lexeme).Map(_ => new BooleanLiteral(false)),
+                Control.Keyword("None", lexeme).Map(_ => new NoneLiteral())
             );
 
         private static T Foldl<T>(IReadOnlyList<Func<T, T>> ts, T start)
