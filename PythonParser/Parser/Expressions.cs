@@ -46,8 +46,8 @@ namespace PythonParser.Parser
 
         private static Parser<DictDisplay, char> DictDisplay(Control.LexemeFactory lexeme) 
             => Combinators.Between(
-                Control.OpenBrace(lexeme),
-                KeyDatumList(lexeme).Option(Array.Empty<KeyDatum>()),
+                Control.OpenBrace(Control.EOLLexeme),
+                KeyDatumList(Control.EOLLexeme).Option(Array.Empty<KeyDatum>()),
                 Control.CloseBrace(lexeme)
             ).Map(data => new DictDisplay(data));
 
