@@ -30,9 +30,9 @@ namespace PythonParser.Parser
 
         private static Parser<SetDisplay, char> SetDisplay(Control.LexemeFactory lexeme) 
             => Combinators.Between(
-                Control.OpenBracket(Control.EOLLexeme),
+                Control.OpenBrace(Control.EOLLexeme),
                 ExpressionList(Control.EOLLexeme),
-                Control.CloseBracket(lexeme)
+                Control.CloseBrace(lexeme)
             ).Map(list => new SetDisplay(list));
 
         private static Parser<KeyDatum, char> KeyDatum(Control.LexemeFactory lexeme) 
