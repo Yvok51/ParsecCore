@@ -336,7 +336,7 @@ namespace PythonParser.Structures
 
         public bool Equals(AttributeRef? other)
         {
-            return other != null && Obj == other.Obj && Attribute == other.Attribute;
+            return other != null && Obj.Equals(other.Obj) && Attribute.Equals(other.Attribute);
         }
 
         public override int GetHashCode()
