@@ -384,7 +384,7 @@ namespace PythonParser.Structures
 
     internal class SliceItem : Expr, IEquatable<SliceItem>
     {
-        public SliceItem(IMaybe<Expr> upperBound, IMaybe<Expr> lowerBound, IMaybe<Expr> stride)
+        public SliceItem(IMaybe<Expr> lowerBound, IMaybe<Expr> upperBound, IMaybe<Expr> stride)
         {
             UpperBound = upperBound;
             LowerBound = lowerBound;

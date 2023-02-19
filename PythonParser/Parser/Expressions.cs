@@ -85,7 +85,7 @@ namespace PythonParser.Parser
             from stride in (from _ in Control.Colon(Control.EOLLexeme)
                             from stride in Expression(Control.EOLLexeme)
                             select stride).Optional()
-            select new SliceItem(upper, lower, stride);
+            select new SliceItem(lower, upper, stride);
 
         internal static readonly Parser<IReadOnlyList<Expr>, char> SliceList =
             Combinators.SepEndBy1(ProperSlice.Try().Or(Expression(Control.EOLLexeme)), Control.Comma(Control.EOLLexeme));
