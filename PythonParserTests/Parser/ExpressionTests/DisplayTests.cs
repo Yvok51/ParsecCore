@@ -1,5 +1,4 @@
-﻿
-using ParsecCore.Input;
+﻿using ParsecCore.Input;
 using PythonParser.Parser;
 using PythonParser.Structures;
 
@@ -125,7 +124,7 @@ namespace PythonParserTests.Parser.ExpressionTests
                 new DictDisplay(new List<KeyDatum>() {
                     new KeyDatum(new StringLiteral("", "a"), new IdentifierLiteral("a")),
                     new KeyDatum(new StringLiteral("", "b"), new IdentifierLiteral("b")),
-                    new KeyDatum(new StringLiteral("", "c"), new IdentifierLiteral("c")) 
+                    new KeyDatum(new StringLiteral("", "c"), new IdentifierLiteral("c"))
                 }),
                 result.Result
             );
@@ -144,7 +143,7 @@ namespace PythonParserTests.Parser.ExpressionTests
             Assert.True(result.IsResult);
             Assert.True(result.Result is DictDisplay);
             Assert.Equal(
-                new DictDisplay(new List<KeyDatum>() { 
+                new DictDisplay(new List<KeyDatum>() {
                     new KeyDatum(new StringLiteral("", "a"), new IdentifierLiteral("a")),
                     new KeyDatum(new StringLiteral("", "b"), new StringLiteral("", "b")),
                     new KeyDatum(new StringLiteral("", "c"), new IntegerLiteral(4))
