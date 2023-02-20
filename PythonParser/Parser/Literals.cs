@@ -1,4 +1,5 @@
 ﻿using ParsecCore;
+using ParsecCore.Help;
 using ParsecCore.MaybeNS;
 using PythonParser.Structures;
 using System.Globalization;
@@ -215,12 +216,19 @@ namespace PythonParser.Parser
         public static Parser<char, char> IdentifierContinue =
             Parsers.Satisfy(c => char.IsLetterOrDigit(c) || c == '_', "identifier character");
 
-        public static Parser<IdentifierLiteral, char> Identifier(Control.LexemeFactory lexeme) 
-            => lexeme.Create(
+        public static Parser<IdentifierLiteral, char> Identifier(Control.LexemeFactory lexeme)
+        {
+            var isKeyword = (string id) => Control.Keywords.Contains(id);
+            var keywordGuard = (string id) => isKeyword(id)
+                ? Parsers.Fail<None, char>("Identifier expected, got keyword")
+                : Parsers.Return<None, char>(None.Instance);
+            return lexeme.Create(
                 from start in IdentifierStart
                 from rest in IdentifierContinue.Many()
+                from _ in keywordGuard(start + rest)
                 select new IdentifierLiteral(start + rest)
             );
+        }
 
         #endregion
 
