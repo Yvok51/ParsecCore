@@ -47,7 +47,7 @@ namespace PythonParser.Parser
 
         private static readonly Parser<Assignment, char> Assignment =
             from targetLists in (from targets in TargetList
-                                 from eq in Control.Equal(Control.Lexeme)
+                                 from eq in Control.Assign(Control.Lexeme)
                                  select targets).Many1()
             from exprs in Expressions.ExpressionList(Control.Lexeme)
             select new Assignment(targetLists, exprs);
@@ -119,9 +119,9 @@ namespace PythonParser.Parser
         private static readonly Parser<IReadOnlyList<Stmt>, char> StatementList =
             Combinators.SepEndBy1(SimpleStatement, Control.Semicolon(Control.Lexeme));
 
-        private static readonly Parser<Stmt, char> Statement =
+        public static readonly Parser<Stmt, char> Statement =
             (from list in StatementList
-             from eol in Control.EOL
+             from eol in Control.EOL.Or(Parsers.EOF.Map(_ => '\n'))
              select new Suite(list)).Try()
             .Or(Parsers.Indirect(() => CompoundStatement));
 
