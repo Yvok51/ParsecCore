@@ -60,11 +60,11 @@ namespace PythonParser.Parser
             from exprs in Expressions.ExpressionList(Control.Lexeme).Optional()
             select new Return(exprs);
 
-        private static readonly Parser<Pass, char> Break =
-            Control.Keyword("break").Map(_ => new Pass());
+        private static readonly Parser<Break, char> Break =
+            Control.Keyword("break").Map(_ => new Break());
 
-        private static readonly Parser<Pass, char> Continue =
-            Control.Keyword("continue").Map(_ => new Pass());
+        private static readonly Parser<Continue, char> Continue =
+            Control.Keyword("continue").Map(_ => new Continue());
 
         private static readonly Parser<IReadOnlyList<IdentifierLiteral>, char> ModulePath =
             Combinators.SepBy1(Literals.Identifier(Control.Lexeme), Control.Dot(Control.Lexeme));
