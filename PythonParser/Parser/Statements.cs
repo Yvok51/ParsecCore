@@ -46,11 +46,10 @@ namespace PythonParser.Parser
             Combinators.SepEndBy1(Target, Control.Comma(Control.Lexeme));
 
         private static readonly Parser<Assignment, char> Assignment =
-            from targetLists in (from targets in TargetList
-                                 from eq in Control.Assign(Control.Lexeme)
-                                 select targets).Many1()
+            from targets in TargetList
+            from eq in Control.Assign(Control.Lexeme)
             from exprs in Expressions.ExpressionList(Control.Lexeme)
-            select new Assignment(targetLists, exprs);
+            select new Assignment(new List<IReadOnlyList<Expr>>() { targets }, exprs);
 
         private static readonly Parser<Pass, char> Pass =
             Control.Lexeme.Create(Control.Keyword("pass")).Map(_ => new Pass());

@@ -65,53 +65,7 @@ namespace PythonParserTests.Parser.StatementTests
                         {
                             new List<Expr>() { new IdentifierLiteral("x"), new IdentifierLiteral("y") }
                         },
-                        new List<Expr>() { new IntegerLiteral(4) }
-                    )
-                }),
-                result.Result
-            );
-        }
-
-        [Fact]
-        public void MultipleAssignments()
-        {
-            var input = ParserInput.Create("x = y = pair\n");
-            var result = Statements.Statement(input);
-
-            Assert.True(result.IsResult);
-            Assert.Equal(
-                new Suite(new List<Stmt>()
-                {
-                    new Assignment(
-                        new List<List<Expr>>()
-                        {
-                            new List<Expr>() { new IdentifierLiteral("x") },
-                            new List<Expr>() { new IdentifierLiteral("y") }
-                        },
-                        new List<Expr>() { new IntegerLiteral(4) }
-                    )
-                }),
-                result.Result
-            );
-        }
-
-        [Fact]
-        public void MultipleAssignmentsMultipleTargets()
-        {
-            var input = ParserInput.Create("x, y = w, z = pair\n");
-            var result = Statements.Statement(input);
-
-            Assert.True(result.IsResult);
-            Assert.Equal(
-                new Suite(new List<Stmt>()
-                {
-                    new Assignment(
-                        new List<List<Expr>>()
-                        {
-                            new List<Expr>() { new IdentifierLiteral("x"), new IdentifierLiteral("y") },
-                            new List<Expr>() { new IdentifierLiteral("w"), new IdentifierLiteral("z") }
-                        },
-                        new List<Expr>() { new IntegerLiteral(4) }
+                        new List<Expr>() { new IdentifierLiteral("pair") }
                     )
                 }),
                 result.Result
