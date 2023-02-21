@@ -1,5 +1,6 @@
-﻿using ParsecCore.Indentation;
+﻿using ParsecCore.Input;
 using PythonParser.Structures;
+using PythonParser.Parser;
 using System.Text;
 
 namespace PythonParser
@@ -8,11 +9,43 @@ namespace PythonParser
     {
         static void Main(string[] args)
         {
+            if (args.Length != 0)
+            {
+                Console.WriteLine("Please supply exactly one file to parse");
+            }
+
+            try
+            {
+                using (var sourceReader = new StreamReader(args[0]))
+                {
+                    var input = ParserInput.Create(sourceReader);
+                    var parseResult = TopLevelParser.PythonFile(input);
+
+                    var result = parseResult.Map(
+                        resultMap: stmts => string.Join("\n", stmts.Select(stmt => stmt.Accept(new PrintVisitor(), 0))),
+                        errorMap: error => error.ToString()
+                    );
+
+                    Console.WriteLine(result);
+                }
+            }
+            catch (Exception ex) when (ex is IOException)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
 
         private class PrintVisitor : ExprVisitor<string, int>, StmtVisitor<string, int>
         {
-            private static string GetIndentation(int indentationLevel) => new string(' ', indentationLevel * 4);
+            public PrintVisitor(int indentationPerLevel = 4)
+            {
+                m_indentationPerLevel = indentationPerLevel;
+            }
+
+            private readonly int m_indentationPerLevel;
+
+            private string GetIndentation(int indentationLevel) 
+                => new string(' ', indentationLevel * m_indentationPerLevel);
 
             private string ListExprs(IReadOnlyList<Expr> exprs, int indent)
                 => string.Join(", ", exprs.Select(expr => expr.Accept(this, indent)));
