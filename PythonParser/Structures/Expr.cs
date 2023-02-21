@@ -16,32 +16,32 @@ namespace PythonParser.Structures
         Minus, Plus, Not
     }
 
-    internal interface ExprVisitor<T>
+    internal interface ExprVisitor<T, A>
     {
-        T VisitStringLiteral(StringLiteral literal);
-        T VisitIntegerLiteral(IntegerLiteral literal);
-        T VisitFloatLiteral(FloatLiteral literal);
-        T VisitBooleanLiteral(BooleanLiteral literal);
-        T VisitNoneLiteral(NoneLiteral literal);
-        T VisitIdentifierLiteral(IdentifierLiteral literal);
-        T VisitParenthForm(ParenthForm parenthForm);
-        T VisitListDisplay(ListDisplay listDisplay);
-        T VisitSetDisplay(SetDisplay setDisplay);
-        T VisitKeyDatum(KeyDatum setDisplay);
-        T VisitDictDisplay(DictDisplay keyDisplay);
-        T VisitAtrributeRef(AttributeRef attributeRef);
-        T VisitSubscription(Subscription subscription);
-        T VisitSliceItem(SliceItem sliceItem);
-        T VisitSlice(Slice slice);
-        T VisitKeywordArgument(KeywordArgument keywordArgument);
-        T VisitCall(Call call);
-        T VisitUnary(Unary unary);
-        T VisitBinary(Binary binary);
+        T VisitStringLiteral(StringLiteral literal, A arg);
+        T VisitIntegerLiteral(IntegerLiteral literal, A arg);
+        T VisitFloatLiteral(FloatLiteral literal, A arg);
+        T VisitBooleanLiteral(BooleanLiteral literal, A arg);
+        T VisitNoneLiteral(NoneLiteral literal, A arg);
+        T VisitIdentifierLiteral(IdentifierLiteral literal, A arg);
+        T VisitParenthForm(ParenthForm parenthForm, A arg);
+        T VisitListDisplay(ListDisplay listDisplay, A arg);
+        T VisitSetDisplay(SetDisplay setDisplay, A arg);
+        T VisitKeyDatum(KeyDatum keyDatum, A arg);
+        T VisitDictDisplay(DictDisplay dictDisplay, A arg);
+        T VisitAtrributeRef(AttributeRef attributeRef, A arg);
+        T VisitSubscription(Subscription subscription, A arg);
+        T VisitSliceItem(SliceItem sliceItem, A arg);
+        T VisitSlice(Slice slice, A arg);
+        T VisitKeywordArgument(KeywordArgument keywordArgument, A arg);
+        T VisitCall(Call call, A arg);
+        T VisitUnary(Unary unary, A arg);
+        T VisitBinary(Binary binary, A arg);
     }
 
     internal abstract class Expr
     {
-        public abstract T Accept<T>(ExprVisitor<T> visitor);
+        public abstract T Accept<T, A>(ExprVisitor<T, A> visitor, A arg);
     }
 
     internal class StringLiteral : Expr, IEquatable<StringLiteral>
@@ -52,9 +52,9 @@ namespace PythonParser.Structures
             Value = value;
         }
 
-        public override T Accept<T>(ExprVisitor<T> visitor)
+        public override T Accept<T, A>(ExprVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitStringLiteral(this);
+            return visitor.VisitStringLiteral(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -83,9 +83,9 @@ namespace PythonParser.Structures
             Value = value;
         }
 
-        public override T Accept<T>(ExprVisitor<T> visitor)
+        public override T Accept<T, A>(ExprVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitIntegerLiteral(this);
+            return visitor.VisitIntegerLiteral(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -113,9 +113,9 @@ namespace PythonParser.Structures
             Value = value;
         }
 
-        public override T Accept<T>(ExprVisitor<T> visitor)
+        public override T Accept<T, A>(ExprVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitFloatLiteral(this);
+            return visitor.VisitFloatLiteral(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -143,9 +143,9 @@ namespace PythonParser.Structures
             Value = value;
         }
 
-        public override T Accept<T>(ExprVisitor<T> visitor)
+        public override T Accept<T, A>(ExprVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitBooleanLiteral(this);
+            return visitor.VisitBooleanLiteral(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -172,9 +172,9 @@ namespace PythonParser.Structures
         {
         }
 
-        public override T Accept<T>(ExprVisitor<T> visitor)
+        public override T Accept<T, A>(ExprVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitNoneLiteral(this);
+            return visitor.VisitNoneLiteral(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -200,9 +200,9 @@ namespace PythonParser.Structures
             Name = name;
         }
 
-        public override T Accept<T>(ExprVisitor<T> visitor)
+        public override T Accept<T, A>(ExprVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitIdentifierLiteral(this);
+            return visitor.VisitIdentifierLiteral(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -230,9 +230,9 @@ namespace PythonParser.Structures
             Expressions = expressions;
         }
 
-        public override T Accept<T>(ExprVisitor<T> visitor)
+        public override T Accept<T, A>(ExprVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitParenthForm(this);
+            return visitor.VisitParenthForm(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -260,9 +260,9 @@ namespace PythonParser.Structures
             Expressions = expressions;
         }
 
-        public override T Accept<T>(ExprVisitor<T> visitor)
+        public override T Accept<T, A>(ExprVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitListDisplay(this);
+            return visitor.VisitListDisplay(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -290,9 +290,9 @@ namespace PythonParser.Structures
             Expressions = expressions;
         }
 
-        public override T Accept<T>(ExprVisitor<T> visitor)
+        public override T Accept<T, A>(ExprVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitSetDisplay(this);
+            return visitor.VisitSetDisplay(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -321,9 +321,9 @@ namespace PythonParser.Structures
             Value = value;
         }
 
-        public override T Accept<T>(ExprVisitor<T> visitor)
+        public override T Accept<T, A>(ExprVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitKeyDatum(this);
+            return visitor.VisitKeyDatum(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -352,9 +352,9 @@ namespace PythonParser.Structures
             Data = data;
         }
 
-        public override T Accept<T>(ExprVisitor<T> visitor)
+        public override T Accept<T, A>(ExprVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitDictDisplay(this);
+            return visitor.VisitDictDisplay(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -383,9 +383,9 @@ namespace PythonParser.Structures
             Attribute = attribute;
         }
 
-        public override T Accept<T>(ExprVisitor<T> visitor)
+        public override T Accept<T, A>(ExprVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitAtrributeRef(this);
+            return visitor.VisitAtrributeRef(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -415,9 +415,9 @@ namespace PythonParser.Structures
             Expressions = expressions;
         }
 
-        public override T Accept<T>(ExprVisitor<T> visitor)
+        public override T Accept<T, A>(ExprVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitSubscription(this);
+            return visitor.VisitSubscription(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -450,9 +450,9 @@ namespace PythonParser.Structures
             Stride = stride;
         }
 
-        public override T Accept<T>(ExprVisitor<T> visitor)
+        public override T Accept<T, A>(ExprVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitSliceItem(this);
+            return visitor.VisitSliceItem(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -486,9 +486,9 @@ namespace PythonParser.Structures
             Slices = slices;
         }
 
-        public override T Accept<T>(ExprVisitor<T> visitor)
+        public override T Accept<T, A>(ExprVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitSlice(this);
+            return visitor.VisitSlice(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -518,9 +518,9 @@ namespace PythonParser.Structures
             Value = value;
         }
 
-        public override T Accept<T>(ExprVisitor<T> visitor)
+        public override T Accept<T, A>(ExprVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitKeywordArgument(this);
+            return visitor.VisitKeywordArgument(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -559,9 +559,9 @@ namespace PythonParser.Structures
             MappingExpr = mappingExpr;
         }
 
-        public override T Accept<T>(ExprVisitor<T> visitor)
+        public override T Accept<T, A>(ExprVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitCall(this);
+            return visitor.VisitCall(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -608,9 +608,9 @@ namespace PythonParser.Structures
             Operator = op;
         }
 
-        public override T Accept<T>(ExprVisitor<T> visitor)
+        public override T Accept<T, A>(ExprVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitUnary(this);
+            return visitor.VisitUnary(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -641,9 +641,9 @@ namespace PythonParser.Structures
             Operator = op;
         }
 
-        public override T Accept<T>(ExprVisitor<T> visitor)
+        public override T Accept<T, A>(ExprVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitBinary(this);
+            return visitor.VisitBinary(this, arg);
         }
 
         public override bool Equals(object? obj)

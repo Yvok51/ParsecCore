@@ -1,30 +1,28 @@
 ﻿using ParsecCore.MaybeNS;
-using PythonParser.Parser;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace PythonParser.Structures
 {
-    internal interface StmtVisitor<T>
+    internal interface StmtVisitor<T, A>
     {
-        T VisitExpression(ExpressionStmt expression);
-        T VisitAssignment(Assignment assignment);
-        T VisitPass(Pass pass);
-        T VisitReturn(Return @return);
-        T VisitBreak(Break @break);
-        T VisitContinue(Continue @continue);
-        T VisitImport(ImportModule import);
-        T VisitImportSpecific(ImportSpecific import);
-        T VisitImportSpecificAll(ImportSpecificAll import);
-        T VisitSuite(Suite suite);
-        T VisitIf(If ifStatement);
-        T VisitWhile(While ifStatement);
-        T VisitFor(For forStatement);
-        T VisitFunction(Function function);
+        T VisitExpression(ExpressionStmt expression, A arg);
+        T VisitAssignment(Assignment assignment, A arg);
+        T VisitPass(Pass pass, A arg);
+        T VisitReturn(Return @return, A arg);
+        T VisitBreak(Break @break, A arg);
+        T VisitContinue(Continue @continue, A arg);
+        T VisitImport(ImportModule import, A arg);
+        T VisitImportSpecific(ImportSpecific import, A arg);
+        T VisitImportSpecificAll(ImportSpecificAll import, A arg);
+        T VisitSuite(Suite suite, A arg);
+        T VisitIf(If ifStatement, A arg);
+        T VisitWhile(While ifStatement, A arg);
+        T VisitFor(For forStatement, A arg);
+        T VisitFunction(Function function, A arg);
     }
 
     internal abstract class Stmt
     {
-        public abstract T Accept<T>(StmtVisitor<T> visitor);
+        public abstract T Accept<T, A>(StmtVisitor<T, A> visitor, A arg);
     }
 
     #region Simple Statements
@@ -36,9 +34,9 @@ namespace PythonParser.Structures
             Expressions = expressions;
         }
 
-        public override T Accept<T>(StmtVisitor<T> visitor)
+        public override T Accept<T, A>(StmtVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitExpression(this);
+            return visitor.VisitExpression(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -67,9 +65,9 @@ namespace PythonParser.Structures
             Expressions = expressions;
         }
 
-        public override T Accept<T>(StmtVisitor<T> visitor)
+        public override T Accept<T, A>(StmtVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitAssignment(this);
+            return visitor.VisitAssignment(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -99,9 +97,9 @@ namespace PythonParser.Structures
         {
         }
 
-        public override T Accept<T>(StmtVisitor<T> visitor)
+        public override T Accept<T, A>(StmtVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitPass(this);
+            return visitor.VisitPass(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -127,9 +125,9 @@ namespace PythonParser.Structures
             Expressions = expressions;
         }
 
-        public override T Accept<T>(StmtVisitor<T> visitor)
+        public override T Accept<T, A>(StmtVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitReturn(this);
+            return visitor.VisitReturn(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -159,9 +157,9 @@ namespace PythonParser.Structures
         {
         }
 
-        public override T Accept<T>(StmtVisitor<T> visitor)
+        public override T Accept<T, A>(StmtVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitBreak(this);
+            return visitor.VisitBreak(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -186,9 +184,9 @@ namespace PythonParser.Structures
         {
         }
 
-        public override T Accept<T>(StmtVisitor<T> visitor)
+        public override T Accept<T, A>(StmtVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitContinue(this);
+            return visitor.VisitContinue(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -215,9 +213,9 @@ namespace PythonParser.Structures
             Alias = alias;
         }
 
-        public override T Accept<T>(StmtVisitor<T> visitor)
+        public override T Accept<T, A>(StmtVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitImport(this);
+            return visitor.VisitImport(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -254,9 +252,9 @@ namespace PythonParser.Structures
             Alias = alias;
         }
 
-        public override T Accept<T>(StmtVisitor<T> visitor)
+        public override T Accept<T, A>(StmtVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitImportSpecific(this);
+            return visitor.VisitImportSpecific(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -289,9 +287,9 @@ namespace PythonParser.Structures
             ModulePath = modulePath;
         }
 
-        public override T Accept<T>(StmtVisitor<T> visitor)
+        public override T Accept<T, A>(StmtVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitImportSpecificAll(this);
+            return visitor.VisitImportSpecificAll(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -323,9 +321,9 @@ namespace PythonParser.Structures
             Statements = statements;
         }
 
-        public override T Accept<T>(StmtVisitor<T> visitor)
+        public override T Accept<T, A>(StmtVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitSuite(this);
+            return visitor.VisitSuite(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -356,9 +354,9 @@ namespace PythonParser.Structures
             ElseBranch = elseBranch;
         }
 
-        public override T Accept<T>(StmtVisitor<T> visitor)
+        public override T Accept<T, A>(StmtVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitIf(this);
+            return visitor.VisitIf(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -395,9 +393,9 @@ namespace PythonParser.Structures
             ElseBranch = elseBranch;
         }
 
-        public override T Accept<T>(StmtVisitor<T> visitor)
+        public override T Accept<T, A>(StmtVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitWhile(this);
+            return visitor.VisitWhile(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -438,9 +436,9 @@ namespace PythonParser.Structures
             ElseBranch = elseBranch;
         }
 
-        public override T Accept<T>(StmtVisitor<T> visitor)
+        public override T Accept<T, A>(StmtVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitFor(this);
+            return visitor.VisitFor(this, arg);
         }
 
         public override bool Equals(object? obj)
@@ -483,9 +481,9 @@ namespace PythonParser.Structures
             Body = body;
         }
 
-        public override T Accept<T>(StmtVisitor<T> visitor)
+        public override T Accept<T, A>(StmtVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitFunction(this);
+            return visitor.VisitFunction(this, arg);
         }
 
         public override bool Equals(object? obj)
