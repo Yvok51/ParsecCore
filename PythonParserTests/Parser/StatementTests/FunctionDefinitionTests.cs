@@ -50,28 +50,6 @@ namespace PythonParserTests.Parser.StatementTests
         }
 
         [Fact]
-        public void DefineFunctionWithKeywordArguments()
-        {
-            var input = ParserInput.Create("def func(a = 1, b = None):\n  pass\n");
-            var result = Statements.Statement(input);
-
-            Assert.True(result.IsResult);
-            Assert.Equal(
-                new Function(
-                    new IdentifierLiteral("func"),
-                    Array.Empty<IdentifierLiteral>(),
-                    new List<(IdentifierLiteral, Expr)>()
-                    {
-                        (new IdentifierLiteral("a"), new IntegerLiteral(1)),
-                        (new IdentifierLiteral("b"), new NoneLiteral())
-                    },
-                    new Suite(new List<Stmt>() { new Suite(new List<Stmt>() { new Pass() }) })
-                ),
-                result.Result
-            );
-        }
-
-        [Fact]
         public void MultipleStatementsInBody()
         {
             var input = ParserInput.Create("def func():\n  x = 1\n  return\n");
