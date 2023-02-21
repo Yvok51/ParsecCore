@@ -137,60 +137,6 @@ namespace PythonParserTests.Parser.ExpressionTests
         }
 
         [Fact]
-        public void KeywordArgumentCall()
-        {
-            var input = ParserInput.Create("func(a = a, b = \"b\", c = 2)");
-            var result = Expressions.Expression(Control.Lexeme)(input);
-
-            Assert.True(result.IsResult);
-            Assert.True(result.Result is Call);
-            Assert.Equal(
-                new Call(
-                    new IdentifierLiteral("func"),
-                    Maybe.Nothing<IReadOnlyList<Expr>>(),
-                    Maybe.FromValue<IReadOnlyList<KeywordArgument>>(new List<KeywordArgument>()
-                    {
-                        new KeywordArgument(new IdentifierLiteral("a"), new IdentifierLiteral("a")),
-                        new KeywordArgument(new IdentifierLiteral("b"), new StringLiteral("", "b")),
-                        new KeywordArgument(new IdentifierLiteral("c"), new IntegerLiteral(2)),
-                    }),
-                    Maybe.Nothing<Expr>(),
-                    Maybe.Nothing<Expr>()
-                ),
-                result.Result
-            );
-        }
-
-        [Fact]
-        public void PositionalAndKeywordArgumentCall()
-        {
-            var input = ParserInput.Create("func(123, \"hello\", a = a, b = \"b\", c = 2)");
-            var result = Expressions.Expression(Control.Lexeme)(input);
-
-            Assert.True(result.IsResult);
-            Assert.True(result.Result is Call);
-            Assert.Equal(
-                new Call(
-                    new IdentifierLiteral("func"),
-                    Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>()
-                    {
-                        new IntegerLiteral(123),
-                        new StringLiteral("", "hello"),
-                    }),
-                    Maybe.FromValue<IReadOnlyList<KeywordArgument>>(new List<KeywordArgument>()
-                    {
-                        new KeywordArgument(new IdentifierLiteral("a"), new IdentifierLiteral("a")),
-                        new KeywordArgument(new IdentifierLiteral("b"), new StringLiteral("", "b")),
-                        new KeywordArgument(new IdentifierLiteral("c"), new IntegerLiteral(2)),
-                    }),
-                    Maybe.Nothing<Expr>(),
-                    Maybe.Nothing<Expr>()
-                ),
-                result.Result
-            );
-        }
-
-        [Fact]
         public void ComplexPrimary()
         {
             var input = ParserInput.Create("a.ref[0](b, c)");

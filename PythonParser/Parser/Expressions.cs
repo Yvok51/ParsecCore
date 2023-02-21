@@ -135,53 +135,13 @@ namespace PythonParser.Parser
                 IMaybe<Expr>,
                 IMaybe<Expr>
             ), char>(
-                    (from da in Control.DoubleAsterisk(Control.EOLLexeme)
-                    from map in Expression(Control.EOLLexeme)
-                    select (
-                        Maybe.Nothing<IReadOnlyList<Expr>>(),
-                        Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
-                        Maybe.Nothing<Expr>(),
-                        Maybe.FromValue(map)
-                    )).Try(),
-                    (from sa in Control.Asterisk(Control.EOLLexeme)
-                    from sequence in Expression(Control.EOLLexeme)
-                    from keywordArgs in OptionalKeywords
-                    from map in OptionalMappingArg
-                    select (
-                        Maybe.Nothing<IReadOnlyList<Expr>>(),
-                        keywordArgs,
-                        Maybe.FromValue(sequence),
-                        map
-                    )).Try(),
-                    (from keywordArgs in KeywordArguments
-                    from sequence in OptionalSequenceArg
-                    from restKeywordArgs in OptionalKeywords
-                    from map in OptionalMappingArg
-                    select (
-                        Maybe.Nothing<IReadOnlyList<Expr>>(),
-                        Maybe.FromValue(restKeywordArgs.Match(
-                            just: (rest) => keywordArgs.Concat(rest).ToList(),
-                            nothing: () => keywordArgs
-                        )),
-                        sequence,
-                        map
-                    )).Try(),
-                    (from args in PositionalArguments
-                    from keywordArgs in OptionalKeywords
-                    from sequence in OptionalSequenceArg
-                    from restKeywordArgs in OptionalKeywords
-                    from map in OptionalMappingArg
+                    from args in PositionalArguments
                     select (
                         Maybe.FromValue(args),
-                        keywordArgs.Match(
-                            just: (kwargs) => Maybe.FromValue<IReadOnlyList<KeywordArgument>>(
-                                kwargs.Concat(restKeywordArgs.Else(Array.Empty<KeywordArgument>())).ToList()
-                            ),
-                            nothing: () => restKeywordArgs
-                        ),
-                        sequence,
-                        map
-                    )).Try()
+                        Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
+                        Maybe.Nothing<Expr>(),
+                        Maybe.Nothing<Expr>()
+                    )
                 );
 
 
