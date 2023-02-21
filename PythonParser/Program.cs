@@ -10,8 +10,6 @@ namespace PythonParser
         {
         }
 
-        private struct Nothing { }
-
         private class PrintVisitor : ExprVisitor<string, int>, StmtVisitor<string, int>
         {
             private static string GetIndentation(int indentationLevel) => new string(' ', indentationLevel * 4);
@@ -72,8 +70,8 @@ namespace PythonParser
 
             public string VisitBinary(Binary binary, int indentation)
             {
-                return binary.Left.Accept(this, indentation) 
-                    + ' ' + BinaryOperators[binary.Operator] 
+                return binary.Left.Accept(this, indentation)
+                    + ' ' + BinaryOperators[binary.Operator]
                     + ' ' + binary.Right.Accept(this, indentation);
             }
 
@@ -136,12 +134,37 @@ namespace PythonParser
 
             public string VisitFor(For forStatement, int indentation)
             {
-                throw new NotImplementedException();
+                var indent = GetIndentation(indentation);
+
+                return indent
+                    + "for "
+                    + ListExprs(forStatement.Targets, indentation)
+                    + " in "
+                    + ListExprs(forStatement.Expressions, indentation)
+                    + ":\n"
+                    + forStatement.Body.Accept(this, indentation + 1)
+                    + forStatement.ElseBranch.Match(
+                        just: body => indent + "else:\n" + body.Accept(this, indentation + 1),
+                        nothing: () => string.Empty
+                      );
             }
 
-            public string VisitFunction(Function function, int aindentationrg)
+            public string VisitFunction(Function function, int indentation)
             {
-                throw new NotImplementedException();
+                return GetIndentation(indentation)
+                    + "def "
+                    + function.Name
+                    + '('
+                    + ListExprs(function.Parameters, indentation)
+                    + (function.DefaultParameters.Count > 0 ? ", " : string.Empty)
+                    + string.Join(
+                        ", ",
+                        function.DefaultParameters.Select(
+                            pair => pair.Item1.Accept(this, indentation) + " = " + pair.Item2.Accept(this, indentation)
+                        )
+                      )
+                    + "):\n"
+                    + function.Body.Accept(this, indentation + 1);
             }
 
             public string VisitIdentifierLiteral(IdentifierLiteral literal, int indentation)
@@ -151,13 +174,32 @@ namespace PythonParser
 
             public string VisitIf(If ifStatement, int indentation)
             {
-                throw new NotImplementedException();
+                var indent = GetIndentation(indentation);
+                var elifsBuilder = new StringBuilder();
+                foreach (var (condition, body) in ifStatement.Elifs)
+                {
+                    elifsBuilder.Append(indent);
+                    elifsBuilder.Append("elif ");
+                    elifsBuilder.Append(condition.Accept(this, indentation));
+                    elifsBuilder.AppendLine(":");
+                    elifsBuilder.Append(body.Accept(this, indentation + 1));
+                }
+                return indent
+                    + "if "
+                    + ifStatement.Test.Accept(this, indentation)
+                    + ":\n"
+                    + ifStatement.ThenBranch.Accept(this, indentation + 1)
+                    + elifsBuilder.ToString()
+                    + ifStatement.ElseBranch.Match(
+                        just: branch => indent + "else:\n" + branch.Accept(this, indentation + 1),
+                        nothing: () => string.Empty
+                      );
             }
 
             public string VisitImport(ImportModule import, int indentation)
             {
-                return "import " 
-                    + string.Join('.', import.ModulePath) 
+                return "import "
+                    + string.Join('.', import.ModulePath)
                     + import.Alias.Match(just: id => " as " + id, nothing: () => string.Empty);
             }
 
@@ -186,7 +228,7 @@ namespace PythonParser
 
             public string VisitKeywordArgument(KeywordArgument keywordArgument, int indentation)
             {
-                return keywordArgument.Name.Accept(this, indentation) 
+                return keywordArgument.Name.Accept(this, indentation)
                     + " = "
                     + keywordArgument.Value.Accept(this, indentation);
             }
@@ -270,9 +312,19 @@ namespace PythonParser
                 return UnaryOperators[unary.Operator] + unary.Expression.Accept(this, indentation);
             }
 
-            public string VisitWhile(While ifStatement, int indentation)
+            public string VisitWhile(While whileStatement, int indentation)
             {
-                throw new NotImplementedException();
+                var indent = GetIndentation(indentation);
+
+                return indent
+                    + "while "
+                    + whileStatement.Test.Accept(this, indentation)
+                    + ":\n"
+                    + whileStatement.Body.Accept(this, indentation + 1)
+                    + whileStatement.ElseBranch.Match(
+                        just: body => indent + "else:\n" + body.Accept(this, indentation + 1),
+                        nothing: () => string.Empty
+                      );
             }
         }
     }
