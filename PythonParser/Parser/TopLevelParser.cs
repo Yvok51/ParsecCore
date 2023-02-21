@@ -2,7 +2,7 @@
 using PythonParser.Parser;
 using PythonParser.Structures;
 
-namespace PythonParser.TopLevelParser
+namespace PythonParser.Parser
 {
     internal static class TopLevelParser
     {
