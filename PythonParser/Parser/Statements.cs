@@ -120,10 +120,11 @@ namespace PythonParser.Parser
             Combinators.SepEndBy1(SimpleStatement, Control.Semicolon(Control.Lexeme));
 
         public static readonly Parser<Stmt, char> Statement =
-            (from list in StatementList
-             from eol in Control.EOL.Or(Parsers.EOF.Map(_ => '\n'))
-             select new Suite(list)).Try()
-            .Or(Parsers.Indirect(() => CompoundStatement));
+            Parsers.Indirect(() => CompoundStatement).Try().Or(
+                from list in StatementList
+                from eol in Control.EOL.Or(Parsers.EOF.Map(_ => '\n'))
+                select new Suite(list)
+            );
 
         private static Parser<Expr, char> ConditionHead(string keyword) =>
             from _ in Control.Keyword(keyword)
