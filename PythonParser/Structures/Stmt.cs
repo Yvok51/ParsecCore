@@ -15,7 +15,7 @@ namespace PythonParser.Structures
         T VisitImportSpecificAll(ImportSpecificAll import, A arg);
         T VisitSuite(Suite suite, A arg);
         T VisitIf(If ifStatement, A arg);
-        T VisitWhile(While ifStatement, A arg);
+        T VisitWhile(While whileStatement, A arg);
         T VisitFor(For forStatement, A arg);
         T VisitFunction(Function function, A arg);
     }
