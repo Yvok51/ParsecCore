@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PythonParser", "PythonParse
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PythonParserTests", "PythonParserTests\PythonParserTests.csproj", "{08E1AE91-70DB-4A7D-8B94-93B351781211}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSONtoXML.Benchmarks", "JSONtoXML.Benchmarks\JSONtoXML.Benchmarks.csproj", "{7002FF49-AD3E-4755-9675-CE55686993ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{08E1AE91-70DB-4A7D-8B94-93B351781211}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08E1AE91-70DB-4A7D-8B94-93B351781211}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08E1AE91-70DB-4A7D-8B94-93B351781211}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7002FF49-AD3E-4755-9675-CE55686993ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7002FF49-AD3E-4755-9675-CE55686993ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7002FF49-AD3E-4755-9675-CE55686993ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7002FF49-AD3E-4755-9675-CE55686993ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
