@@ -9,9 +9,11 @@ namespace PythonParser
     {
         static void Main(string[] args)
         {
-            if (args.Length != 0)
+            if (args.Length != 1)
             {
                 Console.WriteLine("Please supply exactly one file to parse");
+                Console.WriteLine(args);
+                return;
             }
 
             try
@@ -157,7 +159,7 @@ namespace PythonParser
 
             public string VisitExpression(ExpressionStmt expression, int indentation)
             {
-                return GetIndentation(indentation) + expression.Accept(this, indentation);
+                return GetIndentation(indentation) + ListExprs(expression.Expressions, indentation);
             }
 
             public string VisitFloatLiteral(FloatLiteral literal, int indentation)
