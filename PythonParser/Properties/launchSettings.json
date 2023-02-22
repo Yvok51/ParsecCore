@@ -2,7 +2,7 @@
   "profiles": {
     "PythonParser": {
       "commandName": "Project",
-      "commandLineArgs": "example.py"
+      "commandLineArgs": "$(ProjectDir)example.py"
     }
   }
 }
