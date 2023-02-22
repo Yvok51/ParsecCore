@@ -2,7 +2,6 @@
 using ParsecCore.MaybeNS;
 using PythonParser.Parser;
 using PythonParser.Structures;
-using PythonParser.TopLevelParser;
 
 namespace PythonParserTests.Parser
 {
