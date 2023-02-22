@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PythonParser": {
+      "commandName": "Project",
+      "commandLineArgs": "example.py"
+    }
+  }
+}
