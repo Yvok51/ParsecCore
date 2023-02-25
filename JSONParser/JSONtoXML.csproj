@@ -15,9 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="example-json\large.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="example-json\sample1.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
