@@ -13,6 +13,16 @@
 
   <ItemGroup>
     <ProjectReference Include="..\JSONParser\JSONtoXML.csproj" />
+    <ProjectReference Include="..\ParsecCore\ParsecCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="test-files\large.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="test-files\zips.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
