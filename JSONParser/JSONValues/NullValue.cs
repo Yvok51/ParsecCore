@@ -6,7 +6,7 @@ namespace JSONtoXML
     {
         public override T Accept<T, A>(IJsonVisitor<T, A> visitor, A arg)
         {
-            return visitor.VisitString(this, arg);
+            return visitor.VisitNull(this, arg);
         }
 
         public override string ToString() => "null";
