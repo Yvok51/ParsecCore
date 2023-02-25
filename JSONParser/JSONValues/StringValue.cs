@@ -1,4 +1,6 @@
-﻿namespace JSONtoXML
+﻿using JSONtoXML.JSONValues;
+
+namespace JSONtoXML
 {
     internal sealed class StringValue : JsonValue
     {
@@ -7,6 +9,11 @@
         public StringValue(string value)
         {
             _value = value;
+        }
+
+        public override T Accept<T, A>(IJsonVisitor<T, A> visitor, A arg)
+        {
+            return visitor.VisitString(this, arg);
         }
 
         public string Value { get => _value; }
