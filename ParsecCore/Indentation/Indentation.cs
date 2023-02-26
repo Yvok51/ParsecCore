@@ -25,8 +25,8 @@ namespace ParsecCore.Indentation
         )
         {
             return Parsers.Fail<T, TInput>(
-                $"Incorrect indentation (expected indentation {desiredRelation.ToPrettyString()} {referencePosition.Column},"
-                + $" encountered {actualPosition.Column})");
+                $"Incorrect indentation (expected indentation {desiredRelation.ToPrettyString()} {referencePosition.Column - 1},"
+                + $" encountered {actualPosition.Column - 1})");
         }
 
         /// <summary>
