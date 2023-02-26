@@ -15,7 +15,7 @@ namespace PythonParser.Parser
 
         private static readonly Parser<char, char> WhitespaceChar =
             Parsers.Satisfy(c => c == ' ' || c == '\t' || c == '\f', "whitespace")
-            .Or(from escape in Parsers.Char('\\') from eol in EOL select eol);
+            .Or(from escape in Parsers.Char('\\') from eol in EOL select ' ');
 
         private static readonly Parser<string, char> Whitespace =
             WhitespaceChar.Many();
