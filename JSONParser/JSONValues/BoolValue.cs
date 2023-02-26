@@ -1,4 +1,6 @@
-﻿namespace JSONtoXML
+﻿using JSONtoXML.JSONValues;
+
+namespace JSONtoXML
 {
     internal sealed class BoolValue : JsonValue
     {
@@ -7,6 +9,11 @@
         public BoolValue(bool value)
         {
             _value = value;
+        }
+
+        public override T Accept<T, A>(IJsonVisitor<T, A> visitor, A arg)
+        {
+            return visitor.VisitBool(this, arg);
         }
 
         public bool Value { get => _value; }

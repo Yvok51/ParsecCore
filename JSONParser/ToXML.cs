@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using JSONtoXML.JSONValues;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace JSONtoXML
 {
@@ -6,62 +8,70 @@ namespace JSONtoXML
     {
         public static XMLNode ConvertJSON(JsonValue jsonValue)
         {
-            return ConvertImpl(jsonValue, "root");
+            return jsonValue.Accept(new JsonToXmlVisitor(), "root");
         }
 
-        private static XMLNode ConvertImpl(JsonValue jsonValue, string tag, Dictionary<string, string> attributes = null)
+        private class JsonToXmlVisitor : IJsonVisitor<XMLNode, string>
         {
-            var childNodes = jsonValue switch
+            public XMLNode VisitArray(ArrayValue value, string tag)
             {
-                ObjectValue value => Convert(value, tag, attributes),
-                ArrayValue value => Convert(value, tag, attributes),
-                StringValue value => Convert(value),
-                NumberValue value => Convert(value),
-                BoolValue value => Convert(value),
-                NullValue value => Convert(value),
-                _ => Help.ListOf(new XMLTextNode() { Content = "null" }) // Remove?
-            };
-
-            return new XMLElementNode()
-            {
-                Tag = tag,
-                Attributes = attributes,
-                ChildNodes = childNodes
-            };
-        }
-
-        private static IReadOnlyList<XMLNode> Convert(ObjectValue objectValue, string tag, Dictionary<string, string> attributes = null)
-        {
-            List<XMLNode> childNodes = new List<XMLNode>();
-            foreach (var (key, value) in objectValue.Value)
-            {
-                childNodes.Add(ConvertImpl(value, key.Value, attributes));
+                return new XMLElementNode()
+                {
+                    Tag = tag,
+                    Attributes = null,
+                    ChildNodes = value.Value.Select(json => json.Accept(this, "Item")).ToList()
+                };
             }
 
-            return childNodes;
-        }
-
-        private static IReadOnlyList<XMLNode> Convert(ArrayValue arrayValue, string tag, Dictionary<string, string> attributes = null)
-        {
-            List<XMLNode> nodes = new List<XMLNode>();
-            foreach (var value in arrayValue.Value)
+            public XMLNode VisitBool(BoolValue value, string tag)
             {
-                nodes.Add(ConvertImpl(value, "Item", attributes));
+                return new XMLElementNode()
+                {
+                    Tag = tag,
+                    Attributes = null,
+                    ChildNodes = new List<XMLNode>() { new XMLTextNode() { Content = value.Value ? "true" : "else" } }
+                };
             }
 
-            return nodes;
+            public XMLNode VisitNull(NullValue value, string tag)
+            {
+                return new XMLElementNode()
+                {
+                    Tag = tag,
+                    Attributes = null,
+                    ChildNodes = new List<XMLNode>() { new XMLTextNode() { Content = "null" } }
+                };
+            }
+
+            public XMLNode VisitNumber(NumberValue value, string tag)
+            {
+                return new XMLElementNode()
+                {
+                    Tag = tag,
+                    Attributes = null,
+                    ChildNodes = new List<XMLNode>() { new XMLTextNode() { Content = value.Value.ToString() } }
+                };
+            }
+
+            public XMLNode VisitObject(ObjectValue value, string tag)
+            {
+                return new XMLElementNode()
+                {
+                    Tag = tag,
+                    Attributes = null,
+                    ChildNodes = value.Value.Select(pair => pair.Value.Accept(this, pair.Key.Value)).ToList()
+                };
+            }
+
+            public XMLNode VisitString(StringValue value, string tag)
+            {
+                return new XMLElementNode()
+                {
+                    Tag = tag,
+                    Attributes = null,
+                    ChildNodes = new List<XMLNode>() { new XMLTextNode() { Content = value.Value } }
+                };
+            }
         }
-
-        private static IReadOnlyList<XMLNode> Convert(StringValue stringValue) =>
-            Help.ListOf(new XMLTextNode() { Content = stringValue.Value });
-
-        private static IReadOnlyList<XMLNode> Convert(BoolValue boolValue) =>
-            Help.ListOf(new XMLTextNode() { Content = boolValue.Value ? "true" : "false" });
-
-        private static IReadOnlyList<XMLNode> Convert(NullValue nullValue) =>
-            Help.ListOf(new XMLTextNode() { Content = "null" });
-
-        private static IReadOnlyList<XMLNode> Convert(NumberValue numberValue) =>
-            Help.ListOf(new XMLTextNode() { Content = numberValue.Value.ToString() });
     }
 }

@@ -1,7 +1,14 @@
-﻿namespace JSONtoXML
+﻿using JSONtoXML.JSONValues;
+
+namespace JSONtoXML
 {
     internal sealed class NullValue : JsonValue
     {
+        public override T Accept<T, A>(IJsonVisitor<T, A> visitor, A arg)
+        {
+            return visitor.VisitNull(this, arg);
+        }
+
         public override string ToString() => "null";
 
         public override bool Equals(object obj) => obj is NullValue;

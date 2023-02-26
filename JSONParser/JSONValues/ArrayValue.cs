@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using JSONtoXML.JSONValues;
+using System.Collections.Generic;
 using System.Text;
 
 namespace JSONtoXML
@@ -13,6 +14,11 @@ namespace JSONtoXML
         }
 
         public List<JsonValue> Value { get => _values; }
+
+        public override T Accept<T, A>(IJsonVisitor<T, A> visitor, A arg)
+        {
+            return visitor.VisitArray(this, arg);
+        }
 
         public override string ToString()
         {
