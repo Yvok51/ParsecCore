@@ -71,6 +71,47 @@ namespace PythonParserTests.Parser.StatementTests
         }
 
         [Theory]
+        [InlineData("for x in xs:\n\n  call()\n\n  return\n\n")]
+        [InlineData("for x in xs:\n\n  call()\n\n\n  return\n\n")]
+        [InlineData("for x in xs:  \n \n   \n  call() \n  \n   \n  return\n\n")]
+        public void EmptyLines(string inputString)
+        {
+            var input = ParserInput.Create(inputString);
+            var result = Statements.Statement(input);
+
+            Assert.True(result.IsResult);
+            Assert.Equal(
+                new For(
+                    new List<Expr>() { new IdentifierLiteral("x") },
+                    new List<Expr>() { new IdentifierLiteral("xs") },
+                    new Suite(new List<Stmt>()
+                    {
+                        new Suite(
+                            new List<Stmt>()
+                            {
+                                new ExpressionStmt(
+                                    new List<Expr>()
+                                    {
+                                        new Call(
+                                            new IdentifierLiteral("call"),
+                                            Maybe.Nothing<IReadOnlyList<Expr>>(),
+                                            Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
+                                            Maybe.Nothing<Expr>(),
+                                            Maybe.Nothing<Expr>()
+                                        )
+                                    }
+                                )
+                            }
+                        ),
+                        new Suite( new List<Stmt>() { new Return(Maybe.Nothing<IReadOnlyList<Expr>>()) })
+                    }),
+                    Maybe.Nothing<Suite>()
+                ),
+                result.Result
+            );
+        }
+
+        [Theory]
         [InlineData("for x in xs:\n  pass\n\n\nelse:\n  pass")]
         [InlineData("for x in xs:\n  pass\n\nelse:\n  pass")]
         [InlineData("for x in xs:\n  pass\nelse:\n  pass")]

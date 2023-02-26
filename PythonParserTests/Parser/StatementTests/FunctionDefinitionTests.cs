@@ -48,6 +48,31 @@ namespace PythonParserTests.Parser.StatementTests
             );
         }
 
+        [Theory]
+        [InlineData("def func(a,\nb,\nc):\n  pass\n")]
+        [InlineData("def func(a,\n  b,\n  c):\n  pass\n")]
+        public void DefineFunctionWithArgumentsAcrossMultipleLines(string inputString)
+        {
+            var input = ParserInput.Create(inputString);
+            var result = Statements.Statement(input);
+
+            Assert.True(result.IsResult);
+            Assert.Equal(
+                new Function(
+                    new IdentifierLiteral("func"),
+                    new List<IdentifierLiteral>()
+                    {
+                        new IdentifierLiteral("a"),
+                        new IdentifierLiteral("b"),
+                        new IdentifierLiteral("c")
+                    },
+                    Array.Empty<(IdentifierLiteral, Expr)>(),
+                    new Suite(new List<Stmt>() { new Suite(new List<Stmt>() { new Pass() }) })
+                ),
+                result.Result
+            );
+        }
+
         [Fact]
         public void MultipleStatementsInBody()
         {
