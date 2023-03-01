@@ -11,20 +11,20 @@ namespace JSONtoXML
 {
     ""glossary"": {
         ""title"": ""example glossary"",
-		""GlossDiv"": {
+        ""GlossDiv"": {
             ""title"": ""S"",
-			""GlossList"": {
+            ""GlossList"": {
                 ""GlossEntry"": {
                     ""ID"": 1526,
-					""SortAs"": ""SGML"",
-					""GlossTerm"": ""Standard Generalized Markup Language"",
-					""Acronym"": null,
-					""Abbrev"": ""ISO 8879:1986"",
-					""GlossDef"": {
+                    ""SortAs"": ""SGML"",
+                    ""GlossTerm"": ""Standard Generalized Markup Language"",
+                    ""Acronym"": null,
+                    ""Abbrev"": ""ISO 8879:1986"",
+                    ""GlossDef"": {
                         ""para"": ""A meta-markup language, used to create markup languages such as DocBook."",
-						""GlossSeeAlso"": [""GML"", ""XML""]
+                        ""GlossSeeAlso"": [""GML"", ""XML""]
                     },
-					""GlossSee"": true
+                    ""GlossSee"": true
                 }
             }
         }
@@ -85,6 +85,21 @@ namespace JSONtoXML
             Console.WriteLine("JSONtoXML.exe {inputFile} {outputFile}");
             Console.WriteLine("- Input file has to exist");
             Console.WriteLine("- Output file will be overwritten or created");
+        }
+
+        public static void Test()
+        {
+            try
+            {
+                JSONParsers.JsonDocument(
+                    ParserInput.Create(File.ReadAllText("../../../../JSONtoXML.Benchmarks/test-files/zips.json"))
+                );
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Unexpected exception:");
+                Console.WriteLine(e);
+            }
         }
     }
 }
