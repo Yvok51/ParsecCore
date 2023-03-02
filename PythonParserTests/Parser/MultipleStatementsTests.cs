@@ -195,5 +195,26 @@ print(sign(0))
                 result.Result
             );
         }
+
+        [Fact]
+        public void TopStatementIndentedFailure()
+        {
+            var inputString =
+@"
+
+ def sign(num):
+
+    if num > 0:
+        return 1
+    elif num == 0:
+        return 0
+    else:
+        return -1
+";
+            var input = ParserInput.Create(inputString);
+            var result = TopLevelParser.PythonFile(input);
+
+            Assert.True(result.IsError);
+        }
     }
 }
