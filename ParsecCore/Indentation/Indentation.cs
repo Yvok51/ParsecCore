@@ -25,8 +25,8 @@ namespace ParsecCore.Indentation
         )
         {
             return Parsers.Fail<T, TInput>(
-                $"Incorrect indentation (expected indentation {desiredRelation.ToPrettyString()} {referencePosition.Column - 1},"
-                + $" encountered {actualPosition.Column - 1})");
+                $"Incorrect indentation (expected indentation {desiredRelation.ToPrettyString()} {referencePosition.Indentation},"
+                + $" encountered {actualPosition.Indentation})");
         }
 
         /// <summary>
@@ -333,8 +333,8 @@ namespace ParsecCore.Indentation
                     else
                     {
                         return Either.Error<ParseError, List<TItem>>(new ParseError(
-                            $"Incorrect indentation (expected indentation {Relation.EQ.ToPrettyString()} {required.Column},"
-                            + $" encountered {position.Column})",
+                            $"Incorrect indentation (expected indentation {Relation.EQ.ToPrettyString()} {required.Indentation},"
+                            + $" encountered {position.Indentation})",
                             input.Position)
                         );
                     }
