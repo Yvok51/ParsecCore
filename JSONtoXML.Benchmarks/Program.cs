@@ -18,7 +18,7 @@ namespace JSONtoXML.Benchmarks
             Console.WriteLine(summaryMacro);
         }
 
-        [SimpleJob(RunStrategy.Monitoring, launchCount: 30, warmupCount: 0, iterationCount: 30)]
+        [SimpleJob(RunStrategy.Monitoring, launchCount: 20, warmupCount: 0, iterationCount: 20)]
         public class ParseJSONMacro
         {
             public ParseJSONMacro()
@@ -28,15 +28,15 @@ namespace JSONtoXML.Benchmarks
 
             public IEnumerable<string> FileNames()
             {
+                // yield return "test-files/large.json";
                 yield return "test-files/zips.json";
-                //yield return "test-files/large.json";
             }
 
             public Dictionary<string, string> Files;
 
             [Benchmark]
             [ArgumentsSource(nameof(FileNames))]
-            public bool ParseMacro(string fileName) => JSONParsers.JsonDocument(ParserInput.Create(Files[fileName])).IsResult;
+            public bool ParseMacro(string fileName) => JSONParsers.JsonDocument(ParserInput.Create(File.ReadAllText(fileName))).IsResult;
 
             public static Dictionary<string, string> LoadFiles(IEnumerable<string> files)
             {
