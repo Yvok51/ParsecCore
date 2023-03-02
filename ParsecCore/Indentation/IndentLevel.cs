@@ -5,23 +5,20 @@ namespace ParsecCore.Indentation
 {
     public readonly struct IndentLevel : IComparable<IndentLevel>, IComparable, IEquatable<IndentLevel>
     {
-        public IndentLevel(int indentation)
+        public IndentLevel(int column)
         {
-            Indentation = indentation;
+            Column = column;
         }
 
-        public IndentLevel(Position position)
-        {
-            Indentation = position.Column - 1;
-        }
+        public readonly int Column { get; init; }
 
-        public readonly int Indentation { get; init; }
+        public readonly int Indentation { get => Column - 1; }
 
         public static readonly IndentLevel FirstPosition = (IndentLevel)Position.BeginningColumn;
 
         public override string ToString()
         {
-            return Indentation.ToString();
+            return Column.ToString();
         }
 
         public override bool Equals(object? obj)
@@ -31,36 +28,36 @@ namespace ParsecCore.Indentation
 
         public override int GetHashCode()
         {
-            return Indentation.GetHashCode();
+            return Column.GetHashCode();
         }
 
         public int CompareTo(IndentLevel other)
         {
-            return Indentation.CompareTo(other.Indentation);
+            return Column.CompareTo(other.Column);
         }
 
         public int CompareTo(object? obj)
         {
-            return Indentation.CompareTo(obj);
+            return Column.CompareTo(obj);
         }
 
         public bool Equals(IndentLevel other)
         {
-            return Indentation.Equals(other.Indentation);
+            return Column.Equals(other.Column);
         }
 
         public static bool operator ==(IndentLevel left, IndentLevel right) => left.Equals(right);
         public static bool operator !=(IndentLevel left, IndentLevel right) => !left.Equals(right);
 
-        public static bool operator <(IndentLevel left, IndentLevel right) => left.Indentation < right.Indentation;
-        public static bool operator >(IndentLevel left, IndentLevel right) => left.Indentation > right.Indentation;
-        public static bool operator <=(IndentLevel left, IndentLevel right) => left.Indentation <= right.Indentation;
-        public static bool operator >=(IndentLevel left, IndentLevel right) => left.Indentation >= right.Indentation;
+        public static bool operator <(IndentLevel left, IndentLevel right) => left.Column < right.Column;
+        public static bool operator >(IndentLevel left, IndentLevel right) => left.Column > right.Column;
+        public static bool operator <=(IndentLevel left, IndentLevel right) => left.Column <= right.Column;
+        public static bool operator >=(IndentLevel left, IndentLevel right) => left.Column >= right.Column;
 
-        public static explicit operator int(IndentLevel indentation) => indentation.Indentation;
+        public static explicit operator int(IndentLevel indentation) => indentation.Column;
         public static explicit operator IndentLevel(int indentation) => new(indentation);
 
-        public static explicit operator IndentLevel(Position position) => new(position.Column - 1);
+        public static explicit operator IndentLevel(Position position) => new(position.Column);
 
     }
 }
