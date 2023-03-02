@@ -152,5 +152,17 @@ namespace PythonParserTests.Parser.StatementTests
                 result.Result
             );
         }
+
+        [Theory]
+        [InlineData("while x:\n  pass\n  else:\n  pass")]
+        [InlineData("while x:\n  pass\n else:\n  pass")]
+        [InlineData("  while x:\n  pass\nelse:\n  pass")]
+        public void ElseBranchAtDifferentIndentationFails(string inputString)
+        {
+            var input = ParserInput.Create(inputString);
+            var result = Statements.Statement(input);
+
+            Assert.True(result.IsError);
+        }
     }
 }

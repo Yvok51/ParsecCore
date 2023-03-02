@@ -206,5 +206,29 @@ namespace PythonParserTests.Parser.StatementTests
                 result.Result
             );
         }
+
+        [Theory]
+        [InlineData("if x:\n  pass\n  elif y:\n  pass")]
+        [InlineData("if x:\n  pass\n elif y:\n  pass")]
+        [InlineData("  if x:\n  pass\nelif y:\n  pass")]
+        public void ElifBranchAtDifferentIndentationFails(string inputString)
+        {
+            var input = ParserInput.Create(inputString);
+            var result = Statements.Statement(input);
+
+            Assert.True(result.IsError);
+        }
+
+        [Theory]
+        [InlineData("if x:\n  pass\n  else:\n  pass")]
+        [InlineData("if x:\n  pass\n else:\n  pass")]
+        [InlineData("  if x:\n  pass\nelse:\n  pass")]
+        public void ElseBranchAtDifferentIndentationFails(string inputString)
+        {
+            var input = ParserInput.Create(inputString);
+            var result = Statements.Statement(input);
+
+            Assert.True(result.IsError);
+        }
     }
 }
