@@ -27,7 +27,7 @@ namespace JSONtoXML
             {
                 return GetIndentation(indent, _spacesPerIndent)
                     + $"<{element.Tag}{AttributesToString(element.Attributes)}>\n"
-                    + string.Concat(element.ChildNodes.Select(node => element.Accept(this, indent + 1)))
+                    + string.Concat(element.ChildNodes.Select(node => node.Accept(this, indent + 1)))
                     + $"</{element.Tag}>";
             }
 
