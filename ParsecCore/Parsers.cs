@@ -233,7 +233,9 @@ namespace ParsecCore
         {
             if (msg is null) throw new ArgumentNullException(nameof(msg));
 
-            return (input) => Either.Error<ParseError, T>(new ParseError(msg, input.Position));
+            return (input) => Either.Error<ParseError, T>(
+                    new CustomError(input.Position, new FailWithError(msg).ToEnumerable())
+                );
         }
 
         /// <summary>

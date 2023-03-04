@@ -1,4 +1,5 @@
 ﻿using ParsecCore.EitherNS;
+using ParsecCore.Help;
 using ParsecCore.Input;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace ParsecCore.ParsersHelp
 
         public static Parser<T, TInputToken> Parser<T, TInputToken>(IEnumerable<Parser<T, TInputToken>> parsers)
         {
+
             return (input) =>
             {
                 Position initialPosition = input.Position;
@@ -34,7 +36,7 @@ namespace ParsecCore.ParsersHelp
                 }
                 if (parseResults.Count == 0)
                 {
-                    return Either.Error<ParseError, T>(new ParseError("No parser provided", initialPosition));
+                    return Either.Error<ParseError, T>(new CustomError(initialPosition, new FailWithError("No parser provided").ToEnumerable()));
                 }
 
                 return parseResults.Aggregate((left, right) => left.CombineErrors(right));

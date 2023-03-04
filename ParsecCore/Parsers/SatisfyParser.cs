@@ -1,4 +1,6 @@
 ﻿using ParsecCore.EitherNS;
+using ParsecCore.Help;
+using ParsecCore.MaybeNS;
 using System;
 using System.Collections.Generic;
 
@@ -28,10 +30,10 @@ namespace ParsecCore.ParsersHelp
                 if (input.EndOfInput)
                 {
                     return Either.Error<ParseError, char>(
-                        new ParseError(
-                            expected: predicateDescription,
-                            encoutered: "end of file",
-                            input.Position
+                        new StandardError(
+                            input.Position,
+                            unexpected: Maybe.FromValue(EndOfFile.Instance),
+                            expected: new StringToken(predicateDescription).ToEnumerable()
                         )
                     );
                 }
@@ -42,10 +44,10 @@ namespace ParsecCore.ParsersHelp
                 {
                     string readChar = escapedChars.ContainsKey(read) ? escapedChars[read] : read.ToString();
                     return Either.Error<ParseError, char>(
-                        new ParseError(
-                            expected: predicateDescription,
-                            encoutered: $"character '{readChar}'",
-                            readPosition
+                        new StandardError(
+                            readPosition,
+                            unexpected: Maybe.FromValue(new StringToken(readChar)),
+                            expected: new StringToken(predicateDescription).ToEnumerable()
                         )
                     );
                 }
@@ -67,10 +69,10 @@ namespace ParsecCore.ParsersHelp
                 if (input.EndOfInput)
                 {
                     return Either.Error<ParseError, TInputToken>(
-                        new ParseError(
-                            expected: predicateDescription,
-                            encoutered: "end of file",
-                            input.Position
+                        new StandardError(
+                            input.Position,
+                            unexpected: Maybe.FromValue(EndOfFile.Instance),
+                            expected: new StringToken(predicateDescription).ToEnumerable()
                         )
                     );
                 }
@@ -80,10 +82,10 @@ namespace ParsecCore.ParsersHelp
                 if (!predicate(read))
                 {
                     return Either.Error<ParseError, TInputToken>(
-                        new ParseError(
-                            expected: predicateDescription,
-                            encoutered: $"token '{read}'",
-                            readPosition
+                        new StandardError(
+                            readPosition,
+                            unexpected: Maybe.FromValue(new Token<TInputToken>(new[] { read })),
+                            expected: new StringToken(predicateDescription).ToEnumerable()
                         )
                     );
                 }

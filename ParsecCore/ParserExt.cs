@@ -37,7 +37,9 @@ namespace ParsecCore
                     return result;
                 }
 
-                return Either.Error<ParseError, T>(result.Error.WithExpectedMessage(newExpectedMessage));
+                return Either.Error<ParseError, T>(
+                    new CustomError(input.Position, new FailWithError(newExpectedMessage).ToEnumerable())
+                );
             };
         }
 

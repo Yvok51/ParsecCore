@@ -59,5 +59,10 @@ namespace ParsecCore.Help
 
             return concat;
         }
+
+        public static IEnumerable<T> ToEnumerable<T>(this T value)
+        {
+            return new[] { value };
+        }
     }
 }

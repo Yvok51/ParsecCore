@@ -1,4 +1,5 @@
 ﻿using ParsecCore.EitherNS;
+using ParsecCore.MaybeNS;
 using ParsecCore.Help;
 
 namespace ParsecCore.ParsersHelp
@@ -19,11 +20,7 @@ namespace ParsecCore.ParsersHelp
                 }
 
                 return Either.Error<ParseError, None>(
-                    new ParseError(
-                        expected: "end of file",
-                        encoutered: "character",
-                        input.Position
-                    )
+                    new StandardError(input.Position, Maybe.Nothing<ErrorItem>(), EndOfFile.Instance.ToEnumerable())
                 );
             };
         }

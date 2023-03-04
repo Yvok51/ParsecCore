@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ParsecCore.EitherNS;
+using ParsecCore.Help;
 using ParsecCore.MaybeNS;
 
 namespace ParsecCore.Indentation
@@ -332,10 +333,8 @@ namespace ParsecCore.Indentation
                     }
                     else
                     {
-                        return Either.Error<ParseError, List<TItem>>(new ParseError(
-                            $"Incorrect indentation (expected indentation {Relation.EQ.ToPrettyString()} {required.Indentation},"
-                            + $" encountered {position.Indentation})",
-                            input.Position)
+                        return Either.Error<ParseError, List<TItem>>(
+                            new CustomError(input.Position, new IndentationError(Relation.EQ, required, position).ToEnumerable())
                         );
                     }
                 }
