@@ -37,7 +37,7 @@ namespace ParsecCore
         /// Returns a parser which tries to first apply the first parser and if it succeeds returns the result.
         /// If it fails <strong>and does not consume any input</strong> then the second parser is applied and so on.
         /// If any parser fails while consuming input, then the parser's error is returned.
-        /// If all parsers fail then returns the ParseError of tha last parser.
+        /// If all parsers fail then returns aggregated errors of all attempted parsers.
         /// 
         /// Because the parser fails if any parser fails while consuming input the lookahead is 1.
         /// If there is need for parsing to continue in the case input is consumed, then consider modifying
@@ -46,7 +46,7 @@ namespace ParsecCore
         /// <typeparam name="T"> The type of the parsers </typeparam>
         /// <param name="parsers"> Parsers to apply </param>
         /// <returns>
-        /// Parser which sequentially tries to apply the given parsers until one succeeds or all fails
+        /// Parser which sequentially tries to apply the given parsers until one succeeds or all fail
         /// </returns>
         /// <exception cref="ArgumentNullException"> If parser array is null </exception>
         public static Parser<T, TInputToken> Choice<T, TInputToken>(
