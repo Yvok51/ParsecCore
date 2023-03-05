@@ -1,5 +1,7 @@
 ﻿using ParsecCore.EitherNS;
 using ParsecCore.Help;
+using ParsecCore.Indentation;
+using ParsecCore.Input;
 using ParsecCore.MaybeNS;
 using ParsecCore.ParsersHelp;
 using System;
@@ -216,16 +218,48 @@ namespace ParsecCore
         /// Return a parser which does not consume any input and only returns the value given
         /// </summary>
         /// <typeparam name="T"> The type of the value the parser returns </typeparam>
+        /// <typeparam name="TInputToken"> The input type of the parser </typeparam>
         /// <param name="value"> The value for the parser to return </param>
         /// <returns> Parser which returns the given value </returns>
         public static Parser<T, TInputToken> Return<T, TInputToken>(T value) =>
             (input) => Either.Result<ParseError, T>(value);
 
         /// <summary>
+        /// Parser which returns the current position of the input
+        /// </summary>
+        /// <typeparam name="TInputToken"> The input type of the parser </typeparam>
+        /// <returns></returns>
+        public static Parser<Position, TInputToken> Position<TInputToken>()
+        {
+            return (input) =>
+            {
+                return Either.Result<ParseError, Position>(input.Position);
+            };
+        }
+
+        #region Error Handling
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TInputToken"></typeparam>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static Parser<T, TInputToken> ParserError<T, TInputToken>(ParseError error)
+        {
+            if (error is null) throw new ArgumentNullException(nameof(error));
+
+            return (input) => Either.Error<ParseError, T>(error);
+        }
+
+        /// <summary>
         /// Returns a parser which always fails with the given message.
         /// Does not consume any input.
         /// </summary>
         /// <typeparam name="T"> The type of parser </typeparam>
+        /// <typeparam name="TInputToken"> The input type of the parser </typeparam>
         /// <param name="msg"> The message to fail with </param>
         /// <returns> Parser which always fails with the given message </returns>
         /// <exception cref="ArgumentNullException"> If provided message is null </exception>
@@ -233,10 +267,12 @@ namespace ParsecCore
         {
             if (msg is null) throw new ArgumentNullException(nameof(msg));
 
-            return (input) => Either.Error<ParseError, T>(
-                    new CustomError(input.Position, new FailWithError(msg).ToEnumerable())
-                );
+            return from pos in Position<TInputToken>()
+                   from err in ParserError<T, TInputToken>(new CustomError(pos, new FailWithError(msg).ToEnumerable()))
+                   select err;
         }
+
+        #endregion
 
         /// <summary>
         /// Returns a parser which parses exactly the string given

@@ -25,9 +25,13 @@ namespace ParsecCore.Indentation
             IndentLevel actualPosition
         )
         {
-            return Parsers.Fail<T, TInput>(
-                $"Incorrect indentation (expected indentation {desiredRelation.ToPrettyString()} {referencePosition.Indentation},"
-                + $" encountered {actualPosition.Indentation})");
+            return from pos in Parsers.Position<TInput>()
+                   from err in Parsers.ParserError<T, TInput>(
+                       new CustomError(
+                           pos,
+                           new IndentationError(desiredRelation, referencePosition, actualPosition).ToEnumerable())
+                       )
+                   select err;
         }
 
         /// <summary>
@@ -36,15 +40,9 @@ namespace ParsecCore.Indentation
         /// </summary>
         /// <typeparam name="TInput"> The type of the input stream </typeparam>
         /// <returns> The position in the stream in a parser wrapper </returns>
-        public static Parser<IndentLevel, TInput> Position<TInput>()
-        {
-            // A bit hacky since we are basically recreating the Return parser,
-            // but we have to since we need to access the input directly
-            return (input) =>
-            {
-                return Either.Result<ParseError, IndentLevel>((IndentLevel)input.Position);
-            };
-        }
+        public static Parser<IndentLevel, TInput> IndentationLevel<TInput>()
+            => from pos in Parsers.Position<TInput>()
+               select (IndentLevel)pos;
 
         /// <summary>
         /// Guard to check whether the indentation is how we want it
@@ -70,7 +68,7 @@ namespace ParsecCore.Indentation
             if (spaceConsumer is null) throw new ArgumentNullException(nameof(spaceConsumer));
 
             return from _ in spaceConsumer
-                   from position in Position<TInput>()
+                   from position in IndentationLevel<TInput>()
                    from res in TestCorrectIndentation(relation, reference, position)
                    select res;
 
@@ -80,8 +78,8 @@ namespace ParsecCore.Indentation
                 IndentLevel actual
             )
             {
-                return relation.Satisfies(reference, actual) 
-                    ? Parsers.Return<IndentLevel, TInput>(actual) 
+                return relation.Satisfies(reference, actual)
+                    ? Parsers.Return<IndentLevel, TInput>(actual)
                     : IncorrectIndent<IndentLevel, TInput>(relation, reference, actual);
             }
         }
@@ -104,11 +102,11 @@ namespace ParsecCore.Indentation
             if (spaceConsumer is null) throw new ArgumentNullException(nameof(spaceConsumer));
             if (parser is null) throw new ArgumentNullException(nameof(parser));
 
-            return from _ in IndentGuard(spaceConsumer, Relation.EQ, IndentLevel.FirstPosition)
+            return from _ in IndentGuard(spaceConsumer, Relation.EQ, ParsecCore.Indentation.IndentLevel.FirstPosition)
                    from res in parser
                    select res;
         }
-        
+
         /// <summary>
         /// Parser for line folding. The user creates a parser which receives a space consumer which consumes
         /// whitespace between parts of the linefold and manually specifies how the statement can be folded.
@@ -129,7 +127,7 @@ namespace ParsecCore.Indentation
         )
         {
             return from _ in spaceConsumer
-                   from indentLvl in Position<TInput>()
+                   from indentLvl in IndentationLevel<TInput>()
                    from res in linefoldParser(IndentGuard(spaceConsumer, Relation.GT, indentLvl))
                    select res;
         }
@@ -171,7 +169,7 @@ namespace ParsecCore.Indentation
             if (itemParser is null) throw new ArgumentNullException(nameof(itemParser));
 
             return from _ in spaceConsumer
-                   from referenceLvl in Position<char>()
+                   from referenceLvl in IndentationLevel<char>()
                    from referenceItem in referenceParser
                    from lvl in (
                         from __ in Parsers.EOL
@@ -243,7 +241,7 @@ namespace ParsecCore.Indentation
             if (itemParser is null) throw new ArgumentNullException(nameof(itemParser));
 
             return from _ in spaceConsumer
-                   from referenceLvl in Position<char>()
+                   from referenceLvl in IndentationLevel<char>()
                    from referenceItem in referenceParser
                    from __ in Parsers.EOL
                    from currPosition in IndentGuard(spaceConsumer, Relation.GT, referenceLvl)
@@ -256,7 +254,7 @@ namespace ParsecCore.Indentation
                 IndentLevel referenceLevel,
                 IndentLevel desiredLevel,
                 Parser<TItem, char> itemParser
-            ) 
+            )
             {
                 if (currentPosition <= referenceLevel)
                 {
@@ -300,9 +298,9 @@ namespace ParsecCore.Indentation
         )
         {
             var lineBeginningParser = from _ in spaceConsumer
-                         from position in Position<char>()
-                         from end in Parsers.IsEOF
-                         select (position, end);
+                                      from position in IndentationLevel<char>()
+                                      from end in Parsers.IsEOF
+                                      select (position, end);
 
             return (input) =>
             {
