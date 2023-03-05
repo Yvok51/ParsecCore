@@ -87,12 +87,13 @@ namespace JSONtoXML
             Console.WriteLine("- Output file will be overwritten or created");
         }
 
-        public static void Test()
+        public static void Test(string input)
         {
             try
             {
+                // input = File.ReadAllText("../../../../JSONtoXML.Benchmarks/test-files/zips.json");
                 JSONParsers.JsonDocument(
-                    ParserInput.Create(File.ReadAllText("../../../../JSONtoXML.Benchmarks/test-files/zips.json"))
+                    ParserInput.Create(input)
                 );
             }
             catch (Exception e)
