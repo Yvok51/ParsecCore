@@ -28,8 +28,9 @@ namespace JSONtoXML.Benchmarks
 
             public IEnumerable<string> FileNames()
             {
-                // yield return "test-files/large.json";
+                yield return "test-files/countries.json";
                 yield return "test-files/zips.json";
+                yield return "test-files/large.json";
             }
 
             public Dictionary<string, string> Files;
