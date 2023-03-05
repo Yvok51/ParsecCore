@@ -39,6 +39,34 @@ namespace ParsecCore
             return other.ResolveCombine(this);
         }
 
+        public override string ToString()
+        {
+            StringBuilder builder = new();
+            builder.AppendLine($"({Position}):");
+            bool anyExpected = _expected.Any();
+            if (_unexpected.IsEmpty && !anyExpected)
+            {
+                return builder.AppendLine("  Unknown parsing error").ToString();
+            }
+
+            builder.Append(_unexpected.Match(
+                just: item => $"  unexpected: {item.ToString()}\n",
+                nothing: () => string.Empty
+            ));
+
+            if (!anyExpected)
+            {
+                return builder.ToString();
+            }
+
+            foreach (var item in _expected)
+            {
+                builder.AppendLine($"    expected: {item.ToString()}");
+            }
+
+            return builder.ToString();
+        }
+
         internal override ParseError ResolveCombine(StandardError error)
         {
             return new StandardError(
@@ -95,6 +123,16 @@ namespace ParsecCore
         public override ParseError Combine(ParseError other)
         {
             return other.ResolveCombine(this);
+        }
+
+        public override string ToString()
+        {
+            if (!_customs.Any())
+            {
+                return $"({Position}):\n  Unknown custom parsing error";
+            }
+
+            return $"({Position}):\n  " + string.Join("\n  ", _customs);
         }
 
         internal override ParseError ResolveCombine(StandardError error)

@@ -1,5 +1,6 @@
 ﻿using ParsecCore.Indentation;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ParsecCore
 {
@@ -13,6 +14,11 @@ namespace ParsecCore
         private EndOfFile() { }
         public override int Size => 1;
 
+        public override string ToString()
+        {
+            return "\"end of file\"";
+        }
+
         public static readonly EndOfFile Instance = new EndOfFile();
     }
 
@@ -21,6 +27,11 @@ namespace ParsecCore
         public StringToken(string token)
         {
             _token = token;
+        }
+
+        public override string ToString()
+        {
+            return "\"" + _token + "\"";
         }
 
         public override int Size => _token.Length;
@@ -32,12 +43,17 @@ namespace ParsecCore
     {
         public Token(IReadOnlyList<T> token)
         {
-            _token = token;
+            _tokens = token;
         }
 
-        public override int Size => _token.Count;
+        public override string ToString()
+        {
+            return string.Join(' ', _tokens.Select(item => "\"" + item.ToString() + "\""));
+        }
 
-        private readonly IReadOnlyList<T> _token;
+        public override int Size => _tokens.Count;
+
+        private readonly IReadOnlyList<T> _tokens;
     }
 
     public abstract class FancyError
@@ -49,6 +65,11 @@ namespace ParsecCore
         public FailWithError(string message)
         {
             _message = message;
+        }
+
+        public override string ToString()
+        {
+            return "\"" + _message + "\"";
         }
 
         private readonly string _message;
@@ -63,6 +84,12 @@ namespace ParsecCore
             _actual = actual;
         }
 
+        public override string ToString()
+        {
+            return $"Incorrect indentation (expected indentation {_relation.ToPrettyString()} {_reference},"
+                + $" encountered {_actual})";
+        }
+
         private readonly Relation _relation;
         private readonly IndentLevel _reference;
         private readonly IndentLevel _actual;
@@ -73,6 +100,11 @@ namespace ParsecCore
         public ErrorCustom(T item)
         {
             _item = item;
+        }
+
+        public override string ToString()
+        {
+            return "\"" + _item.ToString() + "\"";
         }
 
         private T _item;
