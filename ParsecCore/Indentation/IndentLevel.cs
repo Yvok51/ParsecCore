@@ -18,7 +18,7 @@ namespace ParsecCore.Indentation
 
         public override string ToString()
         {
-            return Column.ToString();
+            return Indentation.ToString();
         }
 
         public override bool Equals(object? obj)
