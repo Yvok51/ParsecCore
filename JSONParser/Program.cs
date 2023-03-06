@@ -92,9 +92,11 @@ namespace JSONtoXML
             try
             {
                 // input = File.ReadAllText("../../../../JSONtoXML.Benchmarks/test-files/zips.json");
-                JSONParsers.JsonDocument(
+                var result = JSONParsers.JsonDocument(
                     ParserInput.Create(input)
                 );
+
+                Console.WriteLine(result);
             }
             catch (Exception e)
             {
