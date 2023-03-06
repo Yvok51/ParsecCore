@@ -1,4 +1,5 @@
 ﻿using System;
+using ParsecCore.Help;
 
 namespace ParsecCore.EitherNS
 {
@@ -61,7 +62,7 @@ namespace ParsecCore.EitherNS
         }
 
         /// <summary>
-        /// Combines two errors together according to the method <see cref="ParseError.Combine(ParseError)"/>.
+        /// Combines two errors together according to the method <see cref="ParseError.Accept(ParseError)"/>.
         /// Presumes both <c>IEither</c> are errors, throws <see cref="InvalidOperationException"/> otherwise
         /// </summary>
         /// <typeparam name="T">  The result type of the either </typeparam>
@@ -73,7 +74,7 @@ namespace ParsecCore.EitherNS
             IEither<ParseError, T> right
         )
         {
-            return Either.Error<ParseError, T>(left.Error.Combine(right.Error));
+            return Either.Error<ParseError, T>(left.Error.Accept(right.Error, None.Instance));
         }
 
     }

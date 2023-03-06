@@ -7,17 +7,25 @@ using ParsecCore.MaybeNS;
 
 namespace ParsecCore
 {
+
+    public interface IParseErrorVisitor<T, A>
+    {
+        T Visit(StandardError error, A arg);
+        T Visit(CustomError error, A arg);
+    }
+
     /// <summary>
     /// Represents an error which occured during parsing
     /// </summary>
-    public abstract partial class ParseError
+    public abstract partial class ParseError : IParseErrorVisitor<ParseError, None>
     {
         public abstract Position Position { get; set; }
 
-        public abstract ParseError Combine(ParseError other);
+        public abstract T Accept<T, A>(IParseErrorVisitor<T, A> visitor, A arg);
 
-        internal abstract ParseError ResolveCombine(StandardError error);
-        internal abstract ParseError ResolveCombine(CustomError error);
+        // ParseError is its own visitor used for merging two ParseErrors together
+        public abstract ParseError Visit(StandardError error, None _);
+        public abstract ParseError Visit(CustomError error, None _);
     }
 
     /// <summary>
@@ -28,29 +36,29 @@ namespace ParsecCore
         public StandardError(Position position, IMaybe<ErrorItem> unexpected, IEnumerable<ErrorItem> expected)
         {
             _position = position;
-            _unexpected = unexpected;
-            _expected = expected;
+            Unexpected = unexpected;
+            Expected = expected;
         }
 
         public override Position Position { get => _position; set => _position = value; }
 
-        public override ParseError Combine(ParseError other)
+        public override T Accept<T, A>(IParseErrorVisitor<T, A> other, A arg)
         {
-            return other.ResolveCombine(this);
+            return other.Visit(this, arg);
         }
 
         public override string ToString()
         {
             StringBuilder builder = new();
             builder.AppendLine($"({Position}):");
-            bool anyExpected = _expected.Any();
-            if (_unexpected.IsEmpty && !anyExpected)
+            bool anyExpected = Expected.Any();
+            if (Unexpected.IsEmpty && !anyExpected)
             {
                 return builder.AppendLine("  Unknown parsing error").ToString();
             }
 
-            builder.Append(_unexpected.Match(
-                just: item => $"  unexpected: {item.ToString()}\n",
+            builder.Append(Unexpected.Match(
+                just: item => $"  encountered: {item.ToString()}\n",
                 nothing: () => string.Empty
             ));
 
@@ -59,23 +67,23 @@ namespace ParsecCore
                 return builder.ToString();
             }
 
-            foreach (var item in _expected)
+            foreach (var item in Expected)
             {
-                builder.AppendLine($"    expected: {item.ToString()}");
+                builder.AppendLine($"     expected: {item.ToString()}");
             }
 
             return builder.ToString();
         }
 
-        internal override ParseError ResolveCombine(StandardError error)
+        public override ParseError Visit(StandardError error, None _)
         {
             return new StandardError(
                 Position,
-                CombineUnexpected(_unexpected, error._unexpected),
-                _expected.Union(error._expected)
+                CombineUnexpected(Unexpected, error.Unexpected),
+                Expected.Union(error.Expected)
             );
         }
-        internal override ParseError ResolveCombine(CustomError error)
+        public override ParseError Visit(CustomError error, None _)
         {
             return error;
         }
@@ -103,8 +111,8 @@ namespace ParsecCore
         }
 
         private Position _position;
-        private readonly IMaybe<ErrorItem> _unexpected;
-        private readonly IEnumerable<ErrorItem> _expected;
+        public IMaybe<ErrorItem> Unexpected { get; init; }
+        public IEnumerable<ErrorItem> Expected { get; init; }
     }
 
     /// <summary>
@@ -115,36 +123,36 @@ namespace ParsecCore
         public CustomError(Position position, IEnumerable<FancyError> customErrors)
         {
             _position = position;
-            _customs = customErrors;
+            Customs = customErrors;
         }
 
         public override Position Position { get => _position; set => _position = value; }
 
-        public override ParseError Combine(ParseError other)
+        public override T Accept<T, A>(IParseErrorVisitor<T, A> other, A arg)
         {
-            return other.ResolveCombine(this);
+            return other.Visit(this, arg);
         }
 
         public override string ToString()
         {
-            if (!_customs.Any())
+            if (!Customs.Any())
             {
                 return $"({Position}):\n  Unknown custom parsing error";
             }
 
-            return $"({Position}):\n  " + string.Join("\n  ", _customs);
+            return $"({Position}):\n  " + string.Join("\n  ", Customs);
         }
 
-        internal override ParseError ResolveCombine(StandardError error)
+        public override ParseError Visit(StandardError error, None _)
         {
             return this;
         }
-        internal override ParseError ResolveCombine(CustomError error)
+        public override ParseError Visit(CustomError error, None _)
         {
-            return new CustomError(Position, _customs.Union(error._customs));
+            return new CustomError(Position, Customs.Union(error.Customs));
         }
 
         private Position _position;
-        private readonly IEnumerable<FancyError> _customs;
+        public IEnumerable<FancyError> Customs { get; init; }
     }
 }

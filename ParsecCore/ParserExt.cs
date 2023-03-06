@@ -10,6 +10,23 @@ namespace ParsecCore
 {
     public static class ParserExt
     {
+        private class FailWithVisitor : IParseErrorVisitor<ParseError, string>
+        {
+            private FailWithVisitor() { }
+
+            public static readonly FailWithVisitor Instance = new();
+
+            public ParseError Visit(StandardError error, string msg)
+            {
+                return new StandardError(error.Position, error.Unexpected, new StringToken(msg).ToEnumerable());
+            }
+
+            public ParseError Visit(CustomError error, string msg)
+            {
+                return new CustomError(error.Position, error.Customs.Append(new FailWithError(msg)));
+            }
+        }
+
         /// <summary>
         /// Changes the error message returned by the parser if it fails.
         /// The parser modified by this method behaves the same except that when it fails,
@@ -38,7 +55,7 @@ namespace ParsecCore
                 }
 
                 return Either.Error<ParseError, T>(
-                    new CustomError(input.Position, new FailWithError(newExpectedMessage).ToEnumerable())
+                    result.Error.Accept(FailWithVisitor.Instance, newExpectedMessage)
                 );
             };
         }
@@ -340,7 +357,7 @@ namespace ParsecCore
         /// Returns a parser which tries to apply the first parser and if it succeeds returns the result.
         /// If it fails <strong>and does not consume any input</strong> then the second parser is tried.
         /// If the first parser fails while consuming input, then the first parser's error is returned.
-        /// If both parsers fail then combines their errors, see: <see cref="ParseError.Combine(ParseError)"/>.
+        /// If both parsers fail then combines their errors, see: <see cref="ParseError.Accept(ParseError)"/>.
         /// <para/>
         /// Because the parser fails if the first parser fails while consuming input the lookahead is 1.
         /// If there is need for parsing to continue in the case input is consumed, then consider modifying
