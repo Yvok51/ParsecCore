@@ -8,9 +8,7 @@ namespace ParsecCore.EitherNS
         /// <summary>
         /// Select is an exptension method used in LINQ expressions for a single `from ... in ...` statement
         /// In context of <see cref="IEither{TLeft, TRight}"/> we use it to simulate 
-        /// the list comprehension notation (weaker do notation) of Haskell.
-        /// Inspired by the paper "Encoding monadic computations in C# using iterators" by Tomáš Petříček
-        /// and <see href="https://tyrrrz.me/blog/monadic-comprehension-via-linq">this</see> blog post 
+        /// the list comprehension notation (weaker do notation) of Haskell. 
         /// </summary>
         /// <typeparam name="TLeft"> The left (error) type </typeparam>
         /// <typeparam name="TSource"> The result type of the source IEither object </typeparam>
@@ -32,8 +30,6 @@ namespace ParsecCore.EitherNS
         /// Select many is an extension method used in LINQ expressions to chain multiple `from ... in ...` statements together
         /// In context of <see cref="IEither{TLeft, TRight}"/> we use it to simulate 
         /// the list comprehension notation (weaker do notation) of Haskell.
-        /// Inspired by the paper "Encoding monadic computations in C# using iterators" by Tomáš Petříček
-        /// and <see href="https://tyrrrz.me/blog/monadic-comprehension-via-linq">this</see> blog post 
         /// </summary>
         /// <typeparam name="TLeft"> The left (error) type - it is consistent throughout </typeparam>
         /// <typeparam name="TFirst"> The result value of the input IEither </typeparam>
