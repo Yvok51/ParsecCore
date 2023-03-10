@@ -1,7 +1,6 @@
 ﻿
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
-using System.Diagnostics;
 using ParsecCore.Input;
 using BenchmarkDotNet.Engines;
 
@@ -22,9 +21,7 @@ namespace JSONtoXML.Benchmarks
         public class ParseJSONMacro
         {
             public ParseJSONMacro()
-            {
-                Files = LoadFiles(FileNames());
-            }
+            {            }
 
             public IEnumerable<string> FileNames()
             {
@@ -33,32 +30,10 @@ namespace JSONtoXML.Benchmarks
                 yield return "test-files/large.json";
             }
 
-            public Dictionary<string, string> Files;
-
             [Benchmark]
             [ArgumentsSource(nameof(FileNames))]
             public bool ParseMacro(string fileName) => JSONParsers.JsonDocument(ParserInput.Create(File.ReadAllText(fileName))).IsResult;
 
-            public static Dictionary<string, string> LoadFiles(IEnumerable<string> files)
-            {
-                var fileContent = new Dictionary<string, string>();
-                foreach (var file in files)
-                {
-                    try
-                    {
-                        using (StreamReader reader = new StreamReader(file))
-                        {
-                            fileContent.Add(file, reader.ReadToEnd());
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.ToString());
-                    }
-                }
-
-                return fileContent;
-            }
         }
 
         public class ParseJSONMicro
