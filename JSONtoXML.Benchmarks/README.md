@@ -6,5 +6,5 @@ The examples used for benchmarking were taken from [here](https://www.json.org/e
 Recommended to be run from the command line with the following command:
 
 ```sh
-dotnet build -c Release
+dotnet run -c Release
 ```
