@@ -14,9 +14,11 @@ namespace ParsecCore
     {
         /// <summary>
         /// Parser which parses an end of file - end of input
-        /// None is a helper struct which is empty - it only serves the type system
+        /// <see cref="None"/> is a helper struct which is empty - it only serves the type system
         /// </summary>
         public static readonly Parser<None, char> EOF = EOFParser.Parser<char>();
+
+
 
         /// <summary>
         /// Parser which answers whether we have reached the end of file.
@@ -57,7 +59,7 @@ namespace ParsecCore
         /// <param name="c"> The character to parse </param>
         /// <returns> Parser which parses only the given character </returns>
         public static Parser<char, char> Char(char c) =>
-            Satisfy(i => i == c, escapedChars.ContainsKey(c) ? $"character '{escapedChars[c]}'" : $"character '{c}'");
+            SatisfyParser.Parser(c, escapedChars.ContainsKey(c) ? $"character '{escapedChars[c]}'" : $"character '{c}'");
 
         private static Dictionary<char, string> escapedChars = new Dictionary<char, string>()
         {

@@ -26,7 +26,6 @@ namespace ParsecCore.ParsersHelp
         {
             return (input) =>
             {
-                var readPosition = input.Position;
                 if (input.EndOfInput)
                 {
                     return Either.Error<ParseError, char>(
@@ -45,7 +44,42 @@ namespace ParsecCore.ParsersHelp
                     string readChar = escapedChars.ContainsKey(read) ? escapedChars[read] : read.ToString();
                     return Either.Error<ParseError, char>(
                         new StandardError(
-                            readPosition,
+                            input.Position,
+                            unexpected: Maybe.FromValue(new StringToken(readChar)),
+                            expected: new StringToken(predicateDescription)
+                        )
+                    );
+                }
+
+                input.Read();
+
+                return Either.Result<ParseError, char>(read);
+            };
+        }
+
+        public static Parser<char, char> Parser(char expected, string predicateDescription)
+        {
+            return (input) =>
+            {
+                if (input.EndOfInput)
+                {
+                    return Either.Error<ParseError, char>(
+                        new StandardError(
+                            input.Position,
+                            unexpected: Maybe.FromValue(EndOfFile.Instance),
+                            expected: new StringToken(predicateDescription)
+                        )
+                    );
+                }
+
+                char read = input.Peek();
+
+                if (read != expected)
+                {
+                    string readChar = escapedChars.ContainsKey(read) ? escapedChars[read] : read.ToString();
+                    return Either.Error<ParseError, char>(
+                        new StandardError(
+                            input.Position,
                             unexpected: Maybe.FromValue(new StringToken(readChar)),
                             expected: new StringToken(predicateDescription)
                         )
@@ -65,7 +99,6 @@ namespace ParsecCore.ParsersHelp
         {
             return (input) =>
             {
-                var readPosition = input.Position;
                 if (input.EndOfInput)
                 {
                     return Either.Error<ParseError, TInputToken>(
@@ -83,7 +116,44 @@ namespace ParsecCore.ParsersHelp
                 {
                     return Either.Error<ParseError, TInputToken>(
                         new StandardError(
-                            readPosition,
+                            input.Position,
+                            unexpected: Maybe.FromValue(new Token<TInputToken>(new[] { read })),
+                            expected: new StringToken(predicateDescription)
+                        )
+                    );
+                }
+
+                input.Read();
+
+                return Either.Result<ParseError, TInputToken>(read);
+            };
+        }
+
+        public static Parser<TInputToken, TInputToken> Parser<TInputToken>(
+            TInputToken expected,
+            string predicateDescription
+        ) where TInputToken : IEquatable<TInputToken>
+        {
+            return (input) =>
+            {
+                if (input.EndOfInput)
+                {
+                    return Either.Error<ParseError, TInputToken>(
+                        new StandardError(
+                            input.Position,
+                            unexpected: Maybe.FromValue(EndOfFile.Instance),
+                            expected: new StringToken(predicateDescription)
+                        )
+                    );
+                }
+
+                TInputToken read = input.Peek();
+
+                if (!EqualityComparer<TInputToken>.Default.Equals(read, expected))
+                {
+                    return Either.Error<ParseError, TInputToken>(
+                        new StandardError(
+                            input.Position,
                             unexpected: Maybe.FromValue(new Token<TInputToken>(new[] { read })),
                             expected: new StringToken(predicateDescription)
                         )
