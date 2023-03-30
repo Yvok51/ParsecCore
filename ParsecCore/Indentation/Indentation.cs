@@ -29,7 +29,7 @@ namespace ParsecCore.Indentation
                    from err in Parsers.ParserError<T, TInput>(
                        new CustomError(
                            pos,
-                           new IndentationError(desiredRelation, referencePosition, actualPosition).ToEnumerable())
+                           new IndentationError(desiredRelation, referencePosition, actualPosition))
                        )
                    select err;
         }
@@ -332,7 +332,7 @@ namespace ParsecCore.Indentation
                     else
                     {
                         return Either.Error<ParseError, List<TItem>>(
-                            new CustomError(input.Position, new IndentationError(Relation.EQ, required, position).ToEnumerable())
+                            new CustomError(input.Position, new IndentationError(Relation.EQ, required, position))
                         );
                     }
                 }
