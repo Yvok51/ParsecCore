@@ -20,7 +20,7 @@ namespace ParsecCore.ParsersHelp
                 }
 
                 return Either.Error<ParseError, None>(
-                    new StandardError(input.Position, Maybe.Nothing<ErrorItem>(), EndOfFile.Instance.ToEnumerable())
+                    new StandardError(input.Position, Maybe.Nothing<ErrorItem>(), EndOfFile.Instance)
                 );
             };
         }

@@ -33,7 +33,7 @@ namespace ParsecCore.ParsersHelp
                         new StandardError(
                             input.Position,
                             unexpected: Maybe.FromValue(EndOfFile.Instance),
-                            expected: new StringToken(predicateDescription).ToEnumerable()
+                            expected: new StringToken(predicateDescription)
                         )
                     );
                 }
@@ -47,7 +47,7 @@ namespace ParsecCore.ParsersHelp
                         new StandardError(
                             readPosition,
                             unexpected: Maybe.FromValue(new StringToken(readChar)),
-                            expected: new StringToken(predicateDescription).ToEnumerable()
+                            expected: new StringToken(predicateDescription)
                         )
                     );
                 }
@@ -72,7 +72,7 @@ namespace ParsecCore.ParsersHelp
                         new StandardError(
                             input.Position,
                             unexpected: Maybe.FromValue(EndOfFile.Instance),
-                            expected: new StringToken(predicateDescription).ToEnumerable()
+                            expected: new StringToken(predicateDescription)
                         )
                     );
                 }
@@ -85,7 +85,7 @@ namespace ParsecCore.ParsersHelp
                         new StandardError(
                             readPosition,
                             unexpected: Maybe.FromValue(new Token<TInputToken>(new[] { read })),
-                            expected: new StringToken(predicateDescription).ToEnumerable()
+                            expected: new StringToken(predicateDescription)
                         )
                     );
                 }

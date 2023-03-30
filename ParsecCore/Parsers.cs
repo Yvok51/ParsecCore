@@ -268,7 +268,7 @@ namespace ParsecCore
             if (msg is null) throw new ArgumentNullException(nameof(msg));
 
             return from pos in Position<TInputToken>()
-                   from err in ParserError<T, TInputToken>(new CustomError(pos, new FailWithError(msg).ToEnumerable()))
+                   from err in ParserError<T, TInputToken>(new CustomError(pos, new FailWithError(msg)))
                    select err;
         }
 
