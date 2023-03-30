@@ -40,6 +40,11 @@ namespace ParsecCore
             Expected = expected;
         }
 
+        public StandardError(Position position, IMaybe<ErrorItem> unexpected, ErrorItem expected)
+            : this(position, unexpected, expected.ToEnumerable())
+        {
+        }
+
         public override Position Position { get => _position; set => _position = value; }
 
         public override T Accept<T, A>(IParseErrorVisitor<T, A> other, A arg)
@@ -124,6 +129,10 @@ namespace ParsecCore
         {
             _position = position;
             Customs = customErrors;
+        }
+
+        public CustomError(Position position, FancyError error) : this(position, error.ToEnumerable())
+        {
         }
 
         public override Position Position { get => _position; set => _position = value; }
