@@ -2,6 +2,7 @@
 using ParsecCore.Help;
 using ParsecCore.MaybeNS;
 using ParsecCore.ParsersHelp;
+using ParsecCore.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,10 @@ namespace ParsecCore
 {
     public static class ParserExt
     {
+        /// <summary>
+        /// Visitor for implementing <see cref="FailWith{T, TInputToken}(Parser{T, TInputToken}, string)"/>
+        /// since it behaves differently for the two types of errors.
+        /// </summary>
         private class FailWithVisitor : IParseErrorVisitor<ParseError, string>
         {
             private FailWithVisitor() { }
@@ -18,7 +23,7 @@ namespace ParsecCore
 
             public ParseError Visit(StandardError error, string msg)
             {
-                return new StandardError(error.Position, error.Unexpected, new StringToken(msg).ToEnumerable());
+                return new StandardError(error.Position, error.Unexpected, new StringToken(msg));
             }
 
             public ParseError Visit(CustomError error, string msg)
@@ -68,6 +73,7 @@ namespace ParsecCore
         /// </summary>
         /// <typeparam name="TSource"> > The type of the source parser </typeparam>
         /// <typeparam name="TResult"> The type of the resulting parser </typeparam>
+        /// <typeparam name="TInputToken"> Type of the input token </typeparam>
         /// <param name="parser"> The source parser </param>
         /// <param name="projection"> The funtion to map the result of the source parser with </param>
         /// <returns> Parser which maps the result of the source parser to a new value </returns>
@@ -96,6 +102,7 @@ namespace ParsecCore
         /// <typeparam name="TFirst"> The type of the source parser </typeparam>
         /// <typeparam name="TSecond"> The type of the parser returned by the chained method </typeparam>
         /// <typeparam name="TResult"> The type of the resulting parser </typeparam>
+        /// <typeparam name="TInputToken"> Type of the input token </typeparam>
         /// <param name="first"> The source parser </param>
         /// <param name="getSecond"> The function to chain to the result of the source parser </param>
         /// <param name="getResult"> Callback which combines the two results together </param>
@@ -122,6 +129,97 @@ namespace ParsecCore
         }
 
         /// <summary>
+        /// Extension method enabling us to use the <code>where</code> clause in LINQ syntax.
+        /// In case the predicate fails then a simple <code>"Assertion failed"</code> message is reported.
+        /// It is therefore recommended to use 
+        /// <see cref="Assert{T, TInputToken}(Parser{T, TInputToken}, Func{T, bool}, string)"/> or
+        /// <see cref="Assert{T, TInputToken}(Parser{T, TInputToken}, Func{T, bool}, Func{T, Position, ParseError})"/>
+        /// instead.
+        /// </summary>
+        /// <typeparam name="T"> The result type of the parser </typeparam>
+        /// <typeparam name="TInputToken"> The input token of the parser </typeparam>
+        /// <param name="parser"> Parser whose result to test </param>
+        /// <param name="predicate"> Predicate to test the result of the parse with </param>
+        /// <returns>
+        /// Parser which tests its result against a predicate and in case the result does not pass it fails
+        /// </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
+        public static Parser<T, TInputToken> Where<T, TInputToken>(
+            this Parser<T, TInputToken> parser,
+            Func<T, bool> predicate
+        )
+        {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
+
+            return parser.Assert(predicate, "Assertion failed");
+        }
+
+        /// <summary>
+        /// Assert that the parser result fulfills a predicate.
+        /// 
+        /// Tries to parse using <paramref name="parser"/>.
+        /// If parse succeeds then tests the result with predicate.
+        /// If predicate fails then an error is generated using <paramref name="generateError"/>
+        /// </summary>
+        /// <typeparam name="T"> The return type of <paramref name="parser"/> </typeparam>
+        /// <typeparam name="TInputToken"> Type of the input token </typeparam>
+        /// <param name="parser"> The parser to parse with </param>
+        /// <param name="predicate"> Test for the result of the parse </param>
+        /// <param name="errorMessage"> What message to report in case result does not pass test </param>
+        /// <returns> Parser which tests whether the result of the parse passes a test </returns>
+        /// <exception cref="ArgumentNullException">  If any of the arguments are null </exception>
+        public static Parser<T, TInputToken> Assert<T, TInputToken>(
+            this Parser<T, TInputToken> parser,
+            Func<T, bool> predicate,
+            string errorMessage
+        )
+        {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
+            if (errorMessage is null) throw new ArgumentNullException(nameof(errorMessage));
+
+            return parser.Assert(predicate, (_, pos) => new CustomError(pos, new FailWithError(errorMessage)));
+        }
+
+        /// <summary>
+        /// Assert that the parser result fulfills a predicate.
+        /// 
+        /// Tries to parse using <paramref name="parser"/>.
+        /// If parse succeeds then tests the result with predicate.
+        /// If predicate fails then an error is generated using <paramref name="generateError"/>
+        /// </summary>
+        /// <typeparam name="T"> The return type of <paramref name="parser"/> </typeparam>
+        /// <typeparam name="TInputToken"> Type of the input token </typeparam>
+        /// <param name="parser"> The parser to parse with </param>
+        /// <param name="predicate"> Test for the result of the parse </param>
+        /// <param name="generateError"> How to generate error if predicate fails </param>
+        /// <returns> Parser which tests whether the result of the parse passes a test </returns>
+        /// <exception cref="ArgumentNullException">  If any of the arguments are null </exception>
+        public static Parser<T, TInputToken> Assert<T, TInputToken>(
+            this Parser<T, TInputToken> parser,
+            Func<T, bool> predicate,
+            Func<T, Position, ParseError> generateError
+        )
+        {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+            if (predicate is null) throw new ArgumentNullException(nameof(predicate));
+            if (generateError is null) throw new ArgumentNullException(nameof(generateError));
+
+            return (input) =>
+            {
+                var position = input.Position;
+                var result = parser(input);
+                return result.Match(
+                    right: value => predicate(value)
+                        ? Either.Result<ParseError, T>(value)
+                        : Either.Error<ParseError, T>(generateError(value, position)),
+                    left: () => result
+                );
+            };
+        }
+
+        /// <summary>
         /// Returns a parser which tries to parse according to the given parser as many times as possible.
         /// Can parse even zero times.
         /// If parsing fails in the middle of one iteration (some input was consumed),
@@ -130,6 +228,7 @@ namespace ParsecCore
         /// to the parser beforehand.
         /// </summary>
         /// <typeparam name="T"> The type of the parser </typeparam>
+        /// <typeparam name="TInputToken"> Type of the input token </typeparam>
         /// <param name="parser"> The parser to apply </param>
         /// <returns> Parser which applies the given parser as many times as possible </returns>
         /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
@@ -151,6 +250,7 @@ namespace ParsecCore
         /// to the parser beforehand.
         /// </summary>
         /// <typeparam name="T"> The type of the parser </typeparam>
+        /// <typeparam name="TInputToken"> Type of the input token </typeparam>
         /// <param name="parser"> The parser to apply </param>
         /// <returns> Parser which applies the given parser as many times as possible </returns>
         /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
@@ -168,6 +268,7 @@ namespace ParsecCore
         /// <summary>
         /// Specialization of the <see cref="Many{T}(Parser{T})">Many</see> method for chars and strings
         /// </summary>
+        /// <typeparam name="TInputToken"> Type of the input token </typeparam>
         /// <param name="parser"> The parser to apply as many times as possible </param>
         /// <returns> Parser which applies the given char parser as many times as possible </returns>
         /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
@@ -184,6 +285,7 @@ namespace ParsecCore
         /// <summary>
         /// Specialization of the <see cref="Many1{T}(Parser{T})">Many1</see> method for chars and strings
         /// </summary>
+        /// <typeparam name="TInputToken"> Type of the input token </typeparam>
         /// <param name="parser"> The parser to apply as many times as possible </param>
         /// <returns> Parser which applies the given char parser as many times as possible </returns>
         /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
@@ -203,6 +305,7 @@ namespace ParsecCore
         /// <see cref="Many{T}(Parser{T})"/> for specifics.
         /// </summary>
         /// <typeparam name="T"> The type of parser </typeparam>
+        /// <typeparam name="TInputToken"> Type of the input token </typeparam>
         /// <param name="parser"> The parser to apply </param>
         /// <returns> 
         /// Parser which applies the given parser as many times as possible and then ignores its result.
@@ -221,6 +324,7 @@ namespace ParsecCore
         /// Applies the parser as many times as possible (but at least once) and ignores the result.
         /// </summary>
         /// <typeparam name="T"> The type of parser </typeparam>
+        /// <typeparam name="TInputToken"> Type of the input token </typeparam>
         /// <param name="parser"> The parser to apply </param>
         /// <returns> 
         /// Parser which applies the given parser as many times as possible and then ignores its result.
@@ -241,6 +345,7 @@ namespace ParsecCore
         /// the <see cref="Parsers.Return{T}(T)">ReturnParser</see> of an empty enumerable
         /// </summary>
         /// <typeparam name="T"> The type of parser to apply </typeparam>
+        /// <typeparam name="TInputToken"> Type of the input token </typeparam>
         /// <param name="parser"> The parser to apply </param>
         /// <param name="count"> Number of times to apply the parser </param>
         /// <returns> Parser which applies itself the given number of times </returns>
@@ -261,6 +366,7 @@ namespace ParsecCore
         /// the error if any input was consumed
         /// </summary>
         /// <typeparam name="T"> The result type of the parser </typeparam>
+        /// <typeparam name="TInputToken"> Type of the input token </typeparam>
         /// <param name="parser"> The parser to optionally apply </param>
         /// <returns> Parser which optionally applies the given parser </returns>
         /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
@@ -279,6 +385,7 @@ namespace ParsecCore
         /// If the parser fails while consuming input, the failure is propagated upwards.
         /// </summary>
         /// <typeparam name="T"> The type of parser </typeparam>
+        /// <typeparam name="TInputToken"> Type of the input token </typeparam>
         /// <param name="parser"> The parser to modify </param>
         /// <param name="defaultValue"> The default value to return if the parser fails </param>
         /// <returns> Parser which returns a default value upon failure </returns>
@@ -299,6 +406,7 @@ namespace ParsecCore
         /// Makes the parser not consume any input if it fails.
         /// </summary>
         /// <typeparam name="T"> The type of parser </typeparam>
+        /// <typeparam name="TInputToken"> Type of the input token </typeparam>
         /// <param name="parser"> The parser to modify </param>
         /// <returns> Parser which does not consume any input on failure </returns>
         /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
@@ -331,6 +439,7 @@ namespace ParsecCore
         /// (combine with <see cref="Try{T}(Parser{T})"/> if this is undesirable)
         /// </summary>
         /// <typeparam name="T"> The return type of the parser </typeparam>
+        /// <typeparam name="TInputToken"> Type of the input token </typeparam>
         /// <param name="parser"> Parser to look ahead with </param>
         /// <returns> Parser which looks ahead (parses without consuming input) </returns>
         /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
@@ -364,7 +473,7 @@ namespace ParsecCore
         /// the first parser with the <see cref="Try{T, TInputToken}(Parser{T, TInputToken})"/> method.
         /// </summary>
         /// <typeparam name="T"> The return type of the parser </typeparam>
-        /// <typeparam name="TInputToken"> The input type of the parser </typeparam>
+        /// <typeparam name="TInputToken"> Type of the input token </typeparam>
         /// <param name="firstParser"> First parser to try </param>
         /// <param name="secondParser"> Second parser to try </param>
         /// <returns> Parser whose result is the result of the first parser to succeed </returns>
@@ -400,7 +509,7 @@ namespace ParsecCore
         /// Ignore the parsers return value and instead return <see cref="None"/>
         /// </summary>
         /// <typeparam name="T"> Type returned by the input parser </typeparam>
-        /// <typeparam name="TInputToken"> Type of the input stream </typeparam>
+        /// <typeparam name="TInputToken"> Type of the input token </typeparam>
         /// <param name="parser"> Parser whose return value is ignored </param>
         /// <returns> Parser whose return value is ignored </returns>
         /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
@@ -419,7 +528,7 @@ namespace ParsecCore
         /// </summary>
         /// <typeparam name="T"> Type of the parsing result </typeparam>
         /// <typeparam name="TResult"> Type returned by the new parser </typeparam>
-        /// <typeparam name="TInput"> Type of the input </typeparam>
+        /// <typeparam name="TInput"> Type of the input token </typeparam>
         /// <param name="parser"> Parser whose result to map </param>
         /// <param name="map"> Mapping function for the result of the parsing </param>
         /// <returns> Parser with its result mapped according to <paramref name="map"/> </returns>
