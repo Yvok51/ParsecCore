@@ -175,7 +175,7 @@ namespace ParsecCore.Indentation
                         from __ in Parsers.EOL
                         from lvl in IndentGuard(spaceConsumer, Relation.GT, referenceLvl)
                         select lvl).Try().Optional()
-                   from done in Parsers.IsEOF
+                   from done in Parsers.IsEOF<char>()
                    from res in ParseItems(
                        done, referenceLvl, referenceItem, lvl, spaceConsumer, desiredIndentation, transform, itemParser
                        )
@@ -299,7 +299,7 @@ namespace ParsecCore.Indentation
         {
             var lineBeginningParser = from _ in spaceConsumer
                                       from position in IndentationLevel<char>()
-                                      from end in Parsers.IsEOF
+                                      from end in Parsers.IsEOF<char>()
                                       select (position, end);
 
             return (input) =>

@@ -132,7 +132,7 @@ namespace ParsecCore.ParsersHelp
         public static Parser<TInputToken, TInputToken> Parser<TInputToken>(
             TInputToken expected,
             string predicateDescription
-        ) where TInputToken : IEquatable<TInputToken>
+        )
         {
             return (input) =>
             {
