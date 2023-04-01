@@ -11,7 +11,7 @@ namespace ParsecCoreTests
         {
             var input = ParserInput.Create("");
 
-            var result = Parsers.EOF(input);
+            var result = Parsers.EOF<char>()(input);
 
             Assert.True(result.IsResult);
             Assert.True(input.EndOfInput);
@@ -22,7 +22,7 @@ namespace ParsecCoreTests
         {
             var input = ParserInput.Create("This is outrageous. It's unfair");
 
-            var result = Parsers.EOF(input);
+            var result = Parsers.EOF<char>()(input);
 
             Assert.True(result.IsError);
             Assert.False(input.EndOfInput);

@@ -5,6 +5,14 @@ using Xunit;
 
 namespace ParsecCoreTests
 {
+
+    public enum Tokens
+    {
+        A,
+        B,
+        C,
+    }
+
     public class CharParserTests
     {
         [Theory]
@@ -22,11 +30,26 @@ namespace ParsecCoreTests
             Assert.Equal(toParse, result.Result);
         }
 
+        [Fact]
+        public void ParseSingleToken()
+        {
+            var parser = Parsers.Char(Tokens.A);
+            var input = ParserInput.Create(
+                new Tokens[] { Tokens.A },
+                (t, pos) => pos.WithIncreasedColumn().WithIncreasedOffset()
+            );
+
+            IEither<ParseError, Tokens> result = parser(input);
+
+            Assert.True(result.IsResult);
+            Assert.Equal(Tokens.A, result.Result);
+        }
+
         [Theory]
         [InlineData("abcd", 'a')]
         [InlineData("ghjk", 'g')]
         [InlineData("71025", '7')]
-        public void ParseMltipleLetters(string inputString, char toParse)
+        public void ParseWithMultipleLetters(string inputString, char toParse)
         {
             var parser = Parsers.Char(toParse);
             var input = ParserInput.Create(inputString);
@@ -36,6 +59,22 @@ namespace ParsecCoreTests
             Assert.True(result.IsResult);
             Assert.Equal(toParse, result.Result);
         }
+
+        [Fact]
+        public void ParseWithMultipleToken()
+        {
+            var parser = Parsers.Char(Tokens.A);
+            var input = ParserInput.Create(
+                new Tokens[] { Tokens.A, Tokens.B, Tokens.C },
+                (t, pos) => pos.WithIncreasedColumn().WithIncreasedOffset()
+            );
+
+            IEither<ParseError, Tokens> result = parser(input);
+
+            Assert.True(result.IsResult);
+            Assert.Equal(Tokens.A, result.Result);
+        }
+
 
         [Theory]
         [InlineData("abcd", 'a')]
@@ -55,6 +94,24 @@ namespace ParsecCoreTests
             Assert.Equal(1, input.Position.Offset);
         }
 
+        [Fact]
+        public void CorrectTokenInputSizeAfterParse()
+        {
+            var parser = Parsers.Char(Tokens.B);
+            var input = ParserInput.Create(
+                new Tokens[] { Tokens.B, Tokens.B, Tokens.C },
+                (t, pos) => pos.WithIncreasedColumn().WithIncreasedOffset()
+            );
+
+            IEither<ParseError, Tokens> result = parser(input);
+
+            Assert.True(result.IsResult);
+            Assert.Equal(Tokens.B, result.Result);
+
+            Assert.False(input.EndOfInput);
+            Assert.Equal(1, input.Position.Offset);
+        }
+
         [Theory]
         [InlineData("abcd", 'n')]
         [InlineData("ghjk", 'y')]
@@ -65,6 +122,20 @@ namespace ParsecCoreTests
             var input = ParserInput.Create(inputString);
 
             IEither<ParseError, char> result = parser(input);
+
+            Assert.True(result.IsError);
+        }
+
+        [Fact]
+        public void ParseTokensCorrectlyFails()
+        {
+            var parser = Parsers.Char(Tokens.B);
+            var input = ParserInput.Create(
+                new Tokens[] { Tokens.A, Tokens.B, Tokens.C },
+                (t, pos) => pos.WithIncreasedColumn().WithIncreasedOffset()
+            );
+
+            IEither<ParseError, Tokens> result = parser(input);
 
             Assert.True(result.IsError);
         }

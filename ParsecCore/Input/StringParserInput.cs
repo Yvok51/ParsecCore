@@ -4,10 +4,25 @@ namespace ParsecCore.Input
 {
     internal class StringParserInput : IParserInput<char>
     {
-        public StringParserInput(string input, int tabSize)
+        public StringParserInput(string input, Func<char, Position, Position> updatePosition)
         {
             _input = input;
-            _tabSize = tabSize;
+            _updatePosition = updatePosition;
+            _position = Position.Start();
+        }
+
+        public StringParserInput(string input, int _tabSize)
+        {
+            _input = input;
+            _updatePosition = (readChar, position) =>
+            {
+                return readChar switch
+                {
+                    '\n' => position.WithNewLine().WithIncreasedOffset(),
+                    '\t' => position.WithTab(_tabSize).WithIncreasedOffset(),
+                    _ => position.WithIncreasedColumn().WithIncreasedOffset()
+                };
+            };
             _position = Position.Start();
         }
 
@@ -22,18 +37,8 @@ namespace ParsecCore.Input
                 throw new InvalidOperationException("Read past the end of the input");
             }
             char readChar = _input[_position.Offset];
-            UpdatePosition(readChar);
+            _position = _updatePosition(readChar, _position);
             return readChar;
-        }
-
-        private void UpdatePosition(char readChar)
-        {
-            _position = readChar switch
-            {
-                '\n' => _position.WithNewLine().WithIncreasedOffset(),
-                '\t' => _position.WithTab(_tabSize).WithIncreasedOffset(),
-                _ => _position.WithIncreasedColumn().WithIncreasedOffset()
-            };
         }
 
         public void Seek(Position position)
@@ -51,7 +56,7 @@ namespace ParsecCore.Input
             return _input[_position.Offset];
         }
 
-        private readonly int _tabSize;
+        private readonly Func<char, Position, Position> _updatePosition;
         private readonly string _input;
         private Position _position;
     }

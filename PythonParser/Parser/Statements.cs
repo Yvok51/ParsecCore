@@ -121,7 +121,7 @@ namespace PythonParser.Parser
         public static readonly Parser<Stmt, char> Statement =
             Parsers.Indirect(() => CompoundStatement).Try().Or(
                 from list in StatementList
-                from eol in Control.EOL.Or(Parsers.EOF.Map(_ => '\n'))
+                from eol in Control.EOL.Or(Parsers.EOF<char>().Map(_ => '\n'))
                 select new Suite(list)
             );
 

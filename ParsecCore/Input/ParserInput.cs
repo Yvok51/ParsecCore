@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -9,17 +10,32 @@ namespace ParsecCore.Input
         /// <summary>
         /// Creates an input for the parser from a string
         /// </summary>
-        /// <param name="inputString"> The string which will serve as input </param>
+        /// <param name="inputTokens"> The string which will serve as input </param>
         /// <param name="tabSize">
         /// The size of the tab in the input, by default 4 spaces. Used in error messages
         /// </param>
         /// <returns> Input for a parser </returns>
         /// <exception cref="ArgumentNullException"> If input string is null </exception>
-        public static IParserInput<char> Create(string inputString, int tabSize = 4)
+        public static IParserInput<char> Create(string inputTokens, int tabSize = 4)
         {
-            if (inputString is null) throw new ArgumentNullException(nameof(inputString));
+            if (inputTokens is null) throw new ArgumentNullException(nameof(inputTokens));
 
-            return new StringParserInput(inputString, tabSize);
+            return new StringParserInput(inputTokens, tabSize);
+        }
+
+        /// <summary>
+        /// Creates an input for the parser from a list of tokens
+        /// </summary>
+        /// <param name="inputTokens"> The tokens which will serve as input </param>
+        /// <param name="updatePosition"> Function telling us how to update a position </param>
+        /// <typeparam name="T"> The type of tokens </typeparam>
+        /// <returns> Input for a parser </returns>
+        /// <exception cref="ArgumentNullException"> If <paramref name="inputTokens"/> is null </exception>
+        public static IParserInput<T> Create<T>(IReadOnlyList<T> inputTokens, Func<T, Position, Position> updatePosition)
+        {
+            if (inputTokens is null) throw new ArgumentNullException(nameof(inputTokens));
+
+            return new TokenListParserInput<T>(inputTokens, updatePosition);
         }
 
         /// <summary>

@@ -20,7 +20,7 @@ namespace ParsecCore.Input
 
         public int Line { get; init; }
         public int Column { get; init; }
-        public int Offset { get; init; }
+        internal int Offset { get; init; }
 
         public static readonly int BeginningColumn = 1;
 
@@ -35,7 +35,10 @@ namespace ParsecCore.Input
         }
 
         /// <summary>
-        /// Forward the position by a given amount of characters in the same row as before
+        /// Forward the position by a given amount of characters in the same row as before.
+        /// Increases the column to the nearest tab position.
+        /// For example, if we are at column 1 and the <paramref name="tabSize"/> is 4, then the final column is 5.
+        /// However, if we are at column 3 and the <paramref name="tabSize"/> is again 4, the the final column is again 5.
         /// </summary>
         /// <param name="columnIncrease"> By how many characters to move forward </param>
         /// <returns> The forwarded position </returns>

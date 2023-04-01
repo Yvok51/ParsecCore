@@ -199,7 +199,7 @@ namespace JSONtoXML
 
         public static readonly Parser<JsonValue, char> JsonDocument =
             from value in JsonValue
-            from _ in Parsers.EOF
+            from _ in Parsers.EOF<char>()
             select value;
     }
 }
