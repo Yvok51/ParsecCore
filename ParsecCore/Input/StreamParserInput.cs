@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection.PortableExecutable;
 using System.Text;
 
 namespace ParsecCore.Input
@@ -18,10 +19,21 @@ namespace ParsecCore.Input
                 throw new ArgumentException("Provided reader must be not null, must be able to read, and must be able to seek");
             }
 
-            _tabSize = tabSize;
             _reader = reader;
             _position = Position.Start((int)_reader.BaseStream.Position);
-            _encoding = reader.CurrentEncoding;
+            _updatePosition = DefaultUpdatePosition(tabSize, reader.CurrentEncoding);
+        }
+
+        public StreamParserInput(StreamReader reader, Func<char, Position, Position> updatePosition)
+        {
+            if (reader is null || !reader.BaseStream.CanRead || !reader.BaseStream.CanSeek)
+            {
+                throw new ArgumentException("Provided reader must be not null, must be able to read, and must be able to seek");
+            }
+
+            _reader = reader;
+            _position = Position.Start((int)_reader.BaseStream.Position);
+            _updatePosition = updatePosition;
         }
 
         public StreamParserInput(Stream stream, Encoding encoding, int tabSize)
@@ -31,11 +43,23 @@ namespace ParsecCore.Input
                 throw new ArgumentException("Provided stream must be not null, must be able to read, and must be able to seek");
             }
 
-            _tabSize = tabSize;
             _reader = new StreamReader(stream, encoding);
             _position = Position.Start((int)_reader.BaseStream.Position);
-            _encoding = encoding;
+            _updatePosition = DefaultUpdatePosition(tabSize, encoding);
         }
+
+        public StreamParserInput(Stream stream, Encoding encoding, Func<char, Position, Position> updatePosition)
+        {
+            if (stream is null || !stream.CanRead || !stream.CanSeek)
+            {
+                throw new ArgumentException("Provided stream must be not null, must be able to read, and must be able to seek");
+            }
+
+            _reader = new StreamReader(stream, encoding);
+            _position = Position.Start((int)_reader.BaseStream.Position);
+            _updatePosition = updatePosition;
+        }
+
         public bool EndOfInput => _reader.EndOfStream;
 
         public Position Position => _position;
@@ -48,7 +72,7 @@ namespace ParsecCore.Input
             }
 
             char readChar = (char)_reader.Read();
-            UpdatePosition(readChar);
+            _position = _updatePosition(readChar, _position);
             return readChar;
         }
 
@@ -56,25 +80,28 @@ namespace ParsecCore.Input
         /// Updates the position based on the read character
         /// </summary>
         /// <param name="readChar"> The read character </param>
-        private void UpdatePosition(char readChar)
+        private static Func<char, Position, Position> DefaultUpdatePosition(int tabSize, Encoding encoding)
         {
-            int offsetBy = _encoding.GetByteCount(new char[] { readChar });
-            _position = readChar switch
+            return (readChar, position) =>
             {
-                '\n' => _position.WithNewLine().WithIncreasedOffset(offsetBy),
-                '\t' => _position.WithTab(_tabSize).WithIncreasedOffset(offsetBy),
-                _ => _position.WithIncreasedColumn().WithIncreasedOffset(offsetBy)
+                int offsetBy = encoding.GetByteCount(new char[] { readChar });
+                return readChar switch
+                {
+                    '\n' => position.WithNewLine().WithIncreasedOffset(offsetBy),
+                    '\t' => position.WithTab(tabSize).WithIncreasedOffset(offsetBy),
+                    _ => position.WithIncreasedColumn().WithIncreasedOffset(offsetBy)
+                };
             };
         }
 
         public void Seek(Position position)
         {
-            if (position != _position)
+            if (position.Offset != _position.Offset)
             {
                 _reader.BaseStream.Position = position.Offset;
                 _reader.DiscardBufferedData();
-                _position = position;
             }
+            _position = position;
         }
 
         public char Peek()
@@ -87,9 +114,8 @@ namespace ParsecCore.Input
             return (char)_reader.Peek();
         }
 
-        private int _tabSize;
-        private StreamReader _reader;
-        private Encoding _encoding;
+        private readonly Func<char, Position, Position> _updatePosition;
+        private readonly StreamReader _reader;
         private Position _position;
     }
 }
