@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace ParsecCore.Help
@@ -42,6 +43,32 @@ namespace ParsecCore.Help
             newList.AddRange(rest);
 
             return newList;
+        }
+
+        /// <summary>
+        /// Append <see cref="IReadOnlyList{T}"/> with a value
+        /// </summary>
+        /// <typeparam name="T"> Type stored inside list </typeparam>
+        /// <param name="prefix"> The list to append to </param>
+        /// <param name="value"> The value to append </param>
+        /// <returns> New list with an added value to the end </returns>
+        public static IReadOnlyList<T> Append<T>(this IReadOnlyList<T> prefix, T value)
+        {
+            List<T> newList = new List<T>(prefix.Count + 1);
+            newList.AddRange(prefix);
+            newList.Add(value);
+
+            return newList;
+        }
+
+        public static IReadOnlyList<R> Map<T, R>(this IReadOnlyList<T> values, Func<T, R> map)
+        {
+            List<R> mapped = new List<R>(values.Count);
+            foreach (var item in values)
+            {
+                mapped.Add(map(item));
+            }
+            return mapped;
         }
 
         /// <summary>
