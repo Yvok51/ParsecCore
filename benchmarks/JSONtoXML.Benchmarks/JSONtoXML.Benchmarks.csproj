@@ -12,8 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\JSONParser\JSONtoXML.csproj" />
-    <ProjectReference Include="..\ParsecCore\ParsecCore.csproj" />
+    <ProjectReference Include="..\..\examples\src\JSONParser\JSONtoXML.csproj" />
+    <ProjectReference Include="..\..\src\ParsecCore\ParsecCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>

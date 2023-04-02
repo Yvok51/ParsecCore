@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ParsecCore\ParsecCore.csproj" />
+    <ProjectReference Include="..\..\..\src\ParsecCore\ParsecCore.csproj" />
   </ItemGroup>
 
 </Project>
