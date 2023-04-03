@@ -17,7 +17,7 @@ namespace JSONtoXML.Benchmarks
             Console.WriteLine(summaryMacro);
         }
 
-        [SimpleJob(RunStrategy.Monitoring, launchCount: 20, warmupCount: 0, iterationCount: 20)]
+        [SimpleJob(RunStrategy.Monitoring, launchCount: 5, warmupCount: 0, iterationCount: 20)]
         public class ParseJSONMacro
         {
             public ParseJSONMacro()
