@@ -10,8 +10,8 @@ namespace JSONtoXML.Benchmarks
     {
         public static void Main(string[] args)
         {
-            var summaryMacro = BenchmarkRunner.Run<ParseJSONMacro>();
             var summaryMicro = BenchmarkRunner.Run<ParseJSONMicro>();
+            var summaryMacro = BenchmarkRunner.Run<ParseJSONMacro>();
 
             Console.WriteLine(summaryMicro);
             Console.WriteLine(summaryMacro);
