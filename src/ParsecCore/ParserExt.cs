@@ -88,8 +88,10 @@ namespace ParsecCore
 
             return (input) =>
             {
-                return from value in parser(input)
-                       select projection(value);
+                var result = parser(input);
+                return result.Map(projection);
+                //return from value in parser(input)
+                //       select projection(value);
             };
         }
 
@@ -122,9 +124,22 @@ namespace ParsecCore
 
             return (input) =>
             {
-                return from firstValue in first(input)
-                       from secondValue in getSecond(firstValue)(input)
-                       select getResult(firstValue, secondValue);
+                var firstResult = first(input);
+                if (firstResult.IsError)
+                {
+                    return Either.Error<ParseError, TResult>(firstResult.Error);
+                }
+
+                var secondResult = getSecond(firstResult.Result)(input);
+                if (secondResult.IsError)
+                {
+                    return Either.Error<ParseError, TResult>(secondResult.Error);
+                }
+
+                return Either.Result<ParseError, TResult>(getResult(firstResult.Result, secondResult.Result));
+                //return from firstValue in first(input)
+                //       from secondValue in getSecond(firstValue)(input)
+                //       select getResult(firstValue, secondValue);
             };
         }
 
