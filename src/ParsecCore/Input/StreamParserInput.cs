@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection.PortableExecutable;
 using System.Text;
@@ -19,8 +20,8 @@ namespace ParsecCore.Input
                 throw new ArgumentException("Provided reader must be not null, must be able to read, and must be able to seek");
             }
 
-            _reader = reader;
-            _position = Position.Start((int)_reader.BaseStream.Position);
+            _reader = new Buffer(reader);
+            _position = Position.Start((int)reader.BaseStream.Position);
             _updatePosition = DefaultUpdatePosition(tabSize, reader.CurrentEncoding);
         }
 
@@ -31,8 +32,8 @@ namespace ParsecCore.Input
                 throw new ArgumentException("Provided reader must be not null, must be able to read, and must be able to seek");
             }
 
-            _reader = reader;
-            _position = Position.Start((int)_reader.BaseStream.Position);
+            _reader = new Buffer(reader);
+            _position = Position.Start((int)reader.BaseStream.Position);
             _updatePosition = updatePosition;
         }
 
@@ -43,8 +44,8 @@ namespace ParsecCore.Input
                 throw new ArgumentException("Provided stream must be not null, must be able to read, and must be able to seek");
             }
 
-            _reader = new StreamReader(stream, encoding);
-            _position = Position.Start((int)_reader.BaseStream.Position);
+            _reader = new Buffer(stream, encoding);
+            _position = Position.Start((int)stream.Position);
             _updatePosition = DefaultUpdatePosition(tabSize, encoding);
         }
 
@@ -55,25 +56,9 @@ namespace ParsecCore.Input
                 throw new ArgumentException("Provided stream must be not null, must be able to read, and must be able to seek");
             }
 
-            _reader = new StreamReader(stream, encoding);
-            _position = Position.Start((int)_reader.BaseStream.Position);
+            _reader = new Buffer(stream, encoding);
+            _position = Position.Start((int)stream.Position);
             _updatePosition = updatePosition;
-        }
-
-        public bool EndOfInput => _reader.EndOfStream;
-
-        public Position Position => _position;
-
-        public char Read()
-        {
-            if (EndOfInput)
-            {
-                throw new InvalidOperationException("Read past the end of the input");
-            }
-
-            char readChar = (char)_reader.Read();
-            _position = _updatePosition(readChar, _position);
-            return readChar;
         }
 
         /// <summary>
@@ -94,12 +79,27 @@ namespace ParsecCore.Input
             };
         }
 
+        public bool EndOfInput => _reader.EndOfStream;
+
+        public Position Position => _position;
+
+        public char Read()
+        {
+            if (EndOfInput)
+            {
+                throw new InvalidOperationException("Read past the end of the input");
+            }
+
+            char readChar = _reader.Read();
+            _position = _updatePosition(readChar, _position);
+            return readChar;
+        }
+
         public void Seek(Position position)
         {
             if (position.Offset != _position.Offset)
             {
-                _reader.BaseStream.Position = position.Offset;
-                _reader.DiscardBufferedData();
+                _reader.Seek(position.Offset);
             }
             _position = position;
         }
@@ -111,11 +111,11 @@ namespace ParsecCore.Input
                 throw new InvalidOperationException("Read past the end of the input");
             }
 
-            return (char)_reader.Peek();
+            return _reader.Peek();
         }
 
         private readonly Func<char, Position, Position> _updatePosition;
-        private readonly StreamReader _reader;
+        private readonly Buffer _reader;
         private Position _position;
     }
 }
