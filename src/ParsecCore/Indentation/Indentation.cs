@@ -226,7 +226,7 @@ namespace ParsecCore.Indentation
         /// <param name="itemParser"> Parser for individual items </param>
         /// <returns> Parser which parses a head and one or more subsequent items at a greater indentation </returns>
         /// <exception cref="ArgumentNullException"> If any of the parameters are null </exception>
-        public static Parser<TResult, char> IndentBlockSome<TSpace, TItem, TResult, TReference>(
+        public static Parser<TResult, char> IndentBlockMany1<TSpace, TItem, TResult, TReference>(
             Parser<TSpace, char> spaceConsumer,
             Parser<TReference, char> referenceParser,
             IMaybe<IndentLevel> desiredIndentation,
