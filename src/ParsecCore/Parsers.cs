@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace ParsecCore
 {
-    public static class Parsers
+    public static partial class Parsers
     {
         /// <summary>
         /// Parser which parses an end of file - end of input.
@@ -170,7 +170,7 @@ namespace ParsecCore
         /// Parses an integer
         /// </summary>
         public static readonly Parser<int, char> DecimalInteger =
-            from op in Combinators.Choice(Symbol("-"), Symbol("+")).Option(string.Empty)
+            from op in Parsers.Choice(Symbol("-"), Symbol("+")).Option(string.Empty)
             from digits in Token(Digits)
             select Int32.Parse(op + digits);
 

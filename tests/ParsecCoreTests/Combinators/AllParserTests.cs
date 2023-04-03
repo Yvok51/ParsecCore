@@ -13,7 +13,7 @@ namespace ParsecCoreTests
             var firstParser = Parsers.String("You underestimate");
             var secondParser = Parsers.String(" ");
             var thirdParser = Parsers.String("my power!");
-            var parser = Combinators.All(firstParser, secondParser, thirdParser);
+            var parser = Parsers.All(firstParser, secondParser, thirdParser);
             var input = ParserInput.Create("You underestimate my power!");
 
             var result = parser(input);
@@ -32,7 +32,7 @@ namespace ParsecCoreTests
             var firstParser = Parsers.String("I ");
             var secondParser = Parsers.String("love ");
             var thirdParser = Parsers.String("sand");
-            var parser = Combinators.All(firstParser, secondParser, thirdParser);
+            var parser = Parsers.All(firstParser, secondParser, thirdParser);
             var input = ParserInput.Create("I love democracy");
 
             var result = parser(input);

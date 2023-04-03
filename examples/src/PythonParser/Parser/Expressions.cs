@@ -10,10 +10,10 @@ namespace PythonParser.Parser
             => lexeme.Create(Parsers.Indirect(() => OrTest(lexeme)));
 
         public static Parser<IReadOnlyList<Expr>, char> ExpressionList(Control.LexemeFactory lexeme)
-            => Combinators.SepEndBy1(Expression(lexeme), Control.Comma(lexeme));
+            => Parsers.SepEndBy1(Expression(lexeme), Control.Comma(lexeme));
 
         private static Parser<ParenthForm, char> ParenthForm(Control.LexemeFactory lexeme) 
-            => Combinators.Between(
+            => Parsers.Between(
                 Control.OpenParan(Control.EOLLexeme),
                 ExpressionList(Control.EOLLexeme),
                 Control.CloseParan(lexeme)
@@ -22,14 +22,14 @@ namespace PythonParser.Parser
         // Does not include comprehensions
 
         private static Parser<ListDisplay, char> ListDisplay(Control.LexemeFactory lexeme) 
-            => Combinators.Between(
+            => Parsers.Between(
                 Control.OpenBracket(Control.EOLLexeme),
                 ExpressionList(Control.EOLLexeme).Option(Array.Empty<Expr>()),
                 Control.CloseBracket(lexeme)
             ).Map(list => new ListDisplay(list));
 
         private static Parser<SetDisplay, char> SetDisplay(Control.LexemeFactory lexeme) 
-            => Combinators.Between(
+            => Parsers.Between(
                 Control.OpenBrace(Control.EOLLexeme),
                 ExpressionList(Control.EOLLexeme),
                 Control.CloseBrace(lexeme)
@@ -42,10 +42,10 @@ namespace PythonParser.Parser
                select new KeyDatum(key, val);
 
         private static Parser<IReadOnlyList<KeyDatum>, char> KeyDatumList(Control.LexemeFactory lexeme)
-            => Combinators.SepEndBy1(KeyDatum(lexeme), Control.Comma(lexeme));
+            => Parsers.SepEndBy1(KeyDatum(lexeme), Control.Comma(lexeme));
 
         private static Parser<DictDisplay, char> DictDisplay(Control.LexemeFactory lexeme) 
-            => Combinators.Between(
+            => Parsers.Between(
                 Control.OpenBrace(Control.EOLLexeme),
                 KeyDatumList(Control.EOLLexeme).Option(Array.Empty<KeyDatum>()),
                 Control.CloseBrace(lexeme)
@@ -54,7 +54,7 @@ namespace PythonParser.Parser
         // Does not include yield and generator expressions
 
         private static Parser<Expr, char> Enclosure(Control.LexemeFactory lexeme)
-            => Combinators.Choice<Expr, char>(
+            => Parsers.Choice<Expr, char>(
                 ParenthForm(lexeme),
                 ListDisplay(lexeme),
                 DictDisplay(lexeme).Try(),
@@ -62,7 +62,7 @@ namespace PythonParser.Parser
             );
 
         public static Parser<Expr, char> Atom(Control.LexemeFactory lexeme)
-            => Combinators.Choice(
+            => Parsers.Choice(
                 Control.Keyword("True", lexeme).Map(_ => new BooleanLiteral(true)).Try(),
                 Control.Keyword("False", lexeme).Map(_ => new BooleanLiteral(false)).Try(),
                 Control.Keyword("None", lexeme).Map(_ => new NoneLiteral()).Try(),
@@ -91,7 +91,7 @@ namespace PythonParser.Parser
             select new SliceItem(lower, upper, stride);
 
         internal static readonly Parser<IReadOnlyList<Expr>, char> SliceList =
-            Combinators.SepEndBy1(ProperSlice.Try().Or(Expression(Control.EOLLexeme)), Control.Comma(Control.EOLLexeme));
+            Parsers.SepEndBy1(ProperSlice.Try().Or(Expression(Control.EOLLexeme)), Control.Comma(Control.EOLLexeme));
 
         private static readonly Parser<KeywordArgument, char> keywordItem =
             from id in Literals.Identifier(Control.EOLLexeme)
@@ -100,10 +100,10 @@ namespace PythonParser.Parser
             select new KeywordArgument(id, exp);
 
         private static readonly Parser<IReadOnlyList<KeywordArgument>, char> KeywordArguments =
-            Combinators.SepBy1(keywordItem, Control.Comma(Control.EOLLexeme));
+            Parsers.SepBy1(keywordItem, Control.Comma(Control.EOLLexeme));
 
         private static readonly Parser<IReadOnlyList<Expr>, char> PositionalArguments =
-            Combinators.SepBy1(Expression(Control.EOLLexeme), Control.Comma(Control.EOLLexeme));
+            Parsers.SepBy1(Expression(Control.EOLLexeme), Control.Comma(Control.EOLLexeme));
 
         private static Parser<IMaybe<T>, char> OptionalArgument<T>(Parser<T, char> p) =>
             (from _ in Control.Comma(Control.EOLLexeme)
@@ -128,7 +128,7 @@ namespace PythonParser.Parser
                 IMaybe<Expr>,
                 IMaybe<Expr>
             ), char> ArgumentList =
-                Combinators.Choice<
+                Parsers.Choice<
             (
                 IMaybe<IReadOnlyList<Expr>>,
                 IMaybe<IReadOnlyList<KeywordArgument>>,
@@ -147,25 +147,25 @@ namespace PythonParser.Parser
 
         public static Parser<Expr, char> Primary(Control.LexemeFactory lexeme) 
             => from atom in Atom(lexeme)
-               from rest in Combinators.Choice<Func<Expr, Expr>, char>
+               from rest in Parsers.Choice<Func<Expr, Expr>, char>
                (
                    from dot in Control.Dot(lexeme)
                    from id in Literals.Identifier(lexeme)
                    select new Func<Expr, Expr>((Expr expr) => new AttributeRef(expr, id)),
-                   (from subscript in Combinators.Between(
+                   (from subscript in Parsers.Between(
                        Control.OpenBracket(Control.EOLLexeme),
                        ExpressionList(Control.EOLLexeme),
                        Control.CloseBracket(lexeme)
                    )
                    select new Func<Expr, Expr>((Expr expr) => new Subscription(expr, subscript))
                    ).Try(),
-                   from slice in Combinators.Between(
+                   from slice in Parsers.Between(
                        Control.OpenBracket(Control.EOLLexeme),
                        SliceList,
                        Control.CloseBracket(lexeme)
                    )
                    select new Func<Expr, Expr>((Expr expr) => new Slice(expr, slice)),
-                   from args in Combinators.Between(
+                   from args in Parsers.Between(
                        Control.OpenParan(Control.EOLLexeme),
                        ArgumentList.Option((
                            Maybe.Nothing<IReadOnlyList<Expr>>(),
@@ -190,7 +190,7 @@ namespace PythonParser.Parser
                );
 
         private static Parser<Expr, char> UExpr(Control.LexemeFactory lexeme) 
-            => Combinators.Choice<Expr, char>(
+            => Parsers.Choice<Expr, char>(
                 Power(lexeme),
                 from op in Control.Minus(lexeme)
                 from expr in Parsers.Indirect(() => UExpr(lexeme))
@@ -209,7 +209,7 @@ namespace PythonParser.Parser
 
         private static Parser<Expr, char> MExpr(Control.LexemeFactory lexeme) 
             => from unary in UExpr(lexeme)
-               from rest in Combinators.Choice(
+               from rest in Parsers.Choice(
                    RightBinary(UExpr(lexeme), Control.Asterisk(lexeme), BinaryOperator.Star),
                    RightBinary(UExpr(lexeme), Control.DoubleSlash(lexeme), BinaryOperator.DoubleSlash),
                    RightBinary(UExpr(lexeme), Control.Slash(lexeme), BinaryOperator.Slash),
@@ -219,7 +219,7 @@ namespace PythonParser.Parser
 
         private static Parser<Expr, char> AExpr(Control.LexemeFactory lexeme) 
             => from multiplative in MExpr(lexeme)
-               from rest in Combinators.Choice(
+               from rest in Parsers.Choice(
                    RightBinary(MExpr(lexeme), Control.Plus(lexeme), BinaryOperator.Plus),
                    RightBinary(MExpr(lexeme), Control.Minus(lexeme), BinaryOperator.Minus)
                ).Many()
@@ -231,7 +231,7 @@ namespace PythonParser.Parser
 
         private static Parser<Expr, char> Comparison(Control.LexemeFactory lexeme)
             => from or in OrExpr(lexeme)
-               from rest in Combinators.Choice(
+               from rest in Parsers.Choice(
                    RightBinary(OrExpr(lexeme), Control.IsNot(lexeme), BinaryOperator.IsNot),
                    RightBinary(OrExpr(lexeme), Control.Is(lexeme), BinaryOperator.Is),
                    RightBinary(OrExpr(lexeme), Control.In(lexeme), BinaryOperator.In),
@@ -253,14 +253,14 @@ namespace PythonParser.Parser
             );
 
         private static Parser<Expr, char> AndTest(Control.LexemeFactory lexeme)
-            => Combinators.ChainL1(
+            => Parsers.ChainL1(
                 NotTest(lexeme),
                 from op in Control.And(lexeme)
                 select new Func<Expr, Expr, Expr>((left, right) => new Binary(left, BinaryOperator.And, right))
             );
 
         private static Parser<Expr, char> OrTest(Control.LexemeFactory lexeme) 
-            => Combinators.ChainL1(
+            => Parsers.ChainL1(
                 AndTest(lexeme),
                 from op in Control.Or(lexeme)
                 select new Func<Expr, Expr, Expr>((left, right) => new Binary(left, BinaryOperator.Or, right))

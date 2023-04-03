@@ -22,7 +22,7 @@ namespace ParsecCore.ParsersHelp
             var nexOpParser = from f in op
                               from right in parseNextValue(value, op)
                               select f(left, right);
-            return Combinators.Choice(nexOpParser, Parsers.Return<T, TInputToken>(left));
+            return Parsers.Choice(nexOpParser, Parsers.Return<T, TInputToken>(left));
         }
         public static Parser<T, TInputToken> Parser<T, TInputToken>(
             Parser<T, TInputToken> value,

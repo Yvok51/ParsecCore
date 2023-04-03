@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace ParsecCore
 {
-    public static class Combinators
+    public static partial class Parsers
     {
         /// <summary>
         /// Returns a parser which tries to first apply the first parser and if it succeeds returns the result.

@@ -14,7 +14,7 @@ namespace ParsecCore.ParsersHelp
                               from right in value
                               from result in parseNextOpValue(f(left, right), value, op)
                               select result;
-            return Combinators.Choice(nexOpParser, Parsers.Return<T, TInputToken>(left));
+            return Parsers.Choice(nexOpParser, Parsers.Return<T, TInputToken>(left));
         }
         public static Parser<T, TInputToken> Parser<T, TInputToken>(
             Parser<T, TInputToken> value,

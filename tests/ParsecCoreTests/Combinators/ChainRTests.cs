@@ -23,7 +23,7 @@ namespace ParsecCoreTests
         public void TwoPlusTwo()
         {
             var input = ParserInput.Create("2 + 2");
-            var parser = Combinators.ChainR(Parsers.DecimalInteger, additionParser, 0);
+            var parser = Parsers.ChainR(Parsers.DecimalInteger, additionParser, 0);
 
             var result = parser(input);
 
@@ -35,7 +35,7 @@ namespace ParsecCoreTests
         public void MixedOperators()
         {
             var input = ParserInput.Create("2 + 2 * 3");
-            var parser = Combinators.ChainR(Parsers.DecimalInteger, Combinators.Choice(additionParser, multiplicationParser), 0);
+            var parser = Parsers.ChainR(Parsers.DecimalInteger, Parsers.Choice(additionParser, multiplicationParser), 0);
 
             var result = parser(input);
 
@@ -47,7 +47,7 @@ namespace ParsecCoreTests
         public void SingleValue()
         {
             var input = ParserInput.Create("3");
-            var parser = Combinators.ChainR(Parsers.DecimalInteger, additionParser, 0);
+            var parser = Parsers.ChainR(Parsers.DecimalInteger, additionParser, 0);
 
             var result = parser(input);
 
@@ -59,7 +59,7 @@ namespace ParsecCoreTests
         public void DefaultValue()
         {
             var input = ParserInput.Create("abc");
-            var parser = Combinators.ChainR(Parsers.DecimalInteger, additionParser, 0);
+            var parser = Parsers.ChainR(Parsers.DecimalInteger, additionParser, 0);
 
             var result = parser(input);
 
@@ -71,7 +71,7 @@ namespace ParsecCoreTests
         public void FailedParse()
         {
             var input = ParserInput.Create("2 +");
-            var parser = Combinators.ChainR(Parsers.DecimalInteger, additionParser, 0);
+            var parser = Parsers.ChainR(Parsers.DecimalInteger, additionParser, 0);
 
             var result = parser(input);
 

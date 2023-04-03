@@ -10,7 +10,7 @@ namespace ParsecCoreTests
         public void ParseAndFail()
         {
             var input = ParserInput.Create("12abc");
-            var parser = Combinators.NotFollowedBy(Parsers.String("12"), "12 not allowed");
+            var parser = Parsers.NotFollowedBy(Parsers.String("12"), "12 not allowed");
             var initialPosition = input.Position;
 
             var result = parser(input);
@@ -23,7 +23,7 @@ namespace ParsecCoreTests
         public void DontParseWithNothingConsumed()
         {
             var input = ParserInput.Create("abc");
-            var parser = Combinators.NotFollowedBy(Parsers.String("12"), "12 not allowed");
+            var parser = Parsers.NotFollowedBy(Parsers.String("12"), "12 not allowed");
             var initialPosition = input.Position;
 
             var result = parser(input);
@@ -36,7 +36,7 @@ namespace ParsecCoreTests
         public void DontParseWithInputConsumed()
         {
             var input = ParserInput.Create("1abc");
-            var parser = Combinators.NotFollowedBy(Parsers.String("12"), "12 not allowed");
+            var parser = Parsers.NotFollowedBy(Parsers.String("12"), "12 not allowed");
             var initialPosition = input.Position;
 
             var result = parser(input);

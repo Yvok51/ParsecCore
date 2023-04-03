@@ -12,7 +12,7 @@ namespace ParsecCoreTests
             var leftParser = Parsers.Char('[');
             var rightParser = Parsers.Char('}');
             var middleParser = Parsers.String("Hello there");
-            var parser = Combinators.Between(leftParser, middleParser, rightParser);
+            var parser = Parsers.Between(leftParser, middleParser, rightParser);
             var input = ParserInput.Create("[Hello there}");
 
             var result = parser(input);
@@ -27,7 +27,7 @@ namespace ParsecCoreTests
             var leftParser = Parsers.Char('[');
             var rightParser = Parsers.Char('}');
             var middleParser = Parsers.String("Hello there");
-            var parser = Combinators.Between(leftParser, middleParser, rightParser);
+            var parser = Parsers.Between(leftParser, middleParser, rightParser);
             var input = ParserInput.Create("Hello there}");
 
             var result = parser(input);
@@ -41,7 +41,7 @@ namespace ParsecCoreTests
             var leftParser = Parsers.Char('[');
             var rightParser = Parsers.Char('}');
             var middleParser = Parsers.String("Hello there");
-            var parser = Combinators.Between(leftParser, middleParser, rightParser);
+            var parser = Parsers.Between(leftParser, middleParser, rightParser);
             var input = ParserInput.Create("[Hello tfere}");
 
             var result = parser(input);
@@ -55,7 +55,7 @@ namespace ParsecCoreTests
             var leftParser = Parsers.Char('[');
             var rightParser = Parsers.Char('}');
             var middleParser = Parsers.String("Hello there");
-            var parser = Combinators.Between(leftParser, middleParser, rightParser);
+            var parser = Parsers.Between(leftParser, middleParser, rightParser);
             var input = ParserInput.Create("[Hello there]");
 
             var result = parser(input);

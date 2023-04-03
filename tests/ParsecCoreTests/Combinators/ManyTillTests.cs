@@ -13,7 +13,7 @@ namespace ParsecCoreTests
             var input = ParserInput.Create("|");
             var valueParser = Parsers.Digit;
             var tillParser = Parsers.Char('|');
-            var parser = Combinators.ManyTill(valueParser, tillParser);
+            var parser = Parsers.ManyTill(valueParser, tillParser);
             var initialPosition = input.Position;
 
             var result = parser(input);
@@ -29,7 +29,7 @@ namespace ParsecCoreTests
             var input = ParserInput.Create("1|");
             var valueParser = Parsers.Digit;
             var tillParser = Parsers.Char('|');
-            var parser = Combinators.ManyTill(valueParser, tillParser);
+            var parser = Parsers.ManyTill(valueParser, tillParser);
             var initialPosition = input.Position;
 
             var expected = new List<char>();
@@ -53,7 +53,7 @@ namespace ParsecCoreTests
             var input = ParserInput.Create("123|");
             var valueParser = Parsers.Digit;
             var tillParser = Parsers.Char('|');
-            var parser = Combinators.ManyTill(valueParser, tillParser);
+            var parser = Parsers.ManyTill(valueParser, tillParser);
             var initialPosition = input.Position;
 
             var expected = new List<char>();
@@ -79,7 +79,7 @@ namespace ParsecCoreTests
             var input = ParserInput.Create("123");
             var valueParser = Parsers.Digit;
             var tillParser = Parsers.Char('|');
-            var parser = Combinators.ManyTill(valueParser, tillParser);
+            var parser = Parsers.ManyTill(valueParser, tillParser);
 
             var result = parser(input);
 
@@ -92,7 +92,7 @@ namespace ParsecCoreTests
             var input = ParserInput.Create("123a|");
             var valueParser = Parsers.Digit;
             var tillParser = Parsers.Char('|');
-            var parser = Combinators.ManyTill(valueParser, tillParser);
+            var parser = Parsers.ManyTill(valueParser, tillParser);
 
             var result = parser(input);
 

@@ -94,7 +94,7 @@ namespace PythonParser.Parser
         public static Parser<string, char> Keyword(string keyword, LexemeFactory lexeme)
             => lexeme.Create(
                 from word in Parsers.String(keyword)
-                from _ in Combinators.NotFollowedBy(Literals.IdentifierContinue, $"keyword {keyword} expected")
+                from _ in Parsers.NotFollowedBy(Literals.IdentifierContinue, $"keyword {keyword} expected")
                 select word
                ).Try();
 

@@ -41,7 +41,7 @@ namespace JSONtoXML
         private static readonly Parser<bool, char> falseParser =
             from _ in Symbol("false")
             select false;
-        private static readonly Parser<bool, char> Boolean = Combinators.Choice(trueParser, falseParser);
+        private static readonly Parser<bool, char> Boolean = Parsers.Choice(trueParser, falseParser);
         public static Parser<BoolValue, char> BoolValue =
             from b in Boolean
             select new BoolValue(b);
@@ -52,11 +52,11 @@ namespace JSONtoXML
             from firstDigit in Parsers.Satisfy(c => char.IsDigit(c) && c != '0', "non-zero digit")
             from nextDigits in Parsers.Digit.Many()
             select firstDigit.ToString() + nextDigits;
-        private static readonly Parser<string, char> integer = Combinators.Choice(zero, nonZeroInteger);
+        private static readonly Parser<string, char> integer = Parsers.Choice(zero, nonZeroInteger);
 
         private static readonly Parser<string, char> minus = Parsers.String("-");
         private static readonly Parser<string, char> plus = Parsers.String("+");
-        private static readonly Parser<string, char> plusOrMinus = Combinators.Choice(plus, minus);
+        private static readonly Parser<string, char> plusOrMinus = Parsers.Choice(plus, minus);
 
         private static readonly Parser<string, char> decimalPoint = Parsers.String(".");
         private static readonly Parser<string, char> fractionalPart =
@@ -65,7 +65,7 @@ namespace JSONtoXML
             select point + digits;
 
         private static readonly Parser<string, char> exponentSymbol =
-            Combinators.Choice(Parsers.String("e"), Parsers.String("E"));
+            Parsers.Choice(Parsers.String("e"), Parsers.String("E"));
         private static readonly Parser<string, char> exponent =
             from symbol in exponentSymbol
             from sign in plusOrMinus.Option(string.Empty)
@@ -128,16 +128,16 @@ namespace JSONtoXML
             return parsers;
         }
 
-        private static readonly Parser<char, char> charToEscape = Combinators.Choice(charsToParsers(toEscaped.Keys));
+        private static readonly Parser<char, char> charToEscape = Parsers.Choice(charsToParsers(toEscaped.Keys));
         private static readonly Parser<char, char> escapedChar =
             from esc in escape
             from escapedChar in charToEscape
             select toEscaped[escapedChar];
 
-        private static readonly Parser<char, char> escaped = Combinators.Choice(escapedChar.Try(), hexEncoded);
+        private static readonly Parser<char, char> escaped = Parsers.Choice(escapedChar.Try(), hexEncoded);
 
-        private static readonly Parser<char, char> stringChar = Combinators.Choice(escaped, insideStringChar);
-        private static readonly Parser<string, char> String = Combinators.Between(quote, stringChar.Many());
+        private static readonly Parser<char, char> stringChar = Parsers.Choice(escaped, insideStringChar);
+        private static readonly Parser<string, char> String = Parsers.Between(quote, stringChar.Many());
 
         public static readonly Parser<StringValue, char> StringValue =
             from str in String
@@ -154,9 +154,9 @@ namespace JSONtoXML
          * is invoked the values are correct and not null
          */
         public static readonly Parser<JsonValue, char> JsonValue =
-            Parsers.Indirect(() => Combinators.Between(
+            Parsers.Indirect(() => Parsers.Between(
                     whitespace,
-                    Combinators.Choice<JsonValue, char>(
+                    Parsers.Choice<JsonValue, char>(
                         NullValue,
                         BoolValue,
                         NumberValue,
@@ -168,10 +168,10 @@ namespace JSONtoXML
 
         ////////// ARRAY //////////
         private static Parser<T, char> betweenBrackets<T>(Parser<T, char> betweenParser) =>
-            Combinators.Between(Symbol("["), betweenParser, Symbol("]"));
+            Parsers.Between(Symbol("["), betweenParser, Symbol("]"));
 
         private static Parser<IReadOnlyList<T>, char> ListOfParser<T>(Parser<T, char> valueParser) =>
-            betweenBrackets(Combinators.SepBy(valueParser, valueSeparator));
+            betweenBrackets(Parsers.SepBy(valueParser, valueSeparator));
 
         public static readonly Parser<ArrayValue, char> ArrayValue =
             from values in ListOfParser(JsonValue)
@@ -179,14 +179,14 @@ namespace JSONtoXML
 
         ////////// OBJECT //////////
         private static Parser<T, char> betweenBraces<T>(Parser<T, char> betweenParser) =>
-            Combinators.Between(Symbol("{"), betweenParser, Symbol("}"));
+            Parsers.Between(Symbol("{"), betweenParser, Symbol("}"));
 
         private static Parser<IReadOnlyList<T>, char> ObjectOfParser<T>(Parser<T, char> valueParser) =>
-            betweenBraces(Combinators.SepBy(valueParser, valueSeparator));
+            betweenBraces(Parsers.SepBy(valueParser, valueSeparator));
 
-        private static readonly Parser<string, char> nameSeperator = Combinators.Between(whitespace, Parsers.String(":"));
+        private static readonly Parser<string, char> nameSeperator = Parsers.Between(whitespace, Parsers.String(":"));
         private static readonly Parser<ObjectKeyValuePair, char> member =
-            from key in Combinators.Between(whitespace, StringValue)
+            from key in Parsers.Between(whitespace, StringValue)
             from sep in nameSeperator
             from value in JsonValue
             select new ObjectKeyValuePair { Key = key, Value = value };

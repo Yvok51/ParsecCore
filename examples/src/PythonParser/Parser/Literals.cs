@@ -11,7 +11,7 @@ namespace PythonParser.Parser
         #region STRINGS
 
         private static Parser<string, char> stringPrefix =
-            Combinators.Choice(
+            Parsers.Choice(
                 from r in Parsers.Char('r')
                 from second in Parsers.OneOf('f', 'F').Map(c => c.ToString()).Or(Parsers.Return<string, char>(""))
                 select r + second,
@@ -64,7 +64,7 @@ namespace PythonParser.Parser
             { 'v', '\v' },
         };
         private static readonly Parser<char, char> charToEscape =
-            Combinators.Choice(toEscaped.Keys.Select(c => Parsers.Char(c)));
+            Parsers.Choice(toEscaped.Keys.Select(c => Parsers.Char(c)));
         private static readonly Parser<char, char> escape = Parsers.Char('\\');
         private static readonly Parser<char, char> escapedChar =
             from escapedChar in charToEscape
@@ -72,7 +72,7 @@ namespace PythonParser.Parser
 
         private static readonly Parser<char, char> escaped =
             from _ in escape
-            from escaped in Combinators.Choice(escapedChar, bit8HexEncoded, bit16HexEncoded)
+            from escaped in Parsers.Choice(escapedChar, bit8HexEncoded, bit16HexEncoded)
             select escaped;
 
         private static readonly Parser<char, char> insideDoubleQuoteShortStringChar =
@@ -99,9 +99,9 @@ namespace PythonParser.Parser
         private static readonly Parser<char, char> singleQuote = Parsers.Char('\'');
 
         private static readonly Parser<string, char> shortString =
-            Combinators.Choice(
-                Combinators.Between(singleQuote, insideSingleQuoteShortStringChar.Or(escaped).Many()),
-                Combinators.Between(doubleQuote, insideDoubleQuoteShortStringChar.Or(escaped).Many())
+            Parsers.Choice(
+                Parsers.Between(singleQuote, insideSingleQuoteShortStringChar.Or(escaped).Many()),
+                Parsers.Between(doubleQuote, insideDoubleQuoteShortStringChar.Or(escaped).Many())
             );
 
         //private static readonly Parser<string, char> longString =
@@ -148,7 +148,7 @@ namespace PythonParser.Parser
             from integer in hexDigit.Or(Parsers.Char('_')).Many1()
             select Convert.ToInt32(StripUnderscores(integer), 16);
         private static Parser<int, char> otherBaseIntegers =
-            from integer in Combinators.Choice(biInteger, octInteger, hexInteger)
+            from integer in Parsers.Choice(biInteger, octInteger, hexInteger)
             select integer;
 
         private static Parser<int, char> nonZeroInteger =
@@ -166,7 +166,7 @@ namespace PythonParser.Parser
 
         internal static Parser<IntegerLiteral, char> Integer =
             from num in nonZeroInteger.Or(factoredZeroAndOtherBase)
-            from alphaNumGuard in Combinators.NotFollowedBy(Parsers.AlphaNum, "Invalid character in number")
+            from alphaNumGuard in Parsers.NotFollowedBy(Parsers.AlphaNum, "Invalid character in number")
             select new IntegerLiteral(num);
 
         private static Parser<string, char> digitPart =
@@ -197,7 +197,7 @@ namespace PythonParser.Parser
 
         internal static Parser<FloatLiteral, char> Float =
             from floatNumber in exponentFloat.Try().Or(pointFloat)
-            from alphaNumGuard in Combinators.NotFollowedBy(Parsers.AlphaNum, "Invalid character in number")
+            from alphaNumGuard in Parsers.NotFollowedBy(Parsers.AlphaNum, "Invalid character in number")
             select new FloatLiteral(
                 double.Parse(StripUnderscores(floatNumber),
                 CultureInfo.InvariantCulture.NumberFormat)
@@ -234,7 +234,7 @@ namespace PythonParser.Parser
 
         public static Parser<Expr, char> Literal(Control.LexemeFactory lexeme) 
             => lexeme.Create(
-                Combinators.Choice<Expr, char>(
+                Parsers.Choice<Expr, char>(
                     String,
                     Integer.Try(),
                     Float

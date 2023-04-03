@@ -55,7 +55,7 @@ namespace ParsecCore.Permutations
         /// <returns> Parser for the constructed permutation </returns>
         public Parser<T, TInput> GetParser()
         {
-            var parser = Combinators.Choice(_branches.Map(branch => branch.GetParser()));
+            var parser = Parsers.Choice(_branches.Map(branch => branch.GetParser()));
 
             return _default.Match(
                 just: (val) => parser.Or(Parsers.Return<T, TInput>(val)),
