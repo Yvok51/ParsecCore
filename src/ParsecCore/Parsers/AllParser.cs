@@ -29,7 +29,7 @@ namespace ParsecCore.ParsersHelp
                     var parsedResult = parser(input);
                     if (parsedResult.IsError)
                     {
-                        return Either.Error<ParseError, IReadOnlyList<T>>(parsedResult.Error);
+                        return Either.RetypeError<ParseError, T, IReadOnlyList<T>>(parsedResult);
                     }
 
                     result.Add(parsedResult.Result);

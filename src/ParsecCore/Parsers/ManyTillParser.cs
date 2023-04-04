@@ -18,7 +18,7 @@ namespace ParsecCore.ParsersHelp
                     var manyResult = many(input);
                     if (manyResult.IsError)
                     {
-                        return Either.Error<ParseError, IReadOnlyList<T>>(manyResult.Error);
+                        return Either.RetypeError<ParseError, T, IReadOnlyList<T>>(manyResult);
                     }
 
                     result.Add(manyResult.Result);

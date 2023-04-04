@@ -324,7 +324,7 @@ namespace ParsecCore.Indentation
                         var itemRes = itemParser(input);
                         if (itemRes.IsError)
                         {
-                            return Either.Error<ParseError, List<TItem>>(itemRes.Error);
+                            return Either.RetypeError<ParseError, TItem, List<TItem>>(itemRes);
                         }
 
                         items.Add(itemRes.Result);

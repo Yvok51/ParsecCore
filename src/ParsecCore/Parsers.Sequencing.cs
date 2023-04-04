@@ -33,7 +33,7 @@ namespace ParsecCore
                 var discardedResult = firstParser(input);
                 if (discardedResult.IsError)
                 {
-                    return Either.Error<ParseError, R>(discardedResult.Error);
+                    return Either.RetypeError<ParseError, T, R>(discardedResult);
                 }
                 return secondParser(input);
             };
@@ -71,7 +71,7 @@ namespace ParsecCore
                 var discardedResult = secondParser(input);
                 if (discardedResult.IsError)
                 {
-                    return Either.Error<ParseError, T>(discardedResult.Error);
+                    return Either.RetypeError<ParseError, R, T>(discardedResult);
                 }
 
                 return result;

@@ -20,7 +20,7 @@ namespace ParsecCore.ParsersHelp
                     return Either.Result<ParseError, IMaybe<T>>(Maybe.Nothing<T>());
                 }
 
-                return Either.Error<ParseError, IMaybe<T>>(result.Error);
+                return Either.RetypeError<ParseError, T, IMaybe<T>>(result);
             };
         }
     }

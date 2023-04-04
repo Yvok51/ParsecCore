@@ -27,7 +27,7 @@ namespace ParsecCore.ParsersHelp
 
                 if (parseResult.IsError)
                 {
-                    return Either.Error<ParseError, IReadOnlyList<T>>(parseResult.Error);
+                    return Either.RetypeError<ParseError, IMaybe<T>, IReadOnlyList<T>>(parseResult);
                 }
 
                 return Either.Result<ParseError, IReadOnlyList<T>>(result);

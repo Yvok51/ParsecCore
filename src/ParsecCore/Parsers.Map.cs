@@ -80,7 +80,7 @@ namespace ParsecCore
                 }
                 else
                 {
-                    return Either.Error<ParseError, TResult>(res.Error);
+                    return Either.RetypeError<ParseError, T, TResult>(res);
                 }
             };
         }
