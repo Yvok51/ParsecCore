@@ -90,8 +90,6 @@ namespace ParsecCore
             {
                 var result = parser(input);
                 return result.Map(projection);
-                //return from value in parser(input)
-                //       select projection(value);
             };
         }
 
@@ -137,9 +135,6 @@ namespace ParsecCore
                 }
 
                 return Either.Result<ParseError, TResult>(getResult(firstResult.Result, secondResult.Result));
-                //return from firstValue in first(input)
-                //       from secondValue in getSecond(firstValue)(input)
-                //       select getResult(firstValue, secondValue);
             };
         }
 
@@ -539,7 +534,9 @@ namespace ParsecCore
         }
 
         /// <summary>
-        /// Map the result of the parser
+        /// Map the result of the parser.
+        /// Equivalent to 
+        /// <see cref="Select{TSource, TResult, TInputToken}(Parser{TSource, TInputToken}, Func{TSource, TResult})"/>.
         /// </summary>
         /// <typeparam name="T"> Type of the parsing result </typeparam>
         /// <typeparam name="TResult"> Type returned by the new parser </typeparam>
@@ -556,7 +553,78 @@ namespace ParsecCore
             if (parser is null) throw new ArgumentNullException(nameof(parser));
             if (map is null) throw new ArgumentNullException(nameof(map));
 
-            return from r in parser select map(r);
+            return parser.Select(map);
+        }
+
+        /// <summary>
+        /// Sequences two parsers after each other but returns the result only of the second one.
+        /// Apply the <paramref name="firstParser"/> and discard its result.
+        /// Afterward, apply the <paramref name="secondParser"/> and return its result.
+        /// If any of the parser fails, then the entire parser fails.
+        /// </summary>
+        /// <typeparam name="T"> The result type of the first parser </typeparam>
+        /// <typeparam name="R"> The result type of the second parser </typeparam>
+        /// <typeparam name="TInput"> The input type of the parsers </typeparam>
+        /// <param name="firstParser"> The parser that is applied first </param>
+        /// <param name="secondParser"> The parser that is applied second and whose value is returned </param>
+        /// <returns> Parser that sequences two parsers </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
+        public static Parser<R, TInput> Then<T, R, TInput>(
+            this Parser<T, TInput> firstParser,
+            Parser<R, TInput> secondParser
+        )
+        {
+            if (firstParser is null) throw new ArgumentNullException(nameof(firstParser));
+            if (secondParser is null) throw new ArgumentNullException(nameof(secondParser));
+
+            return (input) =>
+            {
+                var discardedResult = firstParser(input);
+                if (discardedResult.IsError)
+                {
+                    return Either.Error<ParseError, R>(discardedResult.Error);
+                }
+                return secondParser(input);
+            };
+        }
+
+        /// <summary>
+        /// Sequences two parsers after each other but returns the result only of the first one.
+        /// Apply the <paramref name="firstParser"/>.
+        /// Afterward, apply the <paramref name="secondParser"/> and discard its result.
+        /// If both parsers succeeded return the result of the first one.
+        /// If any of the parser fails, then the entire parser fails.
+        /// </summary>
+        /// <typeparam name="T"> The result type of the first parser </typeparam>
+        /// <typeparam name="R"> The result type of the second parser </typeparam>
+        /// <typeparam name="TInput"> The input type of the parsers </typeparam>
+        /// <param name="firstParser"> The parser that is applied first and whose value is returned </param>
+        /// <param name="secondParser"> The parser that is applied second </param>
+        /// <returns> Parser that sequences two parsers </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
+        public static Parser<T, TInput> FollowedBy<T, R, TInput>(
+            this Parser<T, TInput> firstParser,
+            Parser<R, TInput> secondParser
+        )
+        {
+            if (firstParser is null) throw new ArgumentNullException(nameof(firstParser));
+            if (secondParser is null) throw new ArgumentNullException(nameof(secondParser));
+
+            return (input) =>
+            {
+                var result = firstParser(input);
+                if (result.IsError)
+                {
+                    return result;
+                }
+                var discardedResult = secondParser(input);
+                if (discardedResult.IsError)
+                {
+                    return Either.Error<ParseError, T>(discardedResult.Error);
+                }
+
+                return result;
+            };
         }
     }
 }

@@ -151,9 +151,7 @@ namespace ParsecCore
         /// </summary>
         public static readonly Parser<char, char> EOL = // made so that we don't need lookahead
             NewLine.Or(
-                from cr in CarriageReturn
-                from lf in NewLine.Or(Return<char, char>('\n'))
-                select lf
+                CarriageReturn.Then(NewLine.Or(Return<char, char>('\n')))
             );
 
         /// <summary>
@@ -170,7 +168,7 @@ namespace ParsecCore
         /// Parses an integer
         /// </summary>
         public static readonly Parser<int, char> DecimalInteger =
-            from op in Parsers.Choice(Symbol("-"), Symbol("+")).Option(string.Empty)
+            from op in Symbol("-").Or(Symbol("+")).Option(string.Empty)
             from digits in Token(Digits)
             select Int32.Parse(op + digits);
 

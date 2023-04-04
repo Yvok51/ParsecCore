@@ -120,10 +120,7 @@ namespace ParsecCore
             if (betweenParser is null) throw new ArgumentNullException(nameof(betweenParser));
             if (rightParser is null) throw new ArgumentNullException(nameof(rightParser));
 
-            return from l in leftParser
-                   from between in betweenParser
-                   from r in rightParser
-                   select between;
+            return leftParser.Then(betweenParser.FollowedBy(rightParser));
         }
 
         /// <summary>
@@ -161,7 +158,7 @@ namespace ParsecCore
         ) =>
             Choice(
                 SepBy1(valueParser, separatorParser),
-                Parsers.Return<IReadOnlyList<TValue>, TInputToken>(Array.Empty<TValue>())
+                Return<IReadOnlyList<TValue>, TInputToken>(Array.Empty<TValue>())
             );
 
         /// <summary>
@@ -183,9 +180,7 @@ namespace ParsecCore
             if (valueParser is null) throw new ArgumentNullException(nameof(valueParser));
             if (separatorParser is null) throw new ArgumentNullException(nameof(separatorParser));
 
-            var sepValueParser = from sep in separatorParser
-                                 from val in valueParser
-                                 select val;
+            var sepValueParser = separatorParser.Then(valueParser);
 
             return from firstParse in valueParser
                    from subsequentParses in sepValueParser.Many()
@@ -210,9 +205,7 @@ namespace ParsecCore
             if (valueParser is null) throw new ArgumentNullException(nameof(valueParser));
             if (separatorParser is null) throw new ArgumentNullException(nameof(separatorParser));
 
-            return (from val in valueParser
-                    from sep in separatorParser
-                    select val).Many();
+            return valueParser.FollowedBy(separatorParser).Many();
         }
 
         /// <summary>
@@ -234,9 +227,7 @@ namespace ParsecCore
             if (valueParser is null) throw new ArgumentNullException(nameof(valueParser));
             if (separatorParser is null) throw new ArgumentNullException(nameof(separatorParser));
 
-            return (from val in valueParser
-                    from sep in separatorParser
-                    select val).Many1();
+            return valueParser.FollowedBy(separatorParser).Many1();
         }
 
         /// <summary>
@@ -289,7 +280,7 @@ namespace ParsecCore
             Parser<Func<T, T, T>, TInputToken> op,
             T defaultValue
         ) =>
-            Choice(ChainL1(value, op), Parsers.Return<T, TInputToken>(defaultValue));
+            Choice(ChainL1(value, op), Return<T, TInputToken>(defaultValue));
 
         /// <summary>
         /// Parses one or more occurences of the given values seperated by operators
@@ -335,7 +326,7 @@ namespace ParsecCore
             Parser<Func<T, T, T>, TInputToken> op,
             T defaultValue
         ) =>
-            Choice(ChainR1(value, op), Parsers.Return<T, TInputToken>(defaultValue));
+            Choice(ChainR1(value, op), Return<T, TInputToken>(defaultValue));
 
         /// <summary>
         /// Parses one or more occurences of the given values seperated by operators
@@ -377,10 +368,9 @@ namespace ParsecCore
             if (parser is null) throw new ArgumentNullException(nameof(parser));
             if (msgIfParsed is null) throw new ArgumentNullException(nameof(msgIfParsed));
 
-            var failParser = from _ in parser.Try()
-                             from fail in Parsers.Fail<None, TInputToken>(msgIfParsed)
-                             select fail;
-            return Choice(failParser, Parsers.Return<None, TInputToken>(None.Instance)).Try();
+            var failParser = parser.Try().Then(Fail<None, TInputToken>(msgIfParsed));
+
+            return Choice(failParser, Return<None, TInputToken>(None.Instance)).Try();
         }
 
         /// <summary>
@@ -402,35 +392,6 @@ namespace ParsecCore
             if (till is null) throw new ArgumentNullException(nameof(till));
 
             return ManyTillParser.Parser(parser, till);
-        }
-
-        /// <summary>
-        /// Sequences two parsers after each other but returns the result only of the second one.
-        /// Apply the <paramref name="firstParser"/> and discard its result.
-        /// Afterward, apply the <paramref name="secondParser"/> and return its result.
-        /// If any of the parser fails, then the entire parser fails.
-        /// </summary>
-        /// <typeparam name="T"> The result type of the first parser </typeparam>
-        /// <typeparam name="R"> The result type of the second parser </typeparam>
-        /// <typeparam name="TInput"> The input type of the parsers </typeparam>
-        /// <param name="firstParser"> The parser that is applied first </param>
-        /// <param name="secondParser"> The parser that is applied second and whose value is returned </param>
-        /// <returns> Parser that sequences two parsers </returns>
-        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
-        public static Parser<R, TInput> Then<T, R, TInput>(this Parser<T, TInput> firstParser, Parser<R, TInput> secondParser)
-        {
-            if (firstParser is null) throw new ArgumentNullException(nameof(firstParser));
-            if (secondParser is null) throw new ArgumentNullException(nameof(secondParser));
-
-            return (input) =>
-            {
-                var discardedResult = firstParser(input);
-                if (discardedResult.IsError)
-                {
-                    return Either.Error<ParseError, R>(discardedResult.Error);
-                }
-                return secondParser(input);
-            };
         }
     }
 }

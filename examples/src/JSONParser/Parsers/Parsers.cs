@@ -20,9 +20,7 @@ namespace JSONtoXML
             Parsers.Satisfy(c => c == ' ' || c == '\n' || c == '\t' || c == '\r', "whitespace").Many();
 
         private static Parser<T, char> Token<T>(Parser<T, char> parser) =>
-            from result in parser
-            from _ in whitespace
-            select result;
+            parser.FollowedBy(whitespace);
 
         private static Parser<string, char> Symbol(string s) =>
             Token(Parsers.String(s));
@@ -94,8 +92,7 @@ namespace JSONtoXML
         );
 
         private static readonly Parser<char, char> hexEncoded =
-            from _ in escape
-            from __ in Parsers.Char('u')
+            from _ in escape.Then(Parsers.Char('u'))
             from first in hexadecimalDigit
             from second in hexadecimalDigit
             from third in hexadecimalDigit
@@ -130,9 +127,10 @@ namespace JSONtoXML
 
         private static readonly Parser<char, char> charToEscape = Parsers.Choice(charsToParsers(toEscaped.Keys));
         private static readonly Parser<char, char> escapedChar =
-            from esc in escape
-            from escapedChar in charToEscape
-            select toEscaped[escapedChar];
+            escape.Then(
+                from escapedChar in charToEscape
+                select toEscaped[escapedChar]
+            );
 
         private static readonly Parser<char, char> escaped = Parsers.Choice(escapedChar.Try(), hexEncoded);
 
