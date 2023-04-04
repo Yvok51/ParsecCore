@@ -339,13 +339,14 @@ namespace ParsecCore
         #region Error Handling
 
         /// <summary>
-        /// 
+        /// Returns a parser which always fails and returns the given error.
+        /// Does not consume any input.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="TInputToken"></typeparam>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <typeparam name="T"> The result type of the parser </typeparam>
+        /// <typeparam name="TInputToken"> The input type of the parser </typeparam>
+        /// <param name="error"> The error to return </param>
+        /// <returns> Parser that always fails with the given error </returns>
+        /// <exception cref="ArgumentNullException"> If <paramref name="error"/> is null </exception>
         public static Parser<T, TInputToken> ParserError<T, TInputToken>(ParseError error)
         {
             if (error is null) throw new ArgumentNullException(nameof(error));
@@ -359,12 +360,15 @@ namespace ParsecCore
         /// <summary>
         /// Returns a parser which always fails with the given message.
         /// Does not consume any input.
+        /// <para>
+        /// The error that is raised is <see cref="CustomError"/>.
+        /// </para>
         /// </summary>
-        /// <typeparam name="T"> The type of parser </typeparam>
+        /// <typeparam name="T"> The result type of parser </typeparam>
         /// <typeparam name="TInputToken"> The input type of the parser </typeparam>
         /// <param name="msg"> The message to fail with </param>
-        /// <returns> Parser which always fails with the given message </returns>
-        /// <exception cref="ArgumentNullException"> If provided message is null </exception>
+        /// <returns> Parser that always fails with the given message </returns>
+        /// <exception cref="ArgumentNullException"> If <paramref name="msg"/> is null </exception>
         public static Parser<T, TInputToken> Fail<T, TInputToken>(string msg)
         {
             if (msg is null) throw new ArgumentNullException(nameof(msg));
