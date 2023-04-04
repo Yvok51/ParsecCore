@@ -1,8 +1,16 @@
-﻿using ParsecCore.Help;
+﻿using ParsecCore;
+using ParsecCore.Help;
 using System.Collections.Generic;
 
 namespace ParsecCore.Expression
 {
+    /// <summary>
+    /// A table of operators.
+    /// In sequence according to their priority, from highest to lowest.
+    /// Every row has sorted the different operators into their different types
+    /// </summary>
+    /// <typeparam name="T"> The type of the simple expression </typeparam>
+    /// <typeparam name="TInput"> The input type of the parsers </typeparam>
     internal class OperatorTable<T, TInput>
     {
         public static OperatorTable<T, TInput> Create(IReadOnlyList<IReadOnlyList<Operator<T, TInput>>> operators)
@@ -18,8 +26,19 @@ namespace ParsecCore.Expression
         public IReadOnlyList<OperatorRow<T, TInput>> Table { get; init; }
     }
 
+    /// <summary>
+    /// Represents a single row of operators in an <see cref="OperatorTable{T, TInput}"/>, a single level of priority
+    /// </summary>
+    /// <typeparam name="T"> The type of the simple expression (term) </typeparam>
+    /// <typeparam name="TInput"> The input type of the operator parsers </typeparam>
     internal class OperatorRow<T, TInput>
     {
+        /// <summary>
+        /// Creates a single row of operators from a list.
+        /// Sorts them into different types of operators.
+        /// </summary>
+        /// <param name="row"> The row of operators </param>
+        /// <returns> The sorted row of operators </returns>
         public static OperatorRow<T, TInput> Create(IReadOnlyList<Operator<T, TInput>> row)
         {
             List<PrefixUnary<T, TInput>> prefix = new();

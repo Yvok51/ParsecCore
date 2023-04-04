@@ -5,8 +5,27 @@ using ParsecCore.Help;
 
 namespace ParsecCore.Expression
 {
+    /// <summary>
+    /// Class for quick creation of expression parser
+    /// </summary>
     public static class Expression
     {
+        /// <summary>
+        /// Create a parser for arithmetic expressions.
+        /// The allowed operators are to be listed in a 2D array with the highest priority operators listed first
+        /// and lower priority operators listed lower.
+        /// The operators listed on the same row have the same priority.
+        /// On the same priority first prefix operators are applied, postfix after them and binary operators last.
+        /// <para>
+        /// If the given operators are ambigous and the parsed expression could not be decided,
+        /// then an error is raised.
+        /// </para>
+        /// </summary>
+        /// <typeparam name="T"> The type of the simple expression (term) parser </typeparam>
+        /// <typeparam name="TInput"> The input type of the parsers of terms and operators </typeparam>
+        /// <param name="operators"> The table of operators </param>
+        /// <param name="termParser"> The parser of the basic expression </param>
+        /// <returns> Arithmetic expression parser </returns>
         public static Parser<T, TInput> Build<T, TInput>(
             IReadOnlyList<IReadOnlyList<Operator<T, TInput>>> operators,
             Parser<T, TInput> termParser
