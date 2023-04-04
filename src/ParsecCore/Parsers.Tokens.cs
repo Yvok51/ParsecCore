@@ -54,9 +54,7 @@ namespace ParsecCore
         {
             if (parser is null) throw new ArgumentNullException(nameof(parser));
 
-            return from x in parser
-                   from _ in Spaces
-                   select x;
+            return parser.FollowedBy(Spaces);
         }
 
         /// <summary>
@@ -79,9 +77,7 @@ namespace ParsecCore
             if (parser is null) throw new ArgumentNullException(nameof(parser));
             if (spaceConsumer is null) throw new ArgumentNullException(nameof(spaceConsumer));
 
-            return from x in parser
-                   from _ in spaceConsumer
-                   select x;
+            return parser.FollowedBy(spaceConsumer);
         }
 
         /// <summary>

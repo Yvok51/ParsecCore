@@ -28,17 +28,12 @@ namespace JSONtoXML
         private static readonly Parser<string, char> valueSeparator = Symbol(",");
 
         ////////// NULL //////////
-        public static readonly Parser<NullValue, char> NullValue =
-            from _ in Symbol("null")
-            select new NullValue();
+        public static readonly Parser<NullValue, char> NullValue = Symbol("null").MapConstant(new NullValue());
 
         ////////// BOOLEAN //////////
-        private static readonly Parser<bool, char> trueParser =
-            from _ in Symbol("true")
-            select true;
-        private static readonly Parser<bool, char> falseParser =
-            from _ in Symbol("false")
-            select false;
+        private static readonly Parser<bool, char> trueParser = Symbol("true").MapConstant(true);
+        private static readonly Parser<bool, char> falseParser = Symbol("false").MapConstant(false);
+
         private static readonly Parser<bool, char> Boolean = Parsers.Choice(trueParser, falseParser);
         public static Parser<BoolValue, char> BoolValue =
             from b in Boolean
@@ -195,9 +190,6 @@ namespace JSONtoXML
 
         ////////// JSON DOCUMENT //////////
 
-        public static readonly Parser<JsonValue, char> JsonDocument =
-            from value in JsonValue
-            from _ in Parsers.EOF<char>()
-            select value;
+        public static readonly Parser<JsonValue, char> JsonDocument = JsonValue.FollowedBy(Parsers.EOF<char>());
     }
 }

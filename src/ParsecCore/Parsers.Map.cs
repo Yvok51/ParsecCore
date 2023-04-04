@@ -1,4 +1,5 @@
-﻿using ParsecCore.Help;
+﻿using ParsecCore.EitherNS;
+using ParsecCore.Help;
 using System;
 
 namespace ParsecCore
@@ -19,14 +20,14 @@ namespace ParsecCore
         {
             if (parser is null) throw new ArgumentNullException(nameof(parser));
 
-            return from _ in parser
-                   select None.Instance;
+            return parser.MapConstant(None.Instance);
         }
 
         /// <summary>
         /// Map the result of the parser.
         /// Equivalent to 
         /// <see cref="Select{TSource, TResult, TInputToken}(Parser{TSource, TInputToken}, Func{TSource, TResult})"/>.
+        /// If <paramref name="parser"/> fails, then returned parser also fails.
         /// </summary>
         /// <typeparam name="T"> Type of the parsing result </typeparam>
         /// <typeparam name="TResult"> Type returned by the new parser </typeparam>
@@ -44,6 +45,45 @@ namespace ParsecCore
             if (map is null) throw new ArgumentNullException(nameof(map));
 
             return parser.Select(map);
+        }
+
+        /// <summary>
+        /// Change the result of the parser to a constant value.
+        /// Equivalent to <see cref="Map{T, TResult, TInput}(Parser{T, TInput}, Func{T, TResult})"/> with a constant
+        /// function, but is faster.
+        /// If <paramref name="parser"/> fails, then returned parser also fails.
+        /// </summary>
+        /// <typeparam name="T"> The return type of the parser </typeparam>
+        /// <typeparam name="TResult"> The type of the constant </typeparam>
+        /// <typeparam name="TInput"> The input type of the parser </typeparam>
+        /// <param name="parser"> Parser to apply </param>
+        /// <param name="value"> Value to return if parse was successful </param>
+        /// <returns>
+        /// Parser which parses the same as <paramref name="parser"/> but always returns the same constant
+        /// </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
+        public static Parser<TResult, TInput> MapConstant<T, TResult, TInput>(
+            this Parser<T, TInput> parser,
+            TResult value
+        )
+        {
+            if (parser is null) throw new ArgumentNullException(nameof(parser));
+            if (value is null) throw new ArgumentNullException(nameof(value));
+
+            var valueEither = Either.Result<ParseError, TResult>(value);
+
+            return (input) =>
+            {
+                var res = parser(input);
+                if (res.IsResult)
+                {
+                    return valueEither;
+                }
+                else
+                {
+                    return Either.Error<ParseError, TResult>(res.Error);
+                }
+            };
         }
     }
 }
