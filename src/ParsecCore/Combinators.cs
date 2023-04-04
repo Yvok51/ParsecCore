@@ -1,5 +1,6 @@
 ﻿using ParsecCore.Help;
 using ParsecCore.ParsersHelp;
+using ParsecCore.EitherNS;
 using System;
 using System.Collections.Generic;
 
@@ -401,6 +402,35 @@ namespace ParsecCore
             if (till is null) throw new ArgumentNullException(nameof(till));
 
             return ManyTillParser.Parser(parser, till);
+        }
+
+        /// <summary>
+        /// Sequences two parsers after each other but returns the result only of the second one.
+        /// Apply the <paramref name="firstParser"/> and discard its result.
+        /// Afterward, apply the <paramref name="secondParser"/> and return its result.
+        /// If any of the parser fails, then the entire parser fails.
+        /// </summary>
+        /// <typeparam name="T"> The result type of the first parser </typeparam>
+        /// <typeparam name="R"> The result type of the second parser </typeparam>
+        /// <typeparam name="TInput"> The input type of the parsers </typeparam>
+        /// <param name="firstParser"> The parser that is applied first </param>
+        /// <param name="secondParser"> The parser that is applied second and whose value is returned </param>
+        /// <returns> Parser that sequences two parsers </returns>
+        /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
+        public static Parser<R, TInput> Then<T, R, TInput>(this Parser<T, TInput> firstParser, Parser<R, TInput> secondParser)
+        {
+            if (firstParser is null) throw new ArgumentNullException(nameof(firstParser));
+            if (secondParser is null) throw new ArgumentNullException(nameof(secondParser));
+
+            return (input) =>
+            {
+                var discardedResult = firstParser(input);
+                if (discardedResult.IsError)
+                {
+                    return Either.Error<ParseError, R>(discardedResult.Error);
+                }
+                return secondParser(input);
+            };
         }
     }
 }
