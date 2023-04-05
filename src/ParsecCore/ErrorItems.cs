@@ -186,7 +186,7 @@ namespace ParsecCore
 
         public bool Equals(IndentationError? other)
         {
-            return other is not null 
+            return other is not null
                 && _relation.Equals(other._relation)
                 && _reference.Equals(other._reference)
                 && _actual.Equals(other._actual);

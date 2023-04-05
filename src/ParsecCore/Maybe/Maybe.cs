@@ -49,7 +49,7 @@ namespace ParsecCore.MaybeNS
 
         public bool Equals(Maybe<T> other)
         {
-            return (IsEmpty && other.IsEmpty) 
+            return (IsEmpty && other.IsEmpty)
                 || (HasValue && other.HasValue && EqualityComparer<T>.Default.Equals(_value, other.Value));
         }
 

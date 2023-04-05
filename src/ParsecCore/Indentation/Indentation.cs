@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using ParsecCore.EitherNS;
-using ParsecCore.Help;
+﻿using ParsecCore.EitherNS;
 using ParsecCore.MaybeNS;
+using System;
+using System.Collections.Generic;
 
 namespace ParsecCore.Indentation
 {

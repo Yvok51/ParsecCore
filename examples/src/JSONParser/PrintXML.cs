@@ -18,7 +18,7 @@ namespace JSONtoXML
 
         private class XMLtoString : IXMLVisitor<string, int>
         {
-            public XMLtoString(int spacesPerIndent=4)
+            public XMLtoString(int spacesPerIndent = 4)
             {
                 _spacesPerIndent = spacesPerIndent;
             }

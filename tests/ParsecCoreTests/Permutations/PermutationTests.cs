@@ -1,7 +1,7 @@
-﻿using ParsecCore.EitherNS;
+﻿using ParsecCore;
+using ParsecCore.EitherNS;
 using ParsecCore.Input;
 using ParsecCore.Permutations;
-using ParsecCore;
 using Xunit;
 
 namespace ParsecCoreTests.Permutations

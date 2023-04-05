@@ -1,5 +1,4 @@
 ﻿using ParsecCore.MaybeNS;
-using PythonParser.Parser;
 
 namespace PythonParser.Structures
 {
@@ -427,7 +426,7 @@ namespace PythonParser.Structures
 
         public bool Equals(Subscription? other)
         {
-            return other != null 
+            return other != null
                 && Subscribable.Equals(other.Subscribable)
                 && Enumerable.SequenceEqual(Expressions, other.Expressions);
         }
@@ -462,7 +461,7 @@ namespace PythonParser.Structures
 
         public bool Equals(SliceItem? other)
         {
-            return other != null 
+            return other != null
                 && UpperBound.Equals(other.UpperBound)
                 && LowerBound.Equals(other.LowerBound)
                 && Stride.Equals(other.Stride);
@@ -571,16 +570,16 @@ namespace PythonParser.Structures
 
         public bool Equals(Call? other)
         {
-            return other != null 
+            return other != null
                 && CalledExpr.Equals(other.CalledExpr)
                 && ArgumentList.Match(
-                    just: (list) 
+                    just: (list)
                         => !other.ArgumentList.IsEmpty && Enumerable.SequenceEqual(list, other.ArgumentList.Value),
                     nothing: () => other.ArgumentList.IsEmpty
                 )
                 && KeywordArguments.Match(
                     just: (list)
-                        => !other.KeywordArguments.IsEmpty 
+                        => !other.KeywordArguments.IsEmpty
                         && Enumerable.SequenceEqual(list, other.KeywordArguments.Value),
                     nothing: () => other.KeywordArguments.IsEmpty
                 )
@@ -653,7 +652,7 @@ namespace PythonParser.Structures
 
         public bool Equals(Binary? other)
         {
-            return other != null 
+            return other != null
                 && Left.Equals(other.Left)
                 && Right.Equals(other.Right)
                 && Operator == other.Operator;

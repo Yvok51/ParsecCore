@@ -50,7 +50,7 @@ namespace PythonParserTests.Parser.StatementTests
                 new Suite(new List<Stmt>()
                 {
                     new Return(Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>()
-                    { 
+                    {
                         new Binary(new IntegerLiteral(2), BinaryOperator.Star, new IdentifierLiteral("x"))
                     }))
                 }),

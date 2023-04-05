@@ -77,7 +77,7 @@ namespace PythonParser.Structures
 
         public bool Equals(Assignment? other)
         {
-            return other != null 
+            return other != null
                 && TargetList.Zip(other.TargetList).All(tuple => Enumerable.SequenceEqual(tuple.First, tuple.Second))
                 && Enumerable.SequenceEqual(Expressions, other.Expressions);
         }
@@ -120,7 +120,7 @@ namespace PythonParser.Structures
 
     internal class Return : Stmt, IEquatable<Return>
     {
-        public Return(Maybe<IReadOnlyList<Expr>> expressions) 
+        public Return(Maybe<IReadOnlyList<Expr>> expressions)
         {
             Expressions = expressions;
         }

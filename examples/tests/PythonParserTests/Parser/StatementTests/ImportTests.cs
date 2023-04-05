@@ -18,7 +18,7 @@ namespace PythonParserTests.Parser.StatementTests
                 new Suite(new List<Stmt>()
                 {
                     new ImportModule(
-                        new List<IdentifierLiteral>() 
+                        new List<IdentifierLiteral>()
                         {
                             new IdentifierLiteral("numpy")
                         },

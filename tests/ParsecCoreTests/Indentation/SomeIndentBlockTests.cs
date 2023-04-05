@@ -1,7 +1,7 @@
-﻿using ParsecCore.Indentation;
+﻿using ParsecCore;
+using ParsecCore.Indentation;
 using ParsecCore.Input;
 using ParsecCore.MaybeNS;
-using ParsecCore;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
