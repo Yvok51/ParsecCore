@@ -28,7 +28,7 @@ namespace ParsecCore.ParsersHelp
                     result.Add(manyResult.Result);
                     var position = input.Position;
                     tillResult = tryTill(input);
-                    if (input.Position != position)
+                    if (input.Position != position && tillResult.IsError)
                     {
                         return Either.RetypeError<ParseError, TEnd, IReadOnlyList<T>>(tillResult);
                     }
