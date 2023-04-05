@@ -66,27 +66,27 @@ namespace ParsecCore.Expressions
         }
 
         public static PrefixUnary<T, char> PrefixOperator<T>(string op, Func<T, T> func)
-            => new PrefixUnary<T, char>(Parsers.Symbol(op).MapConstant(func));
+            => new PrefixUnary<T, char>(Parsers.Symbol(op).MapConstant(func).Try());
 
         public static PrefixUnary<T, char> PrefixOperator<T, TSpace>(
             string op,
             Parser<TSpace, char> spaceConsumer,
             Func<T, T> func
         )
-            => new PrefixUnary<T, char>(Parsers.Symbol(op, spaceConsumer).MapConstant(func));
+            => new PrefixUnary<T, char>(Parsers.Symbol(op, spaceConsumer).MapConstant(func).Try());
 
         public static PostfixUnary<T, char> PostfixOperator<T>(string op, Func<T, T> func)
-            => new PostfixUnary<T, char>(Parsers.Symbol(op).MapConstant(func));
+            => new PostfixUnary<T, char>(Parsers.Symbol(op).MapConstant(func).Try());
 
         public static PostfixUnary<T, char> PostfixOperator<T, TSpace>(
             string op,
             Parser<TSpace, char> spaceConsumer,
             Func<T, T> func
         )
-            => new PostfixUnary<T, char>(Parsers.Symbol(op, spaceConsumer).MapConstant(func));
+            => new PostfixUnary<T, char>(Parsers.Symbol(op, spaceConsumer).MapConstant(func).Try());
 
         public static InfixBinary<T, char> BinaryOperator<T>(string op, Func<T, T, T> func, Associativity assoc)
-            => new InfixBinary<T, char>(Parsers.Symbol(op).MapConstant(func), assoc);
+            => new InfixBinary<T, char>(Parsers.Symbol(op).MapConstant(func).Try(), assoc);
 
         public static InfixBinary<T, char> BinaryOperator<T, TSpace>(
             string op,
@@ -94,7 +94,7 @@ namespace ParsecCore.Expressions
             Func<T, T, T> func,
             Associativity assoc
         )
-            => new InfixBinary<T, char>(Parsers.Symbol(op, spaceConsumer).MapConstant(func), assoc);
+            => new InfixBinary<T, char>(Parsers.Symbol(op, spaceConsumer).MapConstant(func).Try(), assoc);
 
         private static Parser<T, TInput> BuildRow<T, TInput>(
             OperatorRow<T, TInput> row,
@@ -140,7 +140,7 @@ namespace ParsecCore.Expressions
                 Associativity.Right => "left",
                 _ => throw new NotImplementedException(),
             };
-            return opParser.Then(Parsers.Fail<T, TInput>($"ambiguous use of a {associativity} associative operator"));
+            return opParser.Then(Parsers.Fail<T, TInput>($"ambiguous use of a {associativity} associative operator")).Try();
         }
 
         private static Parser<T, TInput> CreateRightAssocParser<T, TInput>(
@@ -152,7 +152,7 @@ namespace ParsecCore.Expressions
         )
         {
             var operandParser = from z in termParser
-                                from rest in CreateRightAssocParser1(
+                                from rest in ParseAnotherRightAssoc(
                                     z, termParser, rAssocParser, ambiguousLeft, ambiguousNone
                                 )
                                 select rest;
@@ -164,7 +164,7 @@ namespace ParsecCore.Expressions
             return parser.Or(ambiguousLeft).Or(ambiguousNone);
         }
 
-        private static Parser<T, TInput> CreateRightAssocParser1<T, TInput>(
+        private static Parser<T, TInput> ParseAnotherRightAssoc<T, TInput>(
             T value,
             Parser<T, TInput> termParser,
             Parser<Func<T, T, T>, TInput> rAssocParser,
@@ -187,7 +187,7 @@ namespace ParsecCore.Expressions
 
             var parser = from f in lAssocParser
                          from y in termParser
-                         from res in CreateLeftAssocParser1(
+                         from res in ParseAnotherLeftAssoc(
                              f(value, y), termParser, lAssocParser, ambiguousRight, ambiguousNone
                          )
                          select res;
@@ -195,7 +195,7 @@ namespace ParsecCore.Expressions
             return parser.Or(ambiguousRight).Or(ambiguousNone);
         }
 
-        private static Parser<T, TInput> CreateLeftAssocParser1<T, TInput>(
+        private static Parser<T, TInput> ParseAnotherLeftAssoc<T, TInput>(
             T value,
             Parser<T, TInput> termParser,
             Parser<Func<T, T, T>, TInput> lAssocParser,
