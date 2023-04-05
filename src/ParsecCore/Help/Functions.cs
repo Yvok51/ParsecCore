@@ -36,7 +36,7 @@ namespace ParsecCore.Help
         /// <param name="rest"> The list to prepend </param>
         /// <param name="value"> The value to add to the beginning of the list </param>
         /// <returns> New list with the value as its first member and rest of the list copied </returns>
-        public static IReadOnlyList<T> Prepend<T>(this IReadOnlyList<T> rest, T value)
+        public static List<T> Prepend<T>(this IReadOnlyList<T> rest, T value)
         {
             List<T> newList = new List<T>(rest.Count + 1);
             newList.Add(value);
@@ -52,7 +52,7 @@ namespace ParsecCore.Help
         /// <param name="prefix"> The list to append to </param>
         /// <param name="value"> The value to append </param>
         /// <returns> New list with an added value to the end </returns>
-        public static IReadOnlyList<T> Append<T>(this IReadOnlyList<T> prefix, T value)
+        public static List<T> Append<T>(this IReadOnlyList<T> prefix, T value)
         {
             List<T> newList = new List<T>(prefix.Count + 1);
             newList.AddRange(prefix);
@@ -69,7 +69,7 @@ namespace ParsecCore.Help
         /// <param name="values"> The values we are mapping </param>
         /// <param name="map"> The mapping function </param>
         /// <returns> A new list which contains the mapped values </returns>
-        public static IReadOnlyList<R> Map<T, R>(this IReadOnlyList<T> values, Func<T, R> map)
+        public static List<R> Map<T, R>(this IReadOnlyList<T> values, Func<T, R> map)
         {
             List<R> mapped = new List<R>(values.Count);
             foreach (var item in values)
