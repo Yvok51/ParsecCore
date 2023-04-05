@@ -90,7 +90,7 @@ namespace ParsecCore
         }
         public override ParseError Visit(CustomError error, None _)
         {
-            return error;
+            return error; // prefer custom error over our standard error
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace ParsecCore
 
         public override ParseError Visit(StandardError error, None _)
         {
-            return this;
+            return this; // prefer our custom error over standard error
         }
         public override ParseError Visit(CustomError error, None _)
         {
