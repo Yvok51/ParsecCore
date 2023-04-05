@@ -1,23 +1,23 @@
 ﻿namespace ParsecCore.MaybeNS
 {
-    public partial struct Maybe
+    public static class Maybe
     {
         /// <summary>
-        /// Create a valid <see cref="Maybe{T}"/> value
+        /// Create a <see cref="Maybe{T}"/> that contains a value
         /// </summary>
         /// <typeparam name="T"> The type of value </typeparam>
-        /// <param name="value"> The value whose <see cref="Maybe{T}"/> to create </param>
-        /// <returns> A valid case of the <see cref="Maybe{T}"/> </returns>
+        /// <param name="value"> The value to wrap <see cref="Maybe{T}"/> over </param>
+        /// <returns> A nonempty case of the <see cref="Maybe{T}"/> </returns>
         public static Maybe<T> FromValue<T>(T value)
         {
             return new Maybe<T>(value);
         }
 
         /// <summary>
-        /// Creates an invalid case of the <see cref="Maybe{T}"/>
+        /// Creates an empty case of the <see cref="Maybe{T}"/>
         /// </summary>
-        /// <typeparam name="T"> The type of the value if it was valid </typeparam>
-        /// <returns> An invalid <see cref="Maybe{T}"/> value </returns>
+        /// <typeparam name="T"> The type of the value if it was contained by <see cref="Maybe{T}"/> </typeparam>
+        /// <returns> An empty <see cref="Maybe{T}"/> </returns>
         public static Maybe<T> Nothing<T>()
         {
             return new Maybe<T>();
