@@ -1,11 +1,16 @@
 ﻿using ParsecCore.EitherNS;
-using ParsecCore.Help;
 using ParsecCore.Input;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace ParsecCore.ParsersHelp
 {
+    /// <summary>
+    /// Returns a parser which tries to first apply the first parser and if it succeeds returns the result.
+    /// If it fails <strong>and does not consume any input</strong> then the second parser is applied and so on.
+    /// If any parser fails while consuming input, then the parser's error is returned.
+    /// If all parsers fail then combines the errors of all the parsers
+    /// </summary>
     internal class ChoiceParser
     {
         public static Parser<T, TInputToken> Parser<T, TInputToken>(params Parser<T, TInputToken>[] parsers)

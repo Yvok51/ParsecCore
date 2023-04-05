@@ -15,8 +15,9 @@ namespace ParsecCore
         /// <param name="betweenParser"> The parser for the value inbetween </param>
         /// <param name="rightParser"> The parser for the value on the right </param>
         /// <returns> 
-        /// Parser which parses the entire sequence of leftParse-betweenParser-rightParser but only
-        /// returns the value parsed by the betweenParser
+        /// Parser which parses the entire sequence of
+        /// <paramref name="leftParser"/>-<paramref name="betweenParser"/>-<paramref name="rightParser"/>
+        /// but only returns the value parsed by the <paramref name="betweenParser"/>.
         /// </returns>
         /// <exception cref="ArgumentNullException"> If any arguments are null </exception>
         public static Parser<TBetween, TInputToken> Between<TLeft, TBetween, TRight, TInputToken>(
@@ -41,8 +42,8 @@ namespace ParsecCore
         /// <param name="outsideParser"> The parser for the outside values </param>
         /// <param name="betweenParser"> The parser for the value inbetween </param>
         /// <returns>
-        /// Parser which parses the entire sequence of outsideParser-betweenParser-outsideParser but only
-        /// returns the value parsed by the betweenParser
+        /// <paramref name="outsideParser"/>-<paramref name="betweenParser"/>-<paramref name="outsideParser"/>
+        /// but only returns the value parsed by the <paramref name="betweenParser"/>.
         /// </returns>
         /// <exception cref="ArgumentNullException"> If any arguments are null </exception>
         public static Parser<TBetween, TInputToken> Between<TOutside, TBetween, TInputToken>(

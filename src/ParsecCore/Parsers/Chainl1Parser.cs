@@ -2,6 +2,12 @@
 
 namespace ParsecCore.ParsersHelp
 {
+    /// <summary>
+    /// Parses one or more occurences of the given values seperated by operators
+    /// Returns a value obtained by <em>left-associative</em>
+    /// application of the functions returned by function parser.
+    /// Especially useful for parsing left-recursive grammars, which are often used in numerical expressions.
+    /// </summary>
     internal class Chainl1Parser
     {
         private static Parser<T, TInputToken> parseNextOpValue<T, TInputToken>(

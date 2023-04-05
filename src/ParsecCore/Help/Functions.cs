@@ -61,6 +61,14 @@ namespace ParsecCore.Help
             return newList;
         }
 
+        /// <summary>
+        /// Map all values in <paramref name="values"/> and return the mapped values in a new list.
+        /// </summary>
+        /// <typeparam name="T"> The original type of the values </typeparam>
+        /// <typeparam name="R"> The type of the mapped values </typeparam>
+        /// <param name="values"> The values we are mapping </param>
+        /// <param name="map"> The mapping function </param>
+        /// <returns> A new list which contains the mapped values </returns>
         public static IReadOnlyList<R> Map<T, R>(this IReadOnlyList<T> values, Func<T, R> map)
         {
             List<R> mapped = new List<R>(values.Count);

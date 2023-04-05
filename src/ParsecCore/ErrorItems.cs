@@ -5,11 +5,18 @@ using System.Linq;
 
 namespace ParsecCore
 {
+    /// <summary>
+    /// Items located in <see cref="ParseError"/>
+    /// </summary>
     public abstract class ErrorItem
     {
         public abstract int Size { get; }
     }
 
+    /// <summary>
+    /// Represents an end of file error, i.e. we have encountered an unexpected end of file
+    /// or we expected an end of file.
+    /// </summary>
     public sealed class EndOfFile : ErrorItem, IEquatable<EndOfFile>
     {
         private EndOfFile() { }
@@ -38,6 +45,9 @@ namespace ParsecCore
         public static readonly EndOfFile Instance = new EndOfFile();
     }
 
+    /// <summary>
+    /// General message located in the error
+    /// </summary>
     public sealed class StringToken : ErrorItem, IEquatable<StringToken>
     {
         public StringToken(string token)
@@ -70,6 +80,10 @@ namespace ParsecCore
         private readonly string _token;
     }
 
+    /// <summary>
+    /// A general token located in the error
+    /// </summary>
+    /// <typeparam name="T"> The type of token </typeparam>
     public sealed class Token<T> : ErrorItem, IEquatable<Token<T>>
     {
         public Token(IReadOnlyList<T> token)
@@ -79,7 +93,7 @@ namespace ParsecCore
 
         public override string ToString()
         {
-            return string.Join(' ', _tokens.Select(item => "\"" + item.ToString() + "\""));
+            return string.Join(", ", _tokens.Select(item => "\"" + item.ToString() + "\""));
         }
 
         public override bool Equals(object? obj)
@@ -102,10 +116,16 @@ namespace ParsecCore
         private readonly IReadOnlyList<T> _tokens;
     }
 
+    /// <summary>
+    /// A fancy error item which is used in <see cref="CustomError"/>
+    /// </summary>
     public abstract class FancyError
     {
     }
 
+    /// <summary>
+    /// A message used in <see cref="Parsers.FailWith{T, TInputToken}(Parser{T, TInputToken}, string)"/>
+    /// </summary>
     public class FailWithError : FancyError, IEquatable<FailWithError>
     {
         public FailWithError(string message)
@@ -136,6 +156,9 @@ namespace ParsecCore
         private readonly string _message;
     }
 
+    /// <summary>
+    /// Indentation error used by the indentation module.
+    /// </summary>
     public class IndentationError : FancyError, IEquatable<IndentationError>
     {
         public IndentationError(Relation relation, IndentLevel reference, IndentLevel actual)
@@ -174,6 +197,10 @@ namespace ParsecCore
         private readonly IndentLevel _actual;
     }
 
+    /// <summary>
+    /// Custom error that the user can specify
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class ErrorCustom<T> : FancyError, IEquatable<ErrorCustom<T>>
     {
         public ErrorCustom(T item)

@@ -11,7 +11,8 @@ namespace ParsecCore
         /// Returns a parser which tries to apply the first parser and if it succeeds returns the result.
         /// If it fails <strong>and does not consume any input</strong> then the second parser is tried.
         /// If the first parser fails while consuming input, then the first parser's error is returned.
-        /// If both parsers fail then combines their errors, see: <see cref="ParseError.Accept(ParseError)"/>.
+        /// If both parsers fail then combines their errors,
+        /// see <see cref="ParseError.Accept{T, A}(IParseErrorVisitor{T, A}, A)"/>.
         /// <para/>
         /// Because the parser fails if the first parser fails while consuming input the lookahead is 1.
         /// If there is need for parsing to continue in the case input is consumed, then consider modifying
@@ -53,18 +54,23 @@ namespace ParsecCore
         /// <summary>
         /// Returns a parser which tries to first apply the first parser and if it succeeds returns the result.
         /// If it fails <strong>and does not consume any input</strong> then the second parser is applied and so on.
-        /// If any parser fails while consuming input, then the parser's error is returned.
-        /// If all parsers fail then combines the errors of all the parser,
-        /// see: <see cref="ParseError.Accept(ParseError)"/>.
+        /// If any parser fails while consuming input or if all parsers fail,
+        /// then combines the errors of all the parsers,
+        /// see <see cref="ParseError.Accept{T, A}(IParseErrorVisitor{T, A}, A)"/>.
         /// <para/>
+        /// <para>
         /// Because the parser fails if any parser fails while consuming input the lookahead is 1.
         /// If there is need for parsing to continue in the case input is consumed, then consider modifying
-        /// the parsers with the <see cref="ParserExt.Try{T, TInputToken}(Parser{T, TInputToken})"/> method.
+        /// the parsers with the <see cref="Try{T, TInputToken}(Parser{T, TInputToken})"/> method.
+        /// </para>
+        /// <para>
+        /// If no parsers are provided then returns an error "No parsers provided".
+        /// </para>
         /// </summary>
         /// <typeparam name="T"> The type of the parsers </typeparam>
         /// <param name="parsers"> Parsers to apply </param>
         /// <returns>
-        /// Parser which sequentally tries to apply the given parsers until one succeeds or all fails
+        /// Parser which sequentally tries to apply the given parsers until one succeeds or all fail
         /// </returns>
         /// <exception cref="ArgumentNullException"> If parser array is null </exception>
         public static Parser<T, TInputToken> Choice<T, TInputToken>(
@@ -79,12 +85,18 @@ namespace ParsecCore
         /// <summary>
         /// Returns a parser which tries to first apply the first parser and if it succeeds returns the result.
         /// If it fails <strong>and does not consume any input</strong> then the second parser is applied and so on.
-        /// If any parser fails while consuming input, then the parser's error is returned.
-        /// If all parsers fail then returns aggregated errors of all attempted parsers.
-        /// 
+        /// If any parser fails while consuming input or if all parsers fail,
+        /// then combines the errors of all the parsers,
+        /// see <see cref="ParseError.Accept{T, A}(IParseErrorVisitor{T, A}, A)"/>.
+        /// <para/>
+        /// <para>
         /// Because the parser fails if any parser fails while consuming input the lookahead is 1.
         /// If there is need for parsing to continue in the case input is consumed, then consider modifying
-        /// the parsers with the <see cref="ParserExt.Try{T, TInputToken}(Parser{T, TInputToken})"/> method.
+        /// the parsers with the <see cref="Try{T, TInputToken}(Parser{T, TInputToken})"/> method.
+        /// </para>
+        /// <para>
+        /// If no parsers are provided then returns an error "No parsers provided".
+        /// </para>
         /// </summary>
         /// <typeparam name="T"> The type of the parsers </typeparam>
         /// <param name="parsers"> Parsers to apply </param>

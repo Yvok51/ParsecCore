@@ -5,7 +5,7 @@ namespace ParsecCore.ParsersHelp
 {
     /// <summary>
     /// Parser which parses the end of the file.
-    /// Fails if any character is present
+    /// Fails if any character is still present.
     /// </summary>
     internal class EOFParser
     {

@@ -6,6 +6,7 @@ namespace ParsecCore
     {
         /// <summary>
         /// Makes the parser not consume any input if it fails.
+        /// If the parser succeeds, then consumes input as usual.
         /// </summary>
         /// <typeparam name="T"> The type of parser </typeparam>
         /// <typeparam name="TInputToken"> Type of the input token </typeparam>
@@ -36,9 +37,10 @@ namespace ParsecCore
         }
 
         /// <summary>
-        /// Parses <c>parser</c> without consuming input.
-        /// If <c>parser</c> fails and consumes input, then so does lookAhead
-        /// (combine with <see cref="Try{T}(Parser{T})"/> if this is undesirable)
+        /// Parses <paramref name="parser"/> without consuming input.
+        /// Returns the parsed result but the input remains the same and has to be parsed again.
+        /// If <paramref name="parser"/> fails and consumes input, then so does lookAhead
+        /// (combine with <see cref="Try{T, TInputToken}(Parser{T, TInputToken})"/> if this is undesirable)
         /// </summary>
         /// <typeparam name="T"> The return type of the parser </typeparam>
         /// <typeparam name="TInputToken"> Type of the input token </typeparam>

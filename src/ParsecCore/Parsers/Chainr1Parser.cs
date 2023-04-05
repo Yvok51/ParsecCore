@@ -2,6 +2,11 @@
 
 namespace ParsecCore.ParsersHelp
 {
+    /// <summary>
+    /// Parses one or more occurences of the given values seperated by operators
+    /// Returns a value obtained by <em>right-associative</em>
+    /// application of the functions returned by function parser.
+    /// </summary>
     internal class Chainr1Parser
     {
         private static Parser<T, TInputToken> parseNextValue<T, TInputToken>(

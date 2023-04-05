@@ -9,7 +9,8 @@ namespace ParsecCore
         /// <summary>
         /// Returns a parser which either parses its value or returns 
         /// Nothing if the underlying parser does not consume any input or propagates
-        /// the error if any input was consumed
+        /// the error if any input was consumed.
+        /// See <see cref="Try{T, TInputToken}(Parser{T, TInputToken})"/> to change this beavior.
         /// </summary>
         /// <typeparam name="T"> The result type of the parser </typeparam>
         /// <typeparam name="TInputToken"> Type of the input token </typeparam>
@@ -27,8 +28,9 @@ namespace ParsecCore
 
         /// <summary>
         /// Tries to parse according to the given parser. If the parser succeeds, then returns the parser's result.
-        /// If the parser fails <strong>without consuming input</strong> then returns the given default value.
+        /// If the parser fails <strong>without consuming input</strong>, then returns the given default value.
         /// If the parser fails while consuming input, the failure is propagated upwards.
+        /// See <see cref="Try{T, TInputToken}(Parser{T, TInputToken})"/> to change this behavior
         /// </summary>
         /// <typeparam name="T"> The type of parser </typeparam>
         /// <typeparam name="TInputToken"> Type of the input token </typeparam>

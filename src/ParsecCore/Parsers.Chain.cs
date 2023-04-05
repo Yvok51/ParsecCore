@@ -7,8 +7,9 @@ namespace ParsecCore
     {
         /// <summary>
         /// Parses zero or more occurences of the given values seperated by operators
-        /// Returns a value obtained by <em>left-associative</em> application of the functions returned by op.
-        /// If there are zero occurences, then the <c>defaultValue</c> is returned
+        /// Returns a value obtained by <em>left-associative</em>
+        /// application of the functions returned by <paramref name="op"/>.
+        /// If there are zero occurences, then the <paramref name="defaultValue"/> is returned
         /// </summary>
         /// <typeparam name="T"> The return type of the parser </typeparam>
         /// <param name="value"> The parser for values </param>
@@ -16,7 +17,7 @@ namespace ParsecCore
         /// <param name="defaultValue"> The default value to return in case no value is parsed </param>
         /// <returns> 
         /// Parser which returns a value obtained by the left-associative application of the functions 
-        /// given by <c>op</c> on values returned by <c>value</c>
+        /// given by <paramref name="op"/> on values returned by <paramref name="value"/>
         /// </returns>
         /// <exception cref="ArgumentNullException"> If any arguments are null </exception>
         public static Parser<T, TInputToken> ChainL<T, TInputToken>(
@@ -28,16 +29,16 @@ namespace ParsecCore
 
         /// <summary>
         /// Parses one or more occurences of the given values seperated by operators
-        /// Returns a value obtained by <em>left-associative</em> application of the functions returned by op.
-        /// Especially useful for parsing left-recursive grammars, which are often used in numerical expressions
+        /// Returns a value obtained by <em>left-associative</em>
+        /// application of the functions returned by <paramref name="op"/>.
+        /// Especially useful for parsing left-recursive grammars, which are often used in numerical expressions.
         /// </summary>
         /// <typeparam name="T"> The return type of the parser </typeparam>
         /// <param name="value"> The parser for values </param>
         /// <param name="op"> Parser for the binary operators </param>
-        /// <param name="defaultValue"> The default value to return in case no value is parsed </param>
         /// <returns> 
         /// Parser which returns a value obtained by the left-associative application of the functions 
-        /// given by <c>op</c> on values returned by <c>value</c>
+        /// given by <paramref name="op"/> on values returned by <paramref name="value"/>
         /// </returns>
         /// <exception cref="ArgumentNullException"> If any arguments are null </exception>
         public static Parser<T, TInputToken> ChainL1<T, TInputToken>(
@@ -53,8 +54,9 @@ namespace ParsecCore
 
         /// <summary>
         /// Parses zero or more occurences of the given values seperated by operators
-        /// Returns a value obtained by <em>right-associative</em> application of the functions returned by op.
-        /// If there are zero occurences, then the <c>defaultValue</c> is returned
+        /// Returns a value obtained by <em>right-associative</em>
+        /// application of the functions returned by <paramref name="op"/>.
+        /// If there are zero occurences, then the <paramref name="defaultValue"/> is returned
         /// </summary>
         /// <typeparam name="T"> The return type of the parser </typeparam>
         /// <param name="value"> The parser for values </param>
@@ -62,7 +64,7 @@ namespace ParsecCore
         /// <param name="defaultValue"> The default value to return in case no value is parsed </param>
         /// <returns> 
         /// Parser which returns a value obtained by the right-associative application of the functions 
-        /// given by <c>op</c> on values returned by <c>value</c>
+        /// given by <paramref name="op"/> on values returned by <paramref name="value"/>
         /// </returns>
         /// <exception cref="ArgumentNullException"> If any arguments are null </exception>
         public static Parser<T, TInputToken> ChainR<T, TInputToken>(
@@ -74,15 +76,15 @@ namespace ParsecCore
 
         /// <summary>
         /// Parses one or more occurences of the given values seperated by operators
-        /// Returns a value obtained by <em>right-associative</em> application of the functions returned by op.
+        /// Returns a value obtained by <em>right-associative</em>
+        /// application of the functions returned by <paramref name="op"/>.
         /// </summary>
         /// <typeparam name="T"> The return type of the parser </typeparam>
         /// <param name="value"> The parser for values </param>
         /// <param name="op"> Parser for the binary operators </param>
-        /// <param name="defaultValue"> The default value to return in case no value is parsed </param>
         /// <returns> 
         /// Parser which returns a value obtained by the right-associative application of the functions 
-        /// given by <c>op</c> on values returned by <c>value</c>
+        /// given by <paramref name="op"/> on values returned by <paramref name="value"/>
         /// </returns>
         /// <exception cref="ArgumentNullException"> If any arguments are null </exception>
         public static Parser<T, TInputToken> ChainR1<T, TInputToken>(

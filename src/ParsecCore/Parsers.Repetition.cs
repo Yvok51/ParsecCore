@@ -13,8 +13,8 @@ namespace ParsecCore
         /// Can parse even zero times.
         /// If parsing fails in the middle of one iteration (some input was consumed),
         /// then the parser fails regardless of how many previous iterations were parsed already.
-        /// If this behaviour is not desired add the modifier <see cref="Try{T}(Parser{T})"/> 
-        /// to the parser beforehand.
+        /// If this behaviour is not desired add the modifier 
+        /// <see cref="Try{T, TInputToken}(Parser{T, TInputToken})"/> to the parser beforehand.
         /// </summary>
         /// <typeparam name="T"> The type of the parser </typeparam>
         /// <typeparam name="TInputToken"> Type of the input token </typeparam>
@@ -35,8 +35,8 @@ namespace ParsecCore
         /// Must be sucessful at least once otherwise an error is returned.
         /// If parsing fails in the middle of one iteration (some input was consumed),
         /// then the parser fails regardless of how many previous iterations were parsed already.
-        /// If this behaviour is not desired add the modifier <see cref="Try{T}(Parser{T})"/> 
-        /// to the parser beforehand.
+        /// If this behaviour is not desired add the modifier 
+        /// <see cref="Try{T, TInputToken}(Parser{T, TInputToken})"/> to the parser beforehand.
         /// </summary>
         /// <typeparam name="T"> The type of the parser </typeparam>
         /// <typeparam name="TInputToken"> Type of the input token </typeparam>
@@ -55,7 +55,8 @@ namespace ParsecCore
         }
 
         /// <summary>
-        /// Specialization of the <see cref="Many{T}(Parser{T})">Many</see> method for chars and strings
+        /// Specialization of the <see cref="Many{T, TInputToken}(Parser{T, TInputToken})"/>
+        /// method for chars and strings.
         /// </summary>
         /// <typeparam name="TInputToken"> Type of the input token </typeparam>
         /// <param name="parser"> The parser to apply as many times as possible </param>
@@ -72,7 +73,7 @@ namespace ParsecCore
         }
 
         /// <summary>
-        /// Specialization of the <see cref="Many1{T}(Parser{T})">Many1</see> method for chars and strings
+        /// Specialization of the <see cref="Many1{T, TInputToken}(Parser{T, TInputToken})"/> method for chars and strings
         /// </summary>
         /// <typeparam name="TInputToken"> Type of the input token </typeparam>
         /// <param name="parser"> The parser to apply as many times as possible </param>
@@ -91,7 +92,7 @@ namespace ParsecCore
 
         /// <summary>
         /// Aplies the parser as many times as possible and ignores the result.
-        /// <see cref="Many{T}(Parser{T})"/> for specifics.
+        /// <see cref="Many{T, TInputToken}(Parser{T, TInputToken})"/> for specifics.
         /// </summary>
         /// <typeparam name="T"> The type of parser </typeparam>
         /// <typeparam name="TInputToken"> Type of the input token </typeparam>
@@ -111,6 +112,7 @@ namespace ParsecCore
 
         /// <summary>
         /// Applies the parser as many times as possible (but at least once) and ignores the result.
+        /// See <see cref="Many1{T, TInputToken}(Parser{T, TInputToken})"/>.
         /// </summary>
         /// <typeparam name="T"> The type of parser </typeparam>
         /// <typeparam name="TInputToken"> Type of the input token </typeparam>
@@ -131,7 +133,9 @@ namespace ParsecCore
         /// <summary>
         /// Aplies the parser a given amount of times.
         /// If the count is zero or less, then the returned parser is equivalent to
-        /// the <see cref="Parsers.Return{T}(T)">ReturnParser</see> of an empty enumerable
+        /// the <see cref="Parsers.Return{T}(T)">ReturnParser</see> of an empty enumerable.
+        /// If the aplication of <paramref name="parser"/> <paramref name="count"/> number of times fails,
+        /// then the entire parser fails and consumes any input already consumed.
         /// </summary>
         /// <typeparam name="T"> The type of parser to apply </typeparam>
         /// <typeparam name="TInputToken"> Type of the input token </typeparam>
@@ -150,8 +154,21 @@ namespace ParsecCore
         }
 
         /// <summary>
-        /// Applies <c>parser</c> zero or more times until parser <c>till</c> succeeds.
-        /// Returns the list of values returned by <c>parser</c>.
+        /// Applies <paramref name="parser"/> zero or more times until parser <paramref name="till"/> succeeds.
+        /// Returns the list of values returned by <paramref name="parser"/>.
+        /// Consumes 
+        /// <para>
+        /// If the <paramref name="till"/> is never encountered (until the end of file) then the parser fails.
+        /// If the <paramref name="parser"/> fails before <paramref name="till"/> is encountered,
+        /// then the entire parser fails.
+        /// If the <paramref name="till"/> fails while consuming input, then the entire parser fails,
+        /// use <see cref="Try{T, TInputToken}(Parser{T, TInputToken})"/> to change this behaviour
+        /// </para>
+        /// <para>
+        /// Consumes all input consumed by both <paramref name="parser"/> and <paramref name="till"/> parsers.
+        /// If you want to change this behaviour use <see cref="LookAhead{T, TInputToken}(Parser{T, TInputToken})"/>,
+        /// especially on <paramref name="till"/> parser.
+        /// </para>
         /// </summary>
         /// <typeparam name="T"> The return type of the value parser </typeparam>
         /// <typeparam name="TEnd"> The return type of the till parser </typeparam>

@@ -79,8 +79,8 @@ namespace ParsecCore
         }
 
         /// <summary>
-        /// Returns a parser which tries to parse all of the given parsers in a sequence.
-        /// If it succeeds it returns an IReadOnlyList of the parsed results.
+        /// Returns a parser which tries to parse all of the <paramref name="parsers"/> in a sequence.
+        /// If it succeeds it returns a list of the parsed results.
         /// If it fails it returns the first encountered parse error
         /// </summary>
         /// <typeparam name="T"> The type of parsers </typeparam>
@@ -97,8 +97,8 @@ namespace ParsecCore
         }
 
         /// <summary>
-        /// Returns a parser which tries to parse all of the given parsers in a sequence.
-        /// If it succeeds it returns an IReadOnlyList of the parsed results.
+        /// Returns a parser which tries to parse all of the <paramref name="parsers"/> in a sequence.
+        /// If it succeeds it returns a list of the parsed results.
         /// If it fails it returns the first encountered parse error
         /// </summary>
         /// <typeparam name="T"> The type of parsers </typeparam>
