@@ -19,6 +19,12 @@ namespace ParsecCore.Input
 
         public char Peek()
         {
+            if (_index < BUFFER_SIZE)
+            {
+                return _buffer[_index];
+            }
+
+            BufferNextData();
             return _buffer[_index];
         }
 
