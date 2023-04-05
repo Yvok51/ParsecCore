@@ -1,6 +1,7 @@
 ﻿using ParsecCore.ParsersHelp;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ParsecCore
 {
@@ -20,6 +21,9 @@ namespace ParsecCore
             return from chars in stringParser
                    select string.Concat(chars);
         }
+
+        private static IEnumerable<Parser<char, char>> ToCharParsers(IEnumerable<char> chars)
+            => chars.Select(c => Char(c));
 
         /// <summary>
         /// Sequence many parsers. This combinator tries to parse all of the given parsers in a sequence.
@@ -81,7 +85,8 @@ namespace ParsecCore
         }
 
         /// <summary>
-        /// Returns a parser which parses exactly the given string and any whitespace before or after it
+        /// Returns a parser which parses exactly the given string and any whitespace after it.
+        /// Uses the <see cref="Spaces"/> parser to parse subesquent whitespace.
         /// </summary>
         /// <param name="stringToParse"> The string for the parser to parse </param>
         /// <returns> Parser which parses exactly the given string and any whitespace afterwards </returns>
@@ -91,6 +96,21 @@ namespace ParsecCore
             if (stringToParse is null) throw new ArgumentNullException(nameof(stringToParse));
 
             return Token(String(stringToParse));
+        }
+
+        /// <summary>
+        /// Returns a parser which parses exactly the given string and any whitespace after it
+        /// </summary>
+        /// <param name="stringToParse"> The string for the parser to parse </param>
+        /// <param name="spaceConsumer"> The parser for the whitespace after the string </param>
+        /// <returns> Parser which parses exactly the given string and any whitespace afterwards </returns>
+        /// <exception cref="ArgumentNullException"> If the provided string is null </exception>
+        public static Parser<string, char> Symbol<TSpace>(string stringToParse, Parser<TSpace, char> spaceConsumer)
+        {
+            if (stringToParse is null) throw new ArgumentNullException(nameof(stringToParse));
+            if (spaceConsumer is null) throw new ArgumentNullException(nameof(spaceConsumer));
+
+            return Token(String(stringToParse), spaceConsumer);
         }
     }
 }
