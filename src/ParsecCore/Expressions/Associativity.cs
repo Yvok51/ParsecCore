@@ -1,5 +1,5 @@
 ﻿
-namespace ParsecCore.Expression
+namespace ParsecCore.Expressions
 {
     public enum Associativity
     {

@@ -3,7 +3,7 @@ using ParsecCore.Help;
 using System;
 using System.Collections.Generic;
 
-namespace ParsecCore.Expression
+namespace ParsecCore.Expressions
 {
     /// <summary>
     /// Class for quick creation of expression parser
@@ -31,16 +31,70 @@ namespace ParsecCore.Expression
             Parser<T, TInput> termParser
         )
         {
-            Parser<T, TInput> expressionParser = termParser;
             OperatorTable<T, TInput> table = OperatorTable<T, TInput>.Create(operators);
+            return Build(table, termParser);
+        }
 
-            foreach (var priorityRow in table.Table)
+        /// <summary>
+        /// Create a parser for arithmetic expressions.
+        /// The allowed operators are to be listed in a 2D table with the highest priority operators listed first
+        /// and lower priority operators listed lower.
+        /// The operators listed on the same row have the same priority.
+        /// On the same priority first prefix operators are applied, postfix after them and binary operators last.
+        /// <para>
+        /// If the given operators are ambigous and the parsed expression could not be decided,
+        /// then an error is raised.
+        /// </para>
+        /// </summary>
+        /// <typeparam name="T"> The type of the simple expression (term) parser </typeparam>
+        /// <typeparam name="TInput"> The input type of the parsers of terms and operators </typeparam>
+        /// <param name="operators"> The table of operators </param>
+        /// <param name="termParser"> The parser of the basic expression </param>
+        /// <returns> Arithmetic expression parser </returns>
+        public static Parser<T, TInput> Build<T, TInput>(
+            OperatorTable<T, TInput> operators,
+            Parser<T, TInput> termParser
+        )
+        {
+            Parser<T, TInput> expressionParser = termParser;
+            foreach (var priorityRow in operators.Table)
             {
                 expressionParser = BuildRow(priorityRow, expressionParser);
             }
 
             return expressionParser;
         }
+
+        public static PrefixUnary<T, char> PrefixOperator<T>(string op, Func<T, T> func)
+            => new PrefixUnary<T, char>(Parsers.Symbol(op).MapConstant(func));
+
+        public static PrefixUnary<T, char> PrefixOperator<T, TSpace>(
+            string op,
+            Parser<TSpace, char> spaceConsumer,
+            Func<T, T> func
+        )
+            => new PrefixUnary<T, char>(Parsers.Symbol(op, spaceConsumer).MapConstant(func));
+
+        public static PostfixUnary<T, char> PostfixOperator<T>(string op, Func<T, T> func)
+            => new PostfixUnary<T, char>(Parsers.Symbol(op).MapConstant(func));
+
+        public static PostfixUnary<T, char> PostfixOperator<T, TSpace>(
+            string op,
+            Parser<TSpace, char> spaceConsumer,
+            Func<T, T> func
+        )
+            => new PostfixUnary<T, char>(Parsers.Symbol(op, spaceConsumer).MapConstant(func));
+
+        public static InfixBinary<T, char> BinaryOperator<T>(string op, Func<T, T, T> func, Associativity assoc)
+            => new InfixBinary<T, char>(Parsers.Symbol(op).MapConstant(func), assoc);
+
+        public static InfixBinary<T, char> BinaryOperator<T, TSpace>(
+            string op,
+            Parser<TSpace, char> spaceConsumer,
+            Func<T, T, T> func,
+            Associativity assoc
+        )
+            => new InfixBinary<T, char>(Parsers.Symbol(op, spaceConsumer).MapConstant(func), assoc);
 
         private static Parser<T, TInput> BuildRow<T, TInput>(
             OperatorRow<T, TInput> row,
@@ -52,16 +106,13 @@ namespace ParsecCore.Expression
             var rAssocOp = Parsers.Choice(row.RightAssoc.Map(op => op.Parser));
             var lAssocOp = Parsers.Choice(row.LeftAssoc.Map(op => op.Parser));
             var noAssocOp = Parsers.Choice(row.NoAssoc.Map(op => op.Parser));
-            var prefixOp = Parsers.Choice(row.Prefix.Map(op => op.Parser));
-            var postfixOp = Parsers.Choice(row.Postfix.Map(op => op.Parser));
+            var prefixOp = Parsers.Choice(row.Prefix.Map(op => op.Parser).Append(returnId));
+            var postfixOp = Parsers.Choice(row.Postfix.Map(op => op.Parser).Append(returnId));
 
             var termP = from pre in prefixOp
                         from term in termParser
                         from post in postfixOp
                         select post(pre(term));
-
-            var postfixP = postfixOp.Or(returnId);
-            var prefixP = prefixOp.Or(returnId);
 
             var ambiguousLeft = Ambiguous(Associativity.Left, lAssocOp);
             var ambiguousNone = Ambiguous(Associativity.None, noAssocOp);

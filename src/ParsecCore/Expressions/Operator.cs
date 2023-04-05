@@ -1,8 +1,7 @@
 ﻿using System;
 
-namespace ParsecCore.Expression
+namespace ParsecCore.Expressions
 {
-
     public interface IOperatorVisitor<T, TInput, V, U>
     {
         public V VisitPrefix(PrefixUnary<T, TInput> prefix, U arg);
@@ -28,7 +27,7 @@ namespace ParsecCore.Expression
     /// </summary>
     /// <typeparam name="T"> The type of the simple expression (term) </typeparam>
     /// <typeparam name="TInput"> The type of the input the expression parser takes as input </typeparam>
-    public class PrefixUnary<T, TInput> : Operator<T, TInput>
+    public sealed class PrefixUnary<T, TInput> : Operator<T, TInput>
     {
         public PrefixUnary(Parser<Func<T, T>, TInput> parser)
         {
@@ -48,7 +47,7 @@ namespace ParsecCore.Expression
     /// </summary>
     /// <typeparam name="T"> The type of the simple expression (term) </typeparam>
     /// <typeparam name="TInput"> The type of the input the expression parser takes as input </typeparam>
-    public class PostfixUnary<T, TInput> : Operator<T, TInput>
+    public sealed class PostfixUnary<T, TInput> : Operator<T, TInput>
     {
         public PostfixUnary(Parser<Func<T, T>, TInput> parser)
         {
@@ -68,7 +67,7 @@ namespace ParsecCore.Expression
     /// </summary>
     /// <typeparam name="T"> The type of the simple expression (term) </typeparam>
     /// <typeparam name="TInput"> The type of the input the expression parser takes as input </typeparam>
-    public class InfixBinary<T, TInput> : Operator<T, TInput>
+    public sealed class InfixBinary<T, TInput> : Operator<T, TInput>
     {
         public InfixBinary(Parser<Func<T, T, T>, TInput> parser, Associativity associativity)
         {

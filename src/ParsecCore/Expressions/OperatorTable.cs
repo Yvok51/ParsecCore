@@ -1,8 +1,9 @@
 ﻿using ParsecCore;
 using ParsecCore.Help;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace ParsecCore.Expression
+namespace ParsecCore.Expressions
 {
     /// <summary>
     /// A table of operators.
@@ -11,11 +12,16 @@ namespace ParsecCore.Expression
     /// </summary>
     /// <typeparam name="T"> The type of the simple expression </typeparam>
     /// <typeparam name="TInput"> The input type of the parsers </typeparam>
-    internal class OperatorTable<T, TInput>
+    public sealed class OperatorTable<T, TInput>
     {
         public static OperatorTable<T, TInput> Create(IReadOnlyList<IReadOnlyList<Operator<T, TInput>>> operators)
         {
             return new OperatorTable<T, TInput>(operators.Map(row => OperatorRow<T, TInput>.Create(row)));
+        }
+
+        public static OperatorTable<T, TInput> Create(Operator<T, TInput>[][] operators)
+        {
+            return new OperatorTable<T, TInput>(operators.Select(row => OperatorRow<T, TInput>.Create(row)).ToArray());
         }
 
         private OperatorTable(IReadOnlyList<OperatorRow<T, TInput>> table)
@@ -31,7 +37,7 @@ namespace ParsecCore.Expression
     /// </summary>
     /// <typeparam name="T"> The type of the simple expression (term) </typeparam>
     /// <typeparam name="TInput"> The input type of the operator parsers </typeparam>
-    internal class OperatorRow<T, TInput>
+    public sealed class OperatorRow<T, TInput>
     {
         /// <summary>
         /// Creates a single row of operators from a list.
