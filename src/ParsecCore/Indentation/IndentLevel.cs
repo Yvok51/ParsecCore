@@ -3,15 +3,30 @@ using System;
 
 namespace ParsecCore.Indentation
 {
+    /// <summary>
+    /// Represents a level of indentation - the column to which we re indented.
+    /// </summary>
     public readonly struct IndentLevel : IComparable<IndentLevel>, IComparable, IEquatable<IndentLevel>
     {
+        /// <summary>
+        /// Creates a new <see cref="IndentLevel"/> and sets it column to the specified value.
+        /// Note <see cref="IndentLevel.Indentation"/> is one less then the column.
+        /// </summary>
+        /// <param name="column"> The column we are indented to </param>
         public IndentLevel(int column)
         {
             Column = column;
         }
 
+        /// <summary>
+        /// The column we are located at.
+        /// </summary>
         public readonly int Column { get; init; }
 
+        /// <summary>
+        /// The indentation we are at.
+        /// For example, if we are at the first column then the indentation is zero
+        /// </summary>
         public readonly int Indentation { get => Column - 1; }
 
         public static readonly IndentLevel FirstPosition = (IndentLevel)Position.BeginningColumn;
