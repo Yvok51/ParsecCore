@@ -56,7 +56,7 @@ namespace PythonParserTests.Parser
                             {
                                 new Suite(new List<Stmt>()
                                     {
-                                        new Return(Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>() { new IntegerLiteral(-1) }))
+                                        new Return(Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>() { new Unary(new IntegerLiteral(1), UnaryOperator.Minus) }))
                                     })
                             }))
                         )
@@ -160,7 +160,7 @@ print(sign(0))
                                 {
                                     new Suite(new List<Stmt>()
                                         {
-                                            new Return(Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>() { new IntegerLiteral(-1) }))
+                                            new Return(Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>() { new Unary(new IntegerLiteral(1), UnaryOperator.Minus) }))
                                         })
                                 }))
                             )
