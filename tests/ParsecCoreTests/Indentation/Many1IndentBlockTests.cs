@@ -8,7 +8,7 @@ using Xunit;
 
 namespace ParsecCoreTests.Indentation
 {
-    public class SomeIndentBlockTests
+    public class Many1IndentBlockTests
     {
         public static Parser<string, char> Word = Parsers.Letter.Many1();
 
