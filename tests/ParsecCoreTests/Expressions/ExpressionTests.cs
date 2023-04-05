@@ -19,7 +19,10 @@ namespace ParsecCoreTests.Expressions
                 }
             );
 
-            ExpressionParser = Expression.Build(OperatorTable, Parsers.Natural.FollowedBy(Parsers.Spaces));
+            var termParser = Parsers.Natural.FollowedBy(Parsers.Spaces)
+                .Or(Parsers.Indirect(() => Parsers.Between(Parsers.Symbol("("), ExpressionParser, Parsers.Symbol(")"))));
+
+            ExpressionParser = Expression.Build(OperatorTable, termParser);
         }
 
         public OperatorTable<int, char> OperatorTable { get; set; }
@@ -102,6 +105,20 @@ namespace ParsecCoreTests.Expressions
         [InlineData("-2++", -1)]
         [InlineData("1++ + 2", 4)]
         public void PrecedenceCorrect(string inputStr, int expectedResult)
+        {
+            var input = ParserInput.Create(inputStr);
+            var result = ExpressionParser(input);
+
+            Assert.True(result.IsResult);
+            Assert.Equal(expectedResult, result.Result);
+        }
+
+        [Theory]
+        [InlineData("(2 + 3) * 2 / 4", 2)]
+        [InlineData("2 * 3 * 4 + 10 / 3", 27)]
+        [InlineData("(-2 * 10 - 15) / 7", -5)]
+        [InlineData("(-2 * 10 - 15) / -7", 5)]
+        public void Complex(string inputStr, int expectedResult)
         {
             var input = ParserInput.Create(inputStr);
             var result = ExpressionParser(input);
