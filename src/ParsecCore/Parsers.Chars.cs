@@ -179,9 +179,6 @@ namespace ParsecCore
         /// </summary>
         public static readonly Parser<char, char> Lower = Satisfy(char.IsLower, "lower-case character");
 
-        private static IEnumerable<Parser<char, char>> ToCharParsers(IEnumerable<char> chars) =>
-            chars.Select(c => Char(c));
-
         /// <summary>
         /// Parses any of the given characters
         /// </summary>
