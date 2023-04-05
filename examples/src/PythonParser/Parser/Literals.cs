@@ -232,7 +232,7 @@ namespace PythonParser.Parser
 
         #endregion
 
-        public static Parser<Expr, char> Literal(Control.LexemeFactory lexeme) 
+        public static Parser<Expr, char> Literal(Control.LexemeFactory lexeme)
             => lexeme.Create(
                 Parsers.Choice<Expr, char>(
                     String,

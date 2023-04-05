@@ -70,12 +70,12 @@ namespace PythonParserTests.Parser.ExpressionTests
             Assert.Equal(
                 new Slice(
                     new IdentifierLiteral(identifier),
-                    new List<Expr>() { 
+                    new List<Expr>() {
                         new SliceItem(
                             nullableToMaybe(lowerBound),
                             nullableToMaybe(upperBound),
                             nullableToMaybe(stride)
-                        ) 
+                        )
                     }),
                 result.Result
             );
@@ -122,10 +122,10 @@ namespace PythonParserTests.Parser.ExpressionTests
                 new Call(
                     new IdentifierLiteral("func"),
                     Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>()
-                    { 
+                    {
                         new IdentifierLiteral("a"),
                         new IdentifierLiteral("b"),
-                        new IdentifierLiteral("c") 
+                        new IdentifierLiteral("c")
                     }),
                     Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
                     Maybe.Nothing<Expr>(),

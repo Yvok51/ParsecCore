@@ -29,8 +29,8 @@ namespace PythonParser.Parser
             "False", "class", "finally", "is", "return",
             "None", "continue", "for", "lambda", "try",
             "True", "def", "from", "nonlocal", "while",
-            "and", "del", "global", "not", "with", 
-            "as", "elif", "if", "or", "yield", 
+            "and", "del", "global", "not", "with",
+            "as", "elif", "if", "or", "yield",
             "assert", "else", "import", "pass",
             "break", "except", "in", "raise"
         };
@@ -46,7 +46,7 @@ namespace PythonParser.Parser
                 _spaceConsumer = spaceConsumer;
             }
 
-            public Parser<T, char> Create<T>(Parser<T, char> parser) 
+            public Parser<T, char> Create<T>(Parser<T, char> parser)
                 => from parsed in parser from _ in _spaceConsumer select parsed;
 
             private Parser<None, char> _spaceConsumer;
@@ -80,7 +80,7 @@ namespace PythonParser.Parser
         public static Parser<char, char> Semicolon(LexemeFactory lexeme) => lexeme.Create(Parsers.Char(';'));
         public static Parser<char, char> At(LexemeFactory lexeme) => lexeme.Create(Parsers.Char('@'));
         public static Parser<char, char> Assign(LexemeFactory lexeme) => lexeme.Create(Parsers.Char('='));
- 
+
         public static Parser<string, char> Equal(LexemeFactory lexeme) => lexeme.Create(Parsers.String("==")).Try();
         public static Parser<string, char> NotEqual(LexemeFactory lexeme)
             => lexeme.Create(Parsers.String("!=")).Try();

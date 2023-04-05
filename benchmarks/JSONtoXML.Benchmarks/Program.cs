@@ -1,8 +1,8 @@
 ﻿
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Running;
 using ParsecCore.Input;
-using BenchmarkDotNet.Engines;
 
 namespace JSONtoXML.Benchmarks
 {
@@ -21,7 +21,7 @@ namespace JSONtoXML.Benchmarks
         public class ParseJSONMacro
         {
             public ParseJSONMacro()
-            {            }
+            { }
 
             public IEnumerable<string> FileNames()
             {

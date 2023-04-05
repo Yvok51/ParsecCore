@@ -1,7 +1,6 @@
 ﻿using ParsecCore;
-using PythonParser.Parser;
-using PythonParser.Structures;
 using ParsecCore.Indentation;
+using PythonParser.Structures;
 
 namespace PythonParser.Parser
 {

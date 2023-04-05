@@ -55,7 +55,7 @@ namespace ParsecCore.Expression
             return new OperatorRow<T, TInput>(prefix, postfix, rAssoc, lAssoc, noAssoc);
         }
 
-        private class OperatorSorter : IOperatorVisitor<T, TInput, None, 
+        private class OperatorSorter : IOperatorVisitor<T, TInput, None,
             (List<PrefixUnary<T, TInput>>,
              List<PostfixUnary<T, TInput>>,
              List<InfixBinary<T, TInput>>,

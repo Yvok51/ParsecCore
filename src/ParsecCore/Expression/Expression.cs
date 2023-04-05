@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using ParsecCore;
+﻿using ParsecCore;
 using ParsecCore.Help;
+using System;
+using System.Collections.Generic;
 
 namespace ParsecCore.Expression
 {

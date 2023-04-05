@@ -19,7 +19,7 @@ namespace PythonParserTests.Parser.StatementTests
                     new IdentifierLiteral("func"),
                     Array.Empty<IdentifierLiteral>(),
                     Array.Empty<(IdentifierLiteral, Expr)>(),
-                    new Suite(new List<Stmt>() { new Suite(new List<Stmt>() { new Pass() })})
+                    new Suite(new List<Stmt>() { new Suite(new List<Stmt>() { new Pass() }) })
                 ),
                 result.Result
             );
@@ -35,7 +35,7 @@ namespace PythonParserTests.Parser.StatementTests
             Assert.Equal(
                 new Function(
                     new IdentifierLiteral("func"),
-                    new List<IdentifierLiteral>() 
+                    new List<IdentifierLiteral>()
                     {
                         new IdentifierLiteral("a"),
                         new IdentifierLiteral("b"),
@@ -85,7 +85,7 @@ namespace PythonParserTests.Parser.StatementTests
                     new IdentifierLiteral("func"),
                     Array.Empty<IdentifierLiteral>(),
                     Array.Empty<(IdentifierLiteral, Expr)>(),
-                    new Suite(new List<Stmt>() 
+                    new Suite(new List<Stmt>()
                     {
                         new Suite(new List<Stmt>() {new Assignment(
                             new List<List<Expr>>() { new List<Expr>() { new IdentifierLiteral("x") } },

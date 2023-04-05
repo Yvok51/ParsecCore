@@ -1,7 +1,7 @@
 ﻿using ParsecCore.Input;
 using ParsecCore.MaybeNS;
-using PythonParser.Structures;
 using PythonParser.Parser;
+using PythonParser.Structures;
 using System.Text;
 
 namespace PythonParser
@@ -47,7 +47,7 @@ namespace PythonParser
 
             private readonly int m_indentationPerLevel;
 
-            private string GetIndentation(int indentationLevel) 
+            private string GetIndentation(int indentationLevel)
                 => new string(' ', indentationLevel * m_indentationPerLevel);
 
             private string ListExprs(IReadOnlyList<Expr> exprs, int indent)

@@ -1,6 +1,6 @@
 ﻿using ParsecCore;
-using ParsecCore.Input;
 using ParsecCore.Indentation;
+using ParsecCore.Input;
 using Xunit;
 
 namespace ParsecCoreTests.Indentation
@@ -36,13 +36,13 @@ namespace ParsecCoreTests.Indentation
             Assert.Equal(new IndentLevel(6), res.Result);
         }
 
-            [Fact]
+        [Fact]
         public void PositionOnSingleLineCorrect()
         {
             var input = ParserInput.Create("input   ");
             var parser = from word in Word
-                            from pos in ParsecCore.Indentation.Indentation.IndentationLevel<char>()
-                            select pos;
+                         from pos in ParsecCore.Indentation.Indentation.IndentationLevel<char>()
+                         select pos;
             var res = parser(input);
 
             Assert.True(res.IsResult);
@@ -54,9 +54,9 @@ namespace ParsecCoreTests.Indentation
         {
             var input = ParserInput.Create("input\nasd");
             var parser = from word in Word
-                            from _ in Parsers.EOL
-                            from pos in ParsecCore.Indentation.Indentation.IndentationLevel<char>()
-                            select pos;
+                         from _ in Parsers.EOL
+                         from pos in ParsecCore.Indentation.Indentation.IndentationLevel<char>()
+                         select pos;
             var res = parser(input);
 
             Assert.True(res.IsResult);

@@ -1,6 +1,6 @@
 ﻿using ParsecCore;
-using ParsecCore.Input;
 using ParsecCore.Indentation;
+using ParsecCore.Input;
 using Xunit;
 
 namespace ParsecCoreTests.Indentation
