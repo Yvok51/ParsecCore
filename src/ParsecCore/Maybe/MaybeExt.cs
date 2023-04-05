@@ -4,14 +4,17 @@ namespace ParsecCore.MaybeNS
 {
     public static class MaybeExt
     {
+        /// <summary>
+        /// Returns the value contained in maube or the <paramref name="defaultValue"/>
+        /// if <paramref name="maybe"/> is empty.
+        /// </summary>
+        /// <typeparam name="T"> The type contained in <see cref="Maybe{T}"/></typeparam>
+        /// <param name="maybe"> The <see cref="Maybe{T}"/> whose value we are extracting </param>
+        /// <param name="defaultValue"> The default value to use if <paramref name="maybe"/> is empty </param>
+        /// <returns></returns>
         public static T Else<T>(this Maybe<T> maybe, T defaultValue)
         {
             return maybe.IsEmpty ? defaultValue : maybe.Value;
-        }
-
-        public static TNew Lift<T, TNew>(this Maybe<T> maybe, Func<T, TNew> map, Func<TNew> provideDefault)
-        {
-            return maybe.IsEmpty ? provideDefault() : map(maybe.Value);
         }
 
         /// <summary>
