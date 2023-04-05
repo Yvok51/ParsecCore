@@ -134,9 +134,29 @@ namespace ParsecCore
         public static readonly Parser<char, char> Digit = Satisfy(c => c >= '0' && c <= '9', "digit");
 
         /// <summary>
+        /// Parses a non-zero digit
+        /// </summary>
+        public static readonly Parser<char, char> NonZeroDigit = Satisfy(c => c >= '1' && c <= '9', "non-zero digit");
+
+        /// <summary>
+        /// Parses zero
+        /// </summary>
+        public static readonly Parser<char, char> Zero = Char('0');
+
+        /// <summary>
         /// Parses as many digits as possible, but at least one
         /// </summary>
         public static readonly Parser<string, char> Digits = Digit.Many1();
+
+        /// <summary>
+        /// Parses a natural number (sequence of digits starting with a non-zero digit or zero).
+        /// Does not check that any digits are after zero,
+        /// use <see cref="NotFollowedBy{T, TInputToken}(Parser{T, TInputToken}, string)"/> if that is desirable.
+        /// </summary>
+        public static readonly Parser<int, char> Natural = 
+            (from nonzero in NonZeroDigit
+            from digits in Digit.Many()
+            select Int32.Parse(nonzero + digits)).Or(Zero.MapConstant(0));
 
         /// <summary>
         /// Parses an integer
