@@ -65,9 +65,24 @@ namespace ParsecCore.Expressions
             return expressionParser;
         }
 
+        /// <summary>
+        /// Help function to define a prefix operator.
+        /// </summary>
+        /// <typeparam name="T"> The typed parsed by the simple term parser of the expression </typeparam>
+        /// <param name="op"> The operator symbol </param>
+        /// <param name="func"> The function which will be applied on the term </param>
+        /// <returns> Prefix operator </returns>
         public static PrefixUnary<T, char> PrefixOperator<T>(string op, Func<T, T> func)
             => new PrefixUnary<T, char>(Parsers.Symbol(op).MapConstant(func).Try());
 
+        /// <summary>
+        /// Help function to define a prefix operator.
+        /// </summary>
+        /// <typeparam name="T"> The typed parsed by the simple term parser of the expression </typeparam>
+        /// <param name="op"> The operator symbol </param>
+        /// <param name="spaceConsumer"> The parser that will parse whitespace after the operator </param>
+        /// <param name="func"> The function which will be applied on the term </param>
+        /// <returns> Prefix operator </returns>
         public static PrefixUnary<T, char> PrefixOperator<T, TSpace>(
             string op,
             Parser<TSpace, char> spaceConsumer,
@@ -75,9 +90,24 @@ namespace ParsecCore.Expressions
         )
             => new PrefixUnary<T, char>(Parsers.Symbol(op, spaceConsumer).MapConstant(func).Try());
 
+        /// <summary>
+        /// Help function to define a postfix operator.
+        /// </summary>
+        /// <typeparam name="T"> The typed parsed by the simple term parser of the expression </typeparam>
+        /// <param name="op"> The operator symbol </param>
+        /// <param name="func"> The function which will be applied on the term </param>
+        /// <returns> Postfix operator </returns>
         public static PostfixUnary<T, char> PostfixOperator<T>(string op, Func<T, T> func)
             => new PostfixUnary<T, char>(Parsers.Symbol(op).MapConstant(func).Try());
 
+        /// <summary>
+        /// Help function to define a postfix operator.
+        /// </summary>
+        /// <typeparam name="T"> The typed parsed by the simple term parser of the expression </typeparam>
+        /// <param name="op"> The operator symbol </param>
+        /// <param name="spaceConsumer"> The parser that will parse whitespace after the operator </param>
+        /// <param name="func"> The function which will be applied on the term </param>
+        /// <returns> Postfix operator </returns>
         public static PostfixUnary<T, char> PostfixOperator<T, TSpace>(
             string op,
             Parser<TSpace, char> spaceConsumer,
@@ -85,9 +115,26 @@ namespace ParsecCore.Expressions
         )
             => new PostfixUnary<T, char>(Parsers.Symbol(op, spaceConsumer).MapConstant(func).Try());
 
+        /// <summary>
+        /// Help function to define a binary operator.
+        /// </summary>
+        /// <typeparam name="T"> The typed parsed by the simple term parser of the expression </typeparam>
+        /// <param name="op"> The operator symbol </param>
+        /// <param name="func"> The function which will be applied on the terms </param>
+        /// <param name="assoc"> The associativity of the operator </param>
+        /// <returns> Binary operator </returns>
         public static InfixBinary<T, char> BinaryOperator<T>(string op, Func<T, T, T> func, Associativity assoc)
             => new InfixBinary<T, char>(Parsers.Symbol(op).MapConstant(func).Try(), assoc);
 
+        /// <summary>
+        /// Help function to define a binary operator.
+        /// </summary>
+        /// <typeparam name="T"> The typed parsed by the simple term parser of the expression </typeparam>
+        /// <param name="op"> The operator symbol </param>
+        /// <param name="spaceConsumer"> The parser that will parse whitespace after the operator </param>
+        /// <param name="func"> The function which will be applied on the terms </param>
+        /// <param name="assoc"> The associativity of the operator </param>
+        /// <returns> Binary operator </returns>
         public static InfixBinary<T, char> BinaryOperator<T, TSpace>(
             string op,
             Parser<TSpace, char> spaceConsumer,
@@ -96,6 +143,16 @@ namespace ParsecCore.Expressions
         )
             => new InfixBinary<T, char>(Parsers.Symbol(op, spaceConsumer).MapConstant(func).Try(), assoc);
 
+        /// <summary>
+        /// Build a single priority row of an expression parsers.
+        /// The expression parser is tiered according to priority with the parser created from higher priority
+        /// operators serving as our term (simple expression) parser.
+        /// </summary>
+        /// <typeparam name="T"> The type of the parsed simple expression </typeparam>
+        /// <typeparam name="TInput"> The input type of the parsers </typeparam>
+        /// <param name="row"> The priority row we are creating a parser for </param>
+        /// <param name="termParser"> The simple expression term parser </param>
+        /// <returns> Parser for this priority row </returns>
         private static Parser<T, TInput> BuildRow<T, TInput>(
             OperatorRow<T, TInput> row,
             Parser<T, TInput> termParser
@@ -106,9 +163,11 @@ namespace ParsecCore.Expressions
             var rAssocOp = Parsers.Choice(row.RightAssoc.Map(op => op.Parser));
             var lAssocOp = Parsers.Choice(row.LeftAssoc.Map(op => op.Parser));
             var noAssocOp = Parsers.Choice(row.NoAssoc.Map(op => op.Parser));
+            // add returnId in case no prefix/postfix operators are present in this row
             var prefixOp = Parsers.Choice(row.Prefix.Map(op => op.Parser).Append(returnId));
             var postfixOp = Parsers.Choice(row.Postfix.Map(op => op.Parser).Append(returnId));
 
+            // Create a new term parser from the simple term parser and the prefix and postfix operators
             var termP = from pre in prefixOp
                         from term in termParser
                         from post in postfixOp
@@ -143,6 +202,25 @@ namespace ParsecCore.Expressions
             return opParser.Then(Parsers.Fail<T, TInput>($"ambiguous use of a {associativity} associative operator")).Try();
         }
 
+        /// <summary>
+        /// Create a parser for right-associative operators.
+        /// It will first try to parse a right-associative operator
+        /// and afterwards a list of terms separated by operators.
+        /// </summary>
+        /// <typeparam name="T"> The typed parsed by the term parser </typeparam>
+        /// <typeparam name="TInput"> The input type of the parsers </typeparam>
+        /// <param name="value"> The value we have parsed so far </param>
+        /// <param name="termParser"> The parser for simple term </param>
+        /// <param name="rAssocParser">
+        /// The parser of all different right-associative operators on this priority row
+        /// </param>
+        /// <param name="ambiguousLeft">
+        /// Parser that checks there isn't an ambiguous use of a left-associative operator after us
+        /// </param>
+        /// <param name="ambiguousNone">
+        /// Parser that checks there isn't an ambiguous use of a non-associative operator after us
+        /// </param>
+        /// <returns> Parser for a right-associative operators on this priority row </returns>
         private static Parser<T, TInput> CreateRightAssocParser<T, TInput>(
             T value,
             Parser<T, TInput> termParser,
@@ -176,6 +254,25 @@ namespace ParsecCore.Expressions
                 .Or(Parsers.Return<T, TInput>(value));
         }
 
+        /// <summary>
+        /// Create a parser for left-associative operators.
+        /// It will first try to parse a left-associative operator
+        /// and afterwards a list of terms separated by operators.
+        /// </summary>
+        /// <typeparam name="T"> The typed parsed by the term parser </typeparam>
+        /// <typeparam name="TInput"> The input type of the parsers </typeparam>
+        /// <param name="value"> The value we have parsed so far </param>
+        /// <param name="termParser"> The parser for simple term </param>
+        /// <param name="lAssocParser">
+        /// The parser of all different left-associative operators on this priority row
+        /// </param>
+        /// <param name="ambiguousRight">
+        /// Parser that checks there isn't an ambiguous use of a right-associative operator after us
+        /// </param>
+        /// <param name="ambiguousNone">
+        /// Parser that checks there isn't an ambiguous use of a non-associative operator after us
+        /// </param>
+        /// <returns> Parser for a left-associative operators on this priority row </returns>
         private static Parser<T, TInput> CreateLeftAssocParser<T, TInput>(
             T value,
             Parser<T, TInput> termParser,
@@ -207,6 +304,28 @@ namespace ParsecCore.Expressions
                 .Or(Parsers.Return<T, TInput>(value));
         }
 
+        /// <summary>
+        /// Create a parser for non-associative operators.
+        /// It will first try to parse a non-associative operator and a term afterward.
+        /// Since this operator is non-associative only two terms can be parsed at once
+        /// </summary>
+        /// <typeparam name="T"> The typed parsed by the term parser </typeparam>
+        /// <typeparam name="TInput"> The input type of the parsers </typeparam>
+        /// <param name="value"> The value we have parsed so far </param>
+        /// <param name="termParser"> The parser for simple term </param>
+        /// <param name="noAssocParser">
+        /// The parser of all different non-associative operators on this priority row
+        /// </param>
+        /// <param name="ambiguousLeft">
+        /// Parser that checks there isn't an ambiguous use of a left-associative operator after us
+        /// </param>
+        /// <param name="ambiguousNone">
+        /// Parser that checks there isn't an ambiguous use of a non-associative operator after us
+        /// </param>
+        /// <param name="ambiguousRight">
+        /// Parser that checks there isn't an ambiguous use of a right-associative operator after us
+        /// </param>
+        /// <returns> Parser for a non-associative operators on this priority row </returns>
         private static Parser<T, TInput> CreateNoAssocParser<T, TInput>(
             T value,
             Parser<T, TInput> termParser,
@@ -224,7 +343,7 @@ namespace ParsecCore.Expressions
                          )
                          select res;
 
-            return parser.Or(ambiguousRight).Or(ambiguousNone);
+            return parser;
         }
     }
 }
