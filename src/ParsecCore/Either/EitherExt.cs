@@ -57,12 +57,14 @@ namespace ParsecCore.EitherNS
         }
 
         /// <summary>
-        /// Combines two errors together according to the method <see cref="ParseError.Accept(ParseError)"/>.
-        /// Presumes both <c>IEither</c> are errors, throws <see cref="InvalidOperationException"/> otherwise
+        /// Combines two errors together according to the method
+        /// <see cref="ParseError.Accept{T, A}(IParseErrorVisitor{T, A}, A)"/>.
+        /// Presumes both <see cref="IEither{TLeft, TRight}"/> are errors,
+        /// throws <see cref="InvalidOperationException"/> otherwise.
         /// </summary>
         /// <typeparam name="T">  The result type of the either </typeparam>
-        /// <param name="left"> The first <c>IEither</c> </param>
-        /// <param name="right"> The second <c>IEither</c> </param>
+        /// <param name="left"> The first either </param>
+        /// <param name="right"> The second either </param>
         /// <returns> Error combining both input errors </returns>
         public static IEither<ParseError, T> CombineErrors<T>(
             this IEither<ParseError, T> left,
