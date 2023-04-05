@@ -16,7 +16,7 @@ namespace ParsecCore
         /// <param name="parser"> The parser to optionally apply </param>
         /// <returns> Parser which optionally applies the given parser </returns>
         /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
-        public static Parser<IMaybe<T>, TInputToken> Optional<T, TInputToken>(
+        public static Parser<Maybe<T>, TInputToken> Optional<T, TInputToken>(
             this Parser<T, TInputToken> parser
         )
         {

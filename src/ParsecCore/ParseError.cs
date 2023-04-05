@@ -33,14 +33,14 @@ namespace ParsecCore
     /// </summary>
     public sealed class StandardError : ParseError
     {
-        public StandardError(Position position, IMaybe<ErrorItem> unexpected, IEnumerable<ErrorItem> expected)
+        public StandardError(Position position, Maybe<ErrorItem> unexpected, IEnumerable<ErrorItem> expected)
         {
             _position = position;
             Unexpected = unexpected;
             Expected = expected;
         }
 
-        public StandardError(Position position, IMaybe<ErrorItem> unexpected, ErrorItem expected)
+        public StandardError(Position position, Maybe<ErrorItem> unexpected, ErrorItem expected)
             : this(position, unexpected, expected.ToEnumerable())
         {
         }
@@ -100,7 +100,7 @@ namespace ParsecCore
         /// <param name="left"> One of the unexpected errors </param>
         /// <param name="right"> One of the unexpected errors </param>
         /// <returns> The unexpected error which is more specific </returns>
-        private static IMaybe<ErrorItem> CombineUnexpected(IMaybe<ErrorItem> left, IMaybe<ErrorItem> right)
+        private static Maybe<ErrorItem> CombineUnexpected(Maybe<ErrorItem> left, Maybe<ErrorItem> right)
         {
             if (left.IsEmpty)
             {
@@ -116,7 +116,7 @@ namespace ParsecCore
         }
 
         private Position _position;
-        public IMaybe<ErrorItem> Unexpected { get; init; }
+        public Maybe<ErrorItem> Unexpected { get; init; }
         public IEnumerable<ErrorItem> Expected { get; init; }
     }
 

@@ -31,7 +31,7 @@ namespace ParsecCore.ParsersHelp
                     return Either.Error<ParseError, char>(
                         new StandardError(
                             input.Position,
-                            unexpected: Maybe.FromValue(EndOfFile.Instance),
+                            unexpected: Maybe.FromValue<ErrorItem>(EndOfFile.Instance),
                             expected: new StringToken(predicateDescription)
                         )
                     );
@@ -45,7 +45,7 @@ namespace ParsecCore.ParsersHelp
                     return Either.Error<ParseError, char>(
                         new StandardError(
                             input.Position,
-                            unexpected: Maybe.FromValue(new StringToken(readChar)),
+                            unexpected: Maybe.FromValue<ErrorItem>(new StringToken(readChar)),
                             expected: new StringToken(predicateDescription)
                         )
                     );
@@ -66,7 +66,7 @@ namespace ParsecCore.ParsersHelp
                     return Either.Error<ParseError, char>(
                         new StandardError(
                             input.Position,
-                            unexpected: Maybe.FromValue(EndOfFile.Instance),
+                            unexpected: Maybe.FromValue<ErrorItem>(EndOfFile.Instance),
                             expected: new StringToken(predicateDescription)
                         )
                     );
@@ -80,7 +80,7 @@ namespace ParsecCore.ParsersHelp
                     return Either.Error<ParseError, char>(
                         new StandardError(
                             input.Position,
-                            unexpected: Maybe.FromValue(new StringToken(readChar)),
+                            unexpected: Maybe.FromValue<ErrorItem>(new StringToken(readChar)),
                             expected: new StringToken(predicateDescription)
                         )
                     );
@@ -104,7 +104,7 @@ namespace ParsecCore.ParsersHelp
                     return Either.Error<ParseError, TInputToken>(
                         new StandardError(
                             input.Position,
-                            unexpected: Maybe.FromValue(EndOfFile.Instance),
+                            unexpected: Maybe.FromValue<ErrorItem>(EndOfFile.Instance),
                             expected: new StringToken(predicateDescription)
                         )
                     );
@@ -117,7 +117,7 @@ namespace ParsecCore.ParsersHelp
                     return Either.Error<ParseError, TInputToken>(
                         new StandardError(
                             input.Position,
-                            unexpected: Maybe.FromValue(new Token<TInputToken>(new[] { read })),
+                            unexpected: Maybe.FromValue<ErrorItem>(new Token<TInputToken>(new[] { read })),
                             expected: new StringToken(predicateDescription)
                         )
                     );
@@ -141,7 +141,7 @@ namespace ParsecCore.ParsersHelp
                     return Either.Error<ParseError, TInputToken>(
                         new StandardError(
                             input.Position,
-                            unexpected: Maybe.FromValue(EndOfFile.Instance),
+                            unexpected: Maybe.FromValue<ErrorItem>(EndOfFile.Instance),
                             expected: new StringToken(predicateDescription)
                         )
                     );
@@ -154,7 +154,7 @@ namespace ParsecCore.ParsersHelp
                     return Either.Error<ParseError, TInputToken>(
                         new StandardError(
                             input.Position,
-                            unexpected: Maybe.FromValue(new Token<TInputToken>(new[] { read })),
+                            unexpected: Maybe.FromValue<ErrorItem>(new Token<TInputToken>(new[] { read })),
                             expected: new StringToken(predicateDescription)
                         )
                     );

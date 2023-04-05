@@ -13,7 +13,7 @@ namespace ParsecCore.ParsersHelp
     {
         public static Parser<IReadOnlyList<T>, TInputToken> Parser<T, TInputToken>(Parser<T, TInputToken> parser)
         {
-            Parser<IMaybe<T>, TInputToken> optParser = parser.Optional();
+            Parser<Maybe<T>, TInputToken> optParser = parser.Optional();
             return (input) =>
             {
                 List<T> result = new List<T>();
@@ -27,7 +27,7 @@ namespace ParsecCore.ParsersHelp
 
                 if (parseResult.IsError)
                 {
-                    return Either.RetypeError<ParseError, IMaybe<T>, IReadOnlyList<T>>(parseResult);
+                    return Either.RetypeError<ParseError, Maybe<T>, IReadOnlyList<T>>(parseResult);
                 }
 
                 return Either.Result<ParseError, IReadOnlyList<T>>(result);

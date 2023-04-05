@@ -157,14 +157,13 @@ namespace ParsecCore.Indentation
         public static Parser<TResult, char> IndentBlockMany<TSpace, TItem, TReference, TResult>(
             Parser<TSpace, char> spaceConsumer,
             Parser<TReference, char> referenceParser,
-            IMaybe<IndentLevel> desiredIndentation,
+            Maybe<IndentLevel> desiredIndentation,
             Func<TReference, IList<TItem>, TResult> transform,
             Parser<TItem, char> itemParser
         )
         {
             if (spaceConsumer is null) throw new ArgumentNullException(nameof(spaceConsumer));
             if (referenceParser is null) throw new ArgumentNullException(nameof(referenceParser));
-            if (desiredIndentation is null) throw new ArgumentNullException(nameof(desiredIndentation));
             if (transform is null) throw new ArgumentNullException(nameof(transform));
             if (itemParser is null) throw new ArgumentNullException(nameof(itemParser));
 
@@ -185,9 +184,9 @@ namespace ParsecCore.Indentation
                 bool eof,
                 IndentLevel reference,
                 TReference referenceItem,
-                IMaybe<IndentLevel> current,
+                Maybe<IndentLevel> current,
                 Parser<TSpace, char> spaceConsumer,
-                IMaybe<IndentLevel> desiredIndentation,
+                Maybe<IndentLevel> desiredIndentation,
                 Func<TReference, IList<TItem>, TResult> transform,
                 Parser<TItem, char> itemParser
             )
@@ -229,14 +228,13 @@ namespace ParsecCore.Indentation
         public static Parser<TResult, char> IndentBlockMany1<TSpace, TItem, TResult, TReference>(
             Parser<TSpace, char> spaceConsumer,
             Parser<TReference, char> referenceParser,
-            IMaybe<IndentLevel> desiredIndentation,
+            Maybe<IndentLevel> desiredIndentation,
             Func<TReference, IList<TItem>, TResult> transform,
             Parser<TItem, char> itemParser
         )
         {
             if (spaceConsumer is null) throw new ArgumentNullException(nameof(spaceConsumer));
             if (referenceParser is null) throw new ArgumentNullException(nameof(referenceParser));
-            if (desiredIndentation is null) throw new ArgumentNullException(nameof(desiredIndentation));
             if (transform is null) throw new ArgumentNullException(nameof(transform));
             if (itemParser is null) throw new ArgumentNullException(nameof(itemParser));
 

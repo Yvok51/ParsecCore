@@ -40,7 +40,7 @@ namespace ParsecCore.Permutations
     /// <typeparam name="TInput"></typeparam>
     public class PermutationParser<T, TInput>
     {
-        internal PermutationParser(IReadOnlyList<IPermutationBranch<T, TInput>> branches, IMaybe<T> @default)
+        internal PermutationParser(IReadOnlyList<IPermutationBranch<T, TInput>> branches, Maybe<T> @default)
         {
             _branches = branches;
             _default = @default;
@@ -229,6 +229,6 @@ namespace ParsecCore.Permutations
         /// <summary>
         /// The default value returned if all branches fail in case there are missing optional parsers at the end
         /// </summary>
-        private readonly IMaybe<T> _default;
+        private readonly Maybe<T> _default;
     }
 }

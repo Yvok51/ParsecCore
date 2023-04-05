@@ -105,35 +105,35 @@ namespace PythonParser.Parser
         private static readonly Parser<IReadOnlyList<Expr>, char> PositionalArguments =
             Parsers.SepBy1(Expression(Control.EOLLexeme), Control.Comma(Control.EOLLexeme));
 
-        private static Parser<IMaybe<T>, char> OptionalArgument<T>(Parser<T, char> p) =>
+        private static Parser<Maybe<T>, char> OptionalArgument<T>(Parser<T, char> p) =>
             (from _ in Control.Comma(Control.EOLLexeme)
             from parsed in p
             select parsed).Try().Optional();
 
-        private static readonly Parser<IMaybe<Expr>, char> OptionalSequenceArg =
+        private static readonly Parser<Maybe<Expr>, char> OptionalSequenceArg =
             OptionalArgument(from sa in Control.Asterisk(Control.EOLLexeme)
                              from seq in Expression(Control.EOLLexeme)
                              select seq);
-        private static readonly Parser<IMaybe<Expr>, char> OptionalMappingArg =
+        private static readonly Parser<Maybe<Expr>, char> OptionalMappingArg =
             OptionalArgument(from da in Control.DoubleAsterisk(Control.EOLLexeme)
                              from map in Expression(Control.EOLLexeme)
                              select map);
-        private static readonly Parser<IMaybe<IReadOnlyList<KeywordArgument>>, char> OptionalKeywords =
+        private static readonly Parser<Maybe<IReadOnlyList<KeywordArgument>>, char> OptionalKeywords =
             OptionalArgument(KeywordArguments);
 
         private static readonly Parser<
             (
-                IMaybe<IReadOnlyList<Expr>>,
-                IMaybe<IReadOnlyList<KeywordArgument>>,
-                IMaybe<Expr>,
-                IMaybe<Expr>
+                Maybe<IReadOnlyList<Expr>>,
+                Maybe<IReadOnlyList<KeywordArgument>>,
+                Maybe<Expr>,
+                Maybe<Expr>
             ), char> ArgumentList =
                 Parsers.Choice<
             (
-                IMaybe<IReadOnlyList<Expr>>,
-                IMaybe<IReadOnlyList<KeywordArgument>>,
-                IMaybe<Expr>,
-                IMaybe<Expr>
+                Maybe<IReadOnlyList<Expr>>,
+                Maybe<IReadOnlyList<KeywordArgument>>,
+                Maybe<Expr>,
+                Maybe<Expr>
             ), char>(
                     from args in PositionalArguments
                     select (

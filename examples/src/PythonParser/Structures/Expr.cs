@@ -443,7 +443,7 @@ namespace PythonParser.Structures
 
     internal class SliceItem : Expr, IEquatable<SliceItem>
     {
-        public SliceItem(IMaybe<Expr> lowerBound, IMaybe<Expr> upperBound, IMaybe<Expr> stride)
+        public SliceItem(Maybe<Expr> lowerBound, Maybe<Expr> upperBound, Maybe<Expr> stride)
         {
             UpperBound = upperBound;
             LowerBound = lowerBound;
@@ -473,9 +473,9 @@ namespace PythonParser.Structures
             return HashCode.Combine(UpperBound, LowerBound, Stride);
         }
 
-        public IMaybe<Expr> UpperBound { get; init; }
-        public IMaybe<Expr> LowerBound { get; init; }
-        public IMaybe<Expr> Stride { get; init; }
+        public Maybe<Expr> UpperBound { get; init; }
+        public Maybe<Expr> LowerBound { get; init; }
+        public Maybe<Expr> Stride { get; init; }
     }
 
     internal class Slice : Expr, IEquatable<Slice>
@@ -546,10 +546,10 @@ namespace PythonParser.Structures
     {
         public Call(
             Expr calledExpr,
-            IMaybe<IReadOnlyList<Expr>> argumentList,
-            IMaybe<IReadOnlyList<KeywordArgument>> keywordArguments,
-            IMaybe<Expr> sequenceExpr,
-            IMaybe<Expr> mappingExpr
+            Maybe<IReadOnlyList<Expr>> argumentList,
+            Maybe<IReadOnlyList<KeywordArgument>> keywordArguments,
+            Maybe<Expr> sequenceExpr,
+            Maybe<Expr> mappingExpr
         )
         {
             CalledExpr = calledExpr;
@@ -594,10 +594,10 @@ namespace PythonParser.Structures
         }
 
         public Expr CalledExpr { get; init; }
-        public IMaybe<IReadOnlyList<Expr>> ArgumentList { get; init; }
-        public IMaybe<IReadOnlyList<KeywordArgument>> KeywordArguments { get; init; }
-        public IMaybe<Expr> SequenceExpr { get; init; }
-        public IMaybe<Expr> MappingExpr { get; init; }
+        public Maybe<IReadOnlyList<Expr>> ArgumentList { get; init; }
+        public Maybe<IReadOnlyList<KeywordArgument>> KeywordArguments { get; init; }
+        public Maybe<Expr> SequenceExpr { get; init; }
+        public Maybe<Expr> MappingExpr { get; init; }
     }
 
     internal class Unary : Expr, IEquatable<Unary>

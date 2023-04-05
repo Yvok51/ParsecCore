@@ -182,7 +182,7 @@ namespace PythonParser.Parser
             from sign in Parsers.Char('+').Or(Parsers.Char('-')).Option('+')
             from digits in digitPart
             select "E" + sign + digits;
-        private static Parser<string, char> isFractionPartOptional(IMaybe<string> digits)
+        private static Parser<string, char> isFractionPartOptional(Maybe<string> digits)
             => digits.IsEmpty ? fraction : (from dot in Parsers.Char('.')
                                             from fractionDigits in digitPart.Option("0")
                                             select dot + fractionDigits);

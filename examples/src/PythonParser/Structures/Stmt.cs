@@ -120,7 +120,7 @@ namespace PythonParser.Structures
 
     internal class Return : Stmt, IEquatable<Return>
     {
-        public Return(IMaybe<IReadOnlyList<Expr>> expressions) 
+        public Return(Maybe<IReadOnlyList<Expr>> expressions) 
         {
             Expressions = expressions;
         }
@@ -148,7 +148,7 @@ namespace PythonParser.Structures
             return HashCode.Combine(Expressions);
         }
 
-        public IMaybe<IReadOnlyList<Expr>> Expressions { get; init; }
+        public Maybe<IReadOnlyList<Expr>> Expressions { get; init; }
     }
 
     internal class Break : Stmt, IEquatable<Break>
@@ -207,7 +207,7 @@ namespace PythonParser.Structures
 
     internal class ImportModule : Stmt, IEquatable<ImportModule>
     {
-        public ImportModule(IReadOnlyList<IdentifierLiteral> modulePath, IMaybe<IdentifierLiteral> alias)
+        public ImportModule(IReadOnlyList<IdentifierLiteral> modulePath, Maybe<IdentifierLiteral> alias)
         {
             ModulePath = modulePath;
             Alias = alias;
@@ -236,7 +236,7 @@ namespace PythonParser.Structures
         }
 
         public IReadOnlyList<IdentifierLiteral> ModulePath { get; init; }
-        public IMaybe<IdentifierLiteral> Alias { get; init; }
+        public Maybe<IdentifierLiteral> Alias { get; init; }
     }
 
     internal class ImportSpecific : Stmt, IEquatable<ImportSpecific>
@@ -244,7 +244,7 @@ namespace PythonParser.Structures
         public ImportSpecific(
             IReadOnlyList<IdentifierLiteral> modulePath,
             IdentifierLiteral specific,
-            IMaybe<IdentifierLiteral> alias
+            Maybe<IdentifierLiteral> alias
         )
         {
             ModulePath = modulePath;
@@ -277,7 +277,7 @@ namespace PythonParser.Structures
 
         public IReadOnlyList<IdentifierLiteral> ModulePath { get; init; }
         public IdentifierLiteral Specific { get; init; }
-        public IMaybe<IdentifierLiteral> Alias { get; init; }
+        public Maybe<IdentifierLiteral> Alias { get; init; }
     }
 
     internal class ImportSpecificAll : Stmt, IEquatable<ImportSpecificAll>
@@ -346,7 +346,7 @@ namespace PythonParser.Structures
 
     internal class If : Stmt, IEquatable<If>
     {
-        public If(Expr test, Suite thenBranch, IReadOnlyList<(Expr, Suite)> elifs, IMaybe<Suite> elseBranch)
+        public If(Expr test, Suite thenBranch, IReadOnlyList<(Expr, Suite)> elifs, Maybe<Suite> elseBranch)
         {
             Test = test;
             ThenBranch = thenBranch;
@@ -381,12 +381,12 @@ namespace PythonParser.Structures
         public Expr Test { get; init; }
         public Suite ThenBranch { get; init; }
         public IReadOnlyList<(Expr, Suite)> Elifs { get; init; }
-        public IMaybe<Suite> ElseBranch { get; init; }
+        public Maybe<Suite> ElseBranch { get; init; }
     }
 
     internal class While : Stmt, IEquatable<While>
     {
-        public While(Expr test, Suite body, IMaybe<Suite> elseBranch)
+        public While(Expr test, Suite body, Maybe<Suite> elseBranch)
         {
             Test = test;
             Body = body;
@@ -418,7 +418,7 @@ namespace PythonParser.Structures
 
         public Expr Test { get; init; }
         public Suite Body { get; init; }
-        public IMaybe<Suite> ElseBranch { get; init; }
+        public Maybe<Suite> ElseBranch { get; init; }
     }
 
     internal class For : Stmt, IEquatable<For>
@@ -427,7 +427,7 @@ namespace PythonParser.Structures
             IReadOnlyList<Expr> targets,
             IReadOnlyList<Expr> expressions,
             Suite body,
-            IMaybe<Suite> elseBranch
+            Maybe<Suite> elseBranch
         )
         {
             Targets = targets;
@@ -463,7 +463,7 @@ namespace PythonParser.Structures
         public IReadOnlyList<Expr> Targets { get; init; }
         public IReadOnlyList<Expr> Expressions { get; init; }
         public Suite Body { get; init; }
-        public IMaybe<Suite> ElseBranch { get; init; }
+        public Maybe<Suite> ElseBranch { get; init; }
     }
 
     internal class Function : Stmt, IEquatable<Function>
