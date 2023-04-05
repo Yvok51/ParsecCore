@@ -57,7 +57,9 @@ namespace ParsecCore.EitherNS
         }
 
         /// <summary>
-        /// Combines two errors together according to the method
+        /// Combines two errors together.
+        /// By default chooses the error which has occured further in the input.
+        /// If both errors occured at the same position, then decides according to the method
         /// <see cref="ParseError.Accept{T, A}(IParseErrorVisitor{T, A}, A)"/>.
         /// Presumes both <see cref="IEither{TLeft, TRight}"/> are errors,
         /// throws <see cref="InvalidOperationException"/> otherwise.
@@ -71,6 +73,14 @@ namespace ParsecCore.EitherNS
             IEither<ParseError, T> right
         )
         {
+            if (left.Error.Position > right.Error.Position)
+            {
+                return left;
+            }
+            else if (left.Error.Position < right.Error.Position)
+            {
+                return right;
+            }
             return Either.Error<ParseError, T>(left.Error.Accept(right.Error, None.Instance));
         }
 
