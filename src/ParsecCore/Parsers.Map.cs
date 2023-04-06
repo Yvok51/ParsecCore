@@ -76,11 +76,11 @@ namespace ParsecCore
                 var res = parser(input);
                 if (res.IsResult)
                 {
-                    return valueEither;
+                    return Result.Create(valueEither, res.UnconsumedInput);
                 }
                 else
                 {
-                    return Either.RetypeError<ParseError, T, TResult>(res);
+                    return Result.RetypeError<T, TResult, TInput>(res);
                 }
             };
         }

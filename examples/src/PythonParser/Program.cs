@@ -1,4 +1,5 @@
-﻿using ParsecCore.Input;
+﻿using ParsecCore;
+using ParsecCore.Input;
 using ParsecCore.MaybeNS;
 using PythonParser.Parser;
 using PythonParser.Structures;
@@ -24,9 +25,9 @@ namespace PythonParser
                     var input = ParserInput.Create(sourceReader);
                     var parseResult = TopLevelParser.PythonFile(input);
 
-                    var result = parseResult.Map(
-                        resultMap: stmts => string.Join("\n", stmts.Select(stmt => stmt.Accept(new PrintVisitor(), 0))),
-                        errorMap: error => error.ToString()
+                    var result = parseResult.Match(
+                        success: stmts => string.Join("\n", stmts.Select(stmt => stmt.Accept(new PrintVisitor(), 0))),
+                        failure: error => error.ToString()
                     );
 
                     Console.WriteLine(result);

@@ -20,7 +20,7 @@ namespace ParsecCoreTests
 
             Assert.True(result.IsResult);
             Assert.Equal(0, result.Result.Count);
-            Assert.NotEqual(initialPosition, input.Position);
+            Assert.NotEqual(initialPosition, result.UnconsumedInput.Position);
         }
 
         [Fact]
@@ -39,7 +39,7 @@ namespace ParsecCoreTests
 
             Assert.True(result.IsResult);
             Assert.Equal(expected.Count, result.Result.Count);
-            Assert.NotEqual(initialPosition, input.Position);
+            Assert.NotEqual(initialPosition, result.UnconsumedInput.Position);
 
             for (int i = 0; i < expected.Count; i++)
             {
@@ -65,7 +65,7 @@ namespace ParsecCoreTests
 
             Assert.True(result.IsResult);
             Assert.Equal(expected.Count, result.Result.Count);
-            Assert.NotEqual(initialPosition, input.Position);
+            Assert.NotEqual(initialPosition, result.UnconsumedInput.Position);
 
             for (int i = 0; i < expected.Count; i++)
             {

@@ -9,18 +9,17 @@ namespace ParsecCore.ParsersHelp
         {
             return (input) =>
             {
-                var initialPosition = input.Position;
                 var result = parser(input);
                 if (result.IsResult)
                 {
-                    return Either.Result<ParseError, Maybe<T>>(Maybe.FromValue(result.Result));
+                    return Result.Success(Maybe.FromValue(result.Result), result.UnconsumedInput);
                 }
-                if (initialPosition == input.Position)
+                if (input.Equals(result.UnconsumedInput))
                 {
-                    return Either.Result<ParseError, Maybe<T>>(Maybe.Nothing<T>());
+                    return Result.Success(Maybe.Nothing<T>(), result.UnconsumedInput);
                 }
 
-                return Either.RetypeError<ParseError, T, Maybe<T>>(result);
+                return Result.RetypeError<T, Maybe<T>, TInputToken>(result);
             };
         }
     }

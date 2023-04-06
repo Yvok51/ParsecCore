@@ -15,28 +15,27 @@ namespace ParsecCoreTests.Input
             return stream;
         }
 
-        public (Position, int) ReadTill(IParserInput<char> reader, char[] expectedChars, int startIndex, char seekBackTo, char stopAt)
+        public (IParserInput<char>, int) ReadTill(IParserInput<char> reader, char[] expectedChars, int startIndex, char seekBackTo, char stopAt)
         {
-            Position positionToSeek = reader.Position;
+            var inputToSeekTo = reader;
             int i = startIndex;
             while (!reader.EndOfInput)
             {
-                Position positionToBeRead = reader.Position;
-                char c = reader.Read();
+                char c = reader.Current();
                 if (c == seekBackTo)
                 {
-                    positionToSeek = positionToBeRead;
+                    inputToSeekTo = reader;
                 }
-
                 Assert.Equal(expectedChars[i], c);
                 i++;
                 if (c == stopAt)
                 {
                     break;
                 }
+                reader = reader.Advance();
             }
 
-            return (positionToSeek, i);
+            return (inputToSeekTo, i);
         }
 
         [Fact]
@@ -52,7 +51,8 @@ namespace ParsecCoreTests.Input
                 int i = 0;
                 while (!reader.EndOfInput)
                 {
-                    Assert.Equal(expectedChars[i], reader.Read());
+                    Assert.Equal(expectedChars[i], reader.Current());
+                    reader = reader.Advance();
                     i++;
                 }
                 Assert.Equal(expectedChars.Length, i);
@@ -68,13 +68,12 @@ namespace ParsecCoreTests.Input
 
                 var reader = ParserInput.Create(input, _encoding);
 
-                var (positionToSeek, i) = ReadTill(reader, expectedChars, 0, 'c', 'e');
+                var (newInput, i) = ReadTill(reader, expectedChars, 0, 'c', 'e');
 
-                reader.Seek(positionToSeek);
-
-                while (!reader.EndOfInput)
+                while (!newInput.EndOfInput)
                 {
-                    Assert.Equal(expectedChars[i], reader.Read());
+                    Assert.Equal(expectedChars[i], newInput.Current());
+                    newInput = newInput.Advance();
                     i++;
                 }
                 Assert.Equal(expectedChars.Length, i);
@@ -90,13 +89,12 @@ namespace ParsecCoreTests.Input
 
                 var reader = ParserInput.Create(input, _encoding);
 
-                var (positionToSeek, i) = ReadTill(reader, expectedChars, 0, 'c', 'f');
+                var (newInput, i) = ReadTill(reader, expectedChars, 0, 'c', 'f');
 
-                reader.Seek(positionToSeek);
-
-                while (!reader.EndOfInput)
+                while (!newInput.EndOfInput)
                 {
-                    Assert.Equal(expectedChars[i], reader.Read());
+                    Assert.Equal(expectedChars[i], newInput.Current());
+                    newInput = newInput.Advance();
                     i++;
                 }
                 Assert.Equal(expectedChars.Length, i);
@@ -112,18 +110,16 @@ namespace ParsecCoreTests.Input
 
                 var reader = ParserInput.Create(input, _encoding);
 
-                var (positionToSeek, i) = ReadTill(reader, expectedChars, 0, 'c', 'e');
-                reader.Seek(positionToSeek);
+                var (newInput, i) = ReadTill(reader, expectedChars, 0, 'c', 'e');
 
-                (positionToSeek, i) = ReadTill(reader, expectedChars, i, 'c', 'e');
-                reader.Seek(positionToSeek);
+                (newInput, i) = ReadTill(newInput, expectedChars, i, 'c', 'e');
 
-                (positionToSeek, i) = ReadTill(reader, expectedChars, i, 'd', 'f');
-                reader.Seek(positionToSeek);
+                (newInput, i) = ReadTill(newInput, expectedChars, i, 'd', 'f');
 
-                while (!reader.EndOfInput)
+                while (!newInput.EndOfInput)
                 {
-                    Assert.Equal(expectedChars[i], reader.Read());
+                    Assert.Equal(expectedChars[i], newInput.Current());
+                    newInput = newInput.Advance();
                     i++;
                 }
                 Assert.Equal(expectedChars.Length, i);

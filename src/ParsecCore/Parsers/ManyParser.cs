@@ -21,15 +21,15 @@ namespace ParsecCore.ParsersHelp
                 while (parseResult.IsResult && !parseResult.Result.IsEmpty)
                 {
                     result.Add(parseResult.Result.Value);
-                    parseResult = optParser(input);
+                    parseResult = optParser(parseResult.UnconsumedInput);
                 }
 
                 if (parseResult.IsError)
                 {
-                    return Either.RetypeError<ParseError, Maybe<T>, IReadOnlyList<T>>(parseResult);
+                    return Result.RetypeError<Maybe<T>, IReadOnlyList<T>, TInputToken>(parseResult);
                 }
 
-                return Either.Result<ParseError, IReadOnlyList<T>>(result);
+                return Result.Success(result, parseResult.UnconsumedInput);
             };
         }
     }

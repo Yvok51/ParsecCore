@@ -21,18 +21,13 @@ namespace ParsecCore
 
             return (input) =>
             {
-                var initialPosition = input.Position;
                 var result = parser(input);
                 if (result.IsResult)
                 {
                     return result;
                 }
 
-                if (input.Position != initialPosition)
-                {
-                    input.Seek(initialPosition);
-                }
-                return result;
+                return Result.Failure<T, TInputToken>(result.Error, input);
             };
         }
 
@@ -55,11 +50,10 @@ namespace ParsecCore
 
             return (input) =>
             {
-                var initialPosition = input.Position;
                 var result = parser(input);
                 if (result.IsResult)
                 {
-                    input.Seek(initialPosition);
+                    Result.Success(result.Result, input);
                 }
 
                 return result;

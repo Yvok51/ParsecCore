@@ -23,17 +23,16 @@ namespace ParsecCore.ParsersHelp
 
             return (input) =>
             {
-                Position initialPosition = input.Position;
-                List<IEither<ParseError, T>> parseResults = new();
+                List<IResult<T, TInputToken>> parseResults = new();
                 foreach (var parser in parsers)
                 {
-                    IEither<ParseError, T> currentParseResult = parser(input);
+                    IResult<T, TInputToken> currentParseResult = parser(input);
                     parseResults.Add(currentParseResult);
                     if (currentParseResult.IsResult)
                     {
                         return currentParseResult;
                     }
-                    if (input.Position != initialPosition)
+                    if (!input.Equals(currentParseResult.UnconsumedInput))
                     {
                         return parseResults.Aggregate((left, right) => left.CombineErrors(right));
                     }
@@ -41,7 +40,7 @@ namespace ParsecCore.ParsersHelp
                 }
                 if (parseResults.Count == 0)
                 {
-                    return Either.Error<ParseError, T>(new CustomError(initialPosition, new FailWithError("No parser provided")));
+                    return Result.Failure<T, TInputToken>(new CustomError(input.Position, new FailWithError("No parser provided")), input);
                 }
 
                 return parseResults.Aggregate((left, right) => left.CombineErrors(right));

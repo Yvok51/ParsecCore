@@ -32,9 +32,9 @@ namespace ParsecCore.EitherNS
             return new ErrorValue<TNewLeft, TNewRight>(left(_error));
         }
 
-        public T Match<T>(Func<TResult, T> right, Func<T> left)
+        public T Match<T>(Func<TResult, T> right, Func<TError, T> left)
         {
-            return left();
+            return left(_error);
         }
 
         public override string ToString()

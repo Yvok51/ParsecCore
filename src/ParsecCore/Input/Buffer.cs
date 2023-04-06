@@ -9,62 +9,43 @@ namespace ParsecCore.Input
         {
             _reader = reader;
             _buffer = new char[BUFFER_SIZE];
-            _index = BUFFER_SIZE;
             _lastReadChars = int.MinValue;
             _offsetOfFirstChar = reader.BaseStream.Position;
+            BufferNextData(_offsetOfFirstChar);
         }
         public Buffer(Stream stream, Encoding encoding) : this(new StreamReader(stream, encoding))
         {
         }
 
-        public char Peek()
-        {
-            if (_index < BUFFER_SIZE)
-            {
-                return _buffer[_index];
-            }
-
-            BufferNextData();
-            return _buffer[_index];
-        }
-
-        public char Read()
-        {
-            if (_index < BUFFER_SIZE)
-            {
-                return _buffer[_index++];
-            }
-
-            BufferNextData();
-            return _buffer[_index++];
-        }
-
-        public void Seek(long offset)
+        public char Read(long offset)
         {
             if (offset >= _offsetOfFirstChar && offset < _offsetOfFirstChar + BUFFER_SIZE)
             {
-                _index = (int)(offset - _offsetOfFirstChar);
+                return _buffer[offset - _offsetOfFirstChar];
             }
             else
             {
-                _reader.BaseStream.Position = offset;
-                _reader.DiscardBufferedData();
-                BufferNextData();
+                BufferNextData(offset);
+                return _buffer[0];
             }
         }
 
-        private void BufferNextData()
+        private void BufferNextData(long startingOffset)
         {
-            _offsetOfFirstChar = _reader.BaseStream.Position;
+            _reader.BaseStream.Position = startingOffset;
+            _reader.DiscardBufferedData();
+            _offsetOfFirstChar = startingOffset;
             _lastReadChars = _reader.Read(_buffer, 0, BUFFER_SIZE);
-            _index = 0;
         }
 
-        public bool EndOfStream { get => _lastReadChars == _index; }
+        public bool EndOfStream(long offset)
+        {
+            // presumes that we only advance forward by one and also that the given offset follows this
+            return _offsetOfFirstChar + _lastReadChars <= offset;
+        }
 
         private static readonly int BUFFER_SIZE = 4096;
         private int _lastReadChars;
-        private int _index;
         private long _offsetOfFirstChar;
         private readonly char[] _buffer;
         private readonly StreamReader _reader;

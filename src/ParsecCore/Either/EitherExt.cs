@@ -49,17 +49,16 @@ namespace ParsecCore.EitherNS
                     var second = getSecond(firstResult);
                     return second.Match(
                         secondResult => Either.Result<TLeft, TResult>(getResult(firstResult, secondResult)),
-                        () => Either.RetypeError<TLeft, TSecond, TResult>(second)
+                        (_) => Either.RetypeError<TLeft, TSecond, TResult>(second)
                     );
                 },
-                () => Either.RetypeError<TLeft, TFirst, TResult>(first)
+                (_) => Either.RetypeError<TLeft, TFirst, TResult>(first)
             );
         }
 
         /// <summary>
         /// Combines two errors together.
-        /// By default chooses the error which has occured further in the input.
-        /// If both errors occured at the same position, then decides according to the method
+        /// Decides according to the method
         /// <see cref="ParseError.Accept{T, A}(IParseErrorVisitor{T, A}, A)"/>.
         /// Presumes both <see cref="IEither{TLeft, TRight}"/> are errors,
         /// throws <see cref="InvalidOperationException"/> otherwise.
@@ -68,20 +67,12 @@ namespace ParsecCore.EitherNS
         /// <param name="left"> The first either </param>
         /// <param name="right"> The second either </param>
         /// <returns> Error combining both input errors </returns>
-        public static IEither<ParseError, T> CombineErrors<T>(
+        public static ParseError CombineErrors<T>(
             this IEither<ParseError, T> left,
             IEither<ParseError, T> right
         )
         {
-            if (left.Error.Position > right.Error.Position)
-            {
-                return left;
-            }
-            else if (left.Error.Position < right.Error.Position)
-            {
-                return right;
-            }
-            return Either.Error<ParseError, T>(left.Error.Accept(right.Error, None.Instance));
+            return left.Error.Accept(right.Error, None.Instance);
         }
 
     }

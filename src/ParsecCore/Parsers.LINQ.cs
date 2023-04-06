@@ -66,16 +66,19 @@ namespace ParsecCore
                 var firstResult = first(input);
                 if (firstResult.IsError)
                 {
-                    return Either.RetypeError<ParseError, TFirst, TResult>(firstResult);
+                    return Result.RetypeError<TFirst, TResult, TInputToken>(firstResult);
                 }
 
-                var secondResult = getSecond(firstResult.Result)(input);
+                var secondResult = getSecond(firstResult.Result)(firstResult.UnconsumedInput);
                 if (secondResult.IsError)
                 {
-                    return Either.RetypeError<ParseError, TSecond, TResult>(secondResult);
+                    return Result.RetypeError<TSecond, TResult, TInputToken>(secondResult);
                 }
 
-                return Either.Result<ParseError, TResult>(getResult(firstResult.Result, secondResult.Result));
+                return Result.Success(
+                    getResult(firstResult.Result, secondResult.Result),
+                    secondResult.UnconsumedInput
+                );
             };
         }
 

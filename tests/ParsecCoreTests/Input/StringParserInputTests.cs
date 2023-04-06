@@ -16,7 +16,8 @@ namespace ParsecCoreTests.Input
             int i = 0;
             while (!reader.EndOfInput)
             {
-                Assert.Equal(expectedChars[i], reader.Read());
+                Assert.Equal(expectedChars[i], reader.Current());
+                reader = reader.Advance();
                 i++;
             }
             Assert.Equal(expectedChars.Length, i);
@@ -29,31 +30,29 @@ namespace ParsecCoreTests.Input
             var expectedChars = new char[] { 'a', 'b', 'c', 'd', 'e', 'c', 'd', 'e', 'f', 'g' };
 
             var reader = ParserInput.Create(input);
-            Position positionToSeek = reader.Position;
+            var inputToSeekTo = reader;
 
             int i = 0;
             while (!reader.EndOfInput)
             {
-                Position positionToBeRead = reader.Position;
-                char c = reader.Read();
+                char c = reader.Current();
                 if (c == 'c')
                 {
-                    positionToSeek = positionToBeRead;
+                    inputToSeekTo = reader;
                 }
-
                 Assert.Equal(expectedChars[i], c);
                 i++;
                 if (c == 'e')
                 {
                     break;
                 }
+                reader = reader.Advance();
             }
 
-            reader.Seek(positionToSeek);
-
-            while (!reader.EndOfInput)
+            while (!inputToSeekTo.EndOfInput)
             {
-                Assert.Equal(expectedChars[i], reader.Read());
+                Assert.Equal(expectedChars[i], inputToSeekTo.Current());
+                inputToSeekTo = inputToSeekTo.Advance();
                 i++;
             }
             Assert.Equal(expectedChars.Length, i);
@@ -66,31 +65,29 @@ namespace ParsecCoreTests.Input
             var expectedChars = new char[] { 'a', 'b', 'c', 'd', '\n', 'e', 'f', 'c', 'd', '\n', 'e', 'f', 'g', 'h', 'i' };
 
             var reader = ParserInput.Create(input);
-            Position positionToSeek = reader.Position;
+            var inputToSeekTo = reader;
 
             int i = 0;
             while (!reader.EndOfInput)
             {
-                Position positionToBeRead = reader.Position;
-                char c = reader.Read();
+                char c = reader.Current();
                 if (c == 'c')
                 {
-                    positionToSeek = positionToBeRead;
+                    inputToSeekTo = reader;
                 }
-
                 Assert.Equal(expectedChars[i], c);
                 i++;
                 if (c == 'f')
                 {
                     break;
                 }
+                reader = reader.Advance();
             }
 
-            reader.Seek(positionToSeek);
-
-            while (!reader.EndOfInput)
+            while (!inputToSeekTo.EndOfInput)
             {
-                Assert.Equal(expectedChars[i], reader.Read());
+                Assert.Equal(expectedChars[i], inputToSeekTo.Current());
+                inputToSeekTo = inputToSeekTo.Advance();
                 i++;
             }
             Assert.Equal(expectedChars.Length, i);

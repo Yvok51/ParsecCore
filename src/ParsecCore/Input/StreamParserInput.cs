@@ -9,7 +9,7 @@ namespace ParsecCore.Input
     /// The underlying stream must be readable and seekable.
     /// The stream is not disposed of, the caller still holds the ownership of the stream.
     /// </summary>
-    internal class StreamParserInput : IParserInput<char>
+    internal sealed class StreamParserInput : IParserInput<char>
     {
         public StreamParserInput(StreamReader reader, int tabSize)
         {
@@ -17,9 +17,10 @@ namespace ParsecCore.Input
             {
                 throw new ArgumentException("Provided reader must be not null, must be able to read, and must be able to seek");
             }
-
+            
+            _position = Position.Start((int)reader.BaseStream.Position); // has to be before creation of Buffer
+                                                                         // as it reads in constructor
             _reader = new Buffer(reader);
-            _position = Position.Start((int)reader.BaseStream.Position);
             _updatePosition = DefaultUpdatePosition(tabSize, reader.CurrentEncoding);
         }
 
@@ -30,8 +31,9 @@ namespace ParsecCore.Input
                 throw new ArgumentException("Provided reader must be not null, must be able to read, and must be able to seek");
             }
 
+            _position = Position.Start((int)reader.BaseStream.Position); // has to be before creation of Buffer
+                                                                         // as it reads in constructor
             _reader = new Buffer(reader);
-            _position = Position.Start((int)reader.BaseStream.Position);
             _updatePosition = updatePosition;
         }
 
@@ -42,8 +44,9 @@ namespace ParsecCore.Input
                 throw new ArgumentException("Provided stream must be not null, must be able to read, and must be able to seek");
             }
 
+            _position = Position.Start((int)stream.Position); // has to be before creation of Buffer
+                                                              // as it reads in constructor
             _reader = new Buffer(stream, encoding);
-            _position = Position.Start((int)stream.Position);
             _updatePosition = DefaultUpdatePosition(tabSize, encoding);
         }
 
@@ -54,8 +57,16 @@ namespace ParsecCore.Input
                 throw new ArgumentException("Provided stream must be not null, must be able to read, and must be able to seek");
             }
 
+            _position = Position.Start((int)stream.Position); // has to be before creation of Buffer
+                                                              // as it reads in constructor
             _reader = new Buffer(stream, encoding);
-            _position = Position.Start((int)stream.Position);
+            _updatePosition = updatePosition;
+        }
+
+        private StreamParserInput(Buffer reader, Position position, Func<char, Position, Position> updatePosition)
+        {
+            _reader = reader;
+            _position = position;
             _updatePosition = updatePosition;
         }
 
@@ -77,43 +88,43 @@ namespace ParsecCore.Input
             };
         }
 
-        public bool EndOfInput => _reader.EndOfStream;
+        public bool EndOfInput => _reader.EndOfStream(_position.Offset);
 
         public Position Position => _position;
 
-        public char Read()
+        public IParserInput<char> Advance()
+        {
+            return new StreamParserInput(_reader, _updatePosition(Current(), _position), _updatePosition);
+        }
+
+        public char Current()
         {
             if (EndOfInput)
             {
                 throw new InvalidOperationException("Read past the end of the input");
             }
 
-            char readChar = _reader.Read();
-            _position = _updatePosition(readChar, _position);
-            return readChar;
+            return _reader.Read(_position.Offset);
         }
 
-        public void Seek(Position position)
+        public bool Equals(IParserInput<char>? other)
         {
-            if (position.Offset != _position.Offset)
-            {
-                _reader.Seek(position.Offset);
-            }
-            _position = position;
+            return other is StreamParserInput otherInput
+                && _reader.Equals(otherInput._reader) && Position == otherInput._position;
         }
 
-        public char Peek()
+        public override bool Equals(object? obj)
         {
-            if (EndOfInput)
-            {
-                throw new InvalidOperationException("Read past the end of the input");
-            }
+            return obj is StringParserInput other && Equals(other);
+        }
 
-            return _reader.Peek();
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_reader, _position, _updatePosition);
         }
 
         private readonly Func<char, Position, Position> _updatePosition;
         private readonly Buffer _reader;
-        private Position _position;
+        private readonly Position _position;
     }
 }

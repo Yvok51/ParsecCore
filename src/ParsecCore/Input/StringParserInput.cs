@@ -2,13 +2,18 @@
 
 namespace ParsecCore.Input
 {
-    internal class StringParserInput : IParserInput<char>
+    internal sealed class StringParserInput : IParserInput<char>
     {
-        public StringParserInput(string input, Func<char, Position, Position> updatePosition)
+        public StringParserInput(string input, Position position, Func<char, Position, Position> updatePosition)
         {
             _input = input;
             _updatePosition = updatePosition;
-            _position = Position.Start();
+            _position = position;
+        }
+
+        public StringParserInput(string input, Func<char, Position, Position> updatePosition)
+            : this(input, Position.Start(), updatePosition)
+        {
         }
 
         public StringParserInput(string input, int _tabSize)
@@ -30,23 +35,12 @@ namespace ParsecCore.Input
 
         public Position Position => _position;
 
-        public char Read()
+        public IParserInput<char> Advance()
         {
-            if (EndOfInput)
-            {
-                throw new InvalidOperationException("Read past the end of the input");
-            }
-            char readChar = _input[_position.Offset];
-            _position = _updatePosition(readChar, _position);
-            return readChar;
+            return new StringParserInput(_input, _updatePosition(Current(), _position), _updatePosition);
         }
 
-        public void Seek(Position position)
-        {
-            _position = position;
-        }
-
-        public char Peek()
+        public char Current()
         {
             if (EndOfInput)
             {
@@ -56,8 +50,24 @@ namespace ParsecCore.Input
             return _input[_position.Offset];
         }
 
+        public bool Equals(IParserInput<char>? other)
+        {
+            return other is StringParserInput otherInput
+                && _input.Equals(otherInput._input) && Position == otherInput._position;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is StringParserInput other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_input, _position, _updatePosition);
+        }
+
         private readonly Func<char, Position, Position> _updatePosition;
         private readonly string _input;
-        private Position _position;
+        private readonly Position _position;
     }
 }

@@ -40,7 +40,7 @@ namespace ParsecCore
         {
             return (input) =>
             {
-                return Either.Result<ParseError, T>(value);
+                return Result.Success(value, input);
             };
         }
 
@@ -53,7 +53,7 @@ namespace ParsecCore
         {
             return (input) =>
             {
-                return Either.Result<ParseError, Position>(input.Position);
+                return Result.Success(input.Position, input);
             };
         }
 

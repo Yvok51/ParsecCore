@@ -27,15 +27,16 @@ namespace ParsecCore.ParsersHelp
                 foreach (var parser in parsers)
                 {
                     var parsedResult = parser(input);
+                    input = parsedResult.UnconsumedInput;
                     if (parsedResult.IsError)
                     {
-                        return Either.RetypeError<ParseError, T, IReadOnlyList<T>>(parsedResult);
+                        return Result.RetypeError<T, IReadOnlyList<T>, TInputToken>(parsedResult);
                     }
 
                     result.Add(parsedResult.Result);
                 }
 
-                return Either.Result<ParseError, IReadOnlyList<T>>(result);
+                return Result.Success(result, input);
             };
         }
     }

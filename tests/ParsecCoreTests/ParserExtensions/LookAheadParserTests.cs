@@ -43,7 +43,7 @@ namespace ParsecCoreTests
             var result = parser(input);
 
             Assert.True(result.IsError);
-            Assert.NotEqual(initialPosition, input.Position);
+            Assert.NotEqual(initialPosition, result.UnconsumedInput.Position);
         }
     }
 }

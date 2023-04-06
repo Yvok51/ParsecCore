@@ -34,7 +34,7 @@ namespace ParsecCore.EitherNS
         /// <param name="right"> The function to transform the result value </param>
         /// <param name="left"> Function to supply the value in case of error </param>
         /// <returns> The value calculated by one of the supplied functions </returns>
-        T Match<T>(Func<TRight, T> right, Func<T> left);
+        T Match<T>(Func<TRight, T> right, Func<TLeft, T> left);
 
         /// <summary>
         /// Whether this IEither is holding the ERROR - LEFT value

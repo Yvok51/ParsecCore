@@ -3,5 +3,5 @@ using ParsecCore.Input;
 
 namespace ParsecCore
 {
-    public delegate IEither<ParseError, T> Parser<out T, TInput>(IParserInput<TInput> input);
+    public delegate IResult<T, TInput> Parser<out T, TInput>(IParserInput<TInput> input);
 }
