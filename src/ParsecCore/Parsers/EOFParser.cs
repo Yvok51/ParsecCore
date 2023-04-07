@@ -1,5 +1,4 @@
-﻿using ParsecCore.EitherNS;
-using ParsecCore.MaybeNS;
+﻿using ParsecCore.MaybeNS;
 
 namespace ParsecCore.ParsersHelp
 {
@@ -15,11 +14,12 @@ namespace ParsecCore.ParsersHelp
             {
                 if (input.EndOfInput)
                 {
-                    return new ResultValue<ParseError, None>(None.Instance);
+                    return Result.Success(None.Instance, input);
                 }
 
-                return Either.Error<ParseError, None>(
-                    new StandardError(input.Position, Maybe.Nothing<ErrorItem>(), EndOfFile.Instance)
+                return Result.Failure<None, TInputToken>(
+                    new StandardError(input.Position, Maybe.Nothing<ErrorItem>(), EndOfFile.Instance),
+                    input
                 );
             };
         }

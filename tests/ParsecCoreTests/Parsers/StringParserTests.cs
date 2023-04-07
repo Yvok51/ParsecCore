@@ -1,6 +1,5 @@
 ﻿
 using ParsecCore;
-using ParsecCore.EitherNS;
 using ParsecCore.Input;
 using Xunit;
 
@@ -17,7 +16,7 @@ namespace ParsecCoreTests
             var parser = Parsers.String(toParse);
             var input = ParserInput.Create(inputString);
 
-            IEither<ParseError, string> result = parser(input);
+            IResult<string, char> result = parser(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(toParse, result.Result);
@@ -32,7 +31,7 @@ namespace ParsecCoreTests
             var parser = Parsers.String(toParse);
             var input = ParserInput.Create(inputString);
 
-            IEither<ParseError, string> result = parser(input);
+            IResult<string, char> result = parser(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(toParse, result.Result);
@@ -47,13 +46,13 @@ namespace ParsecCoreTests
             var parser = Parsers.String(toParse);
             var input = ParserInput.Create(inputString);
 
-            IEither<ParseError, string> result = parser(input);
+            IResult<string, char> result = parser(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(toParse, result.Result);
 
             Assert.False(input.EndOfInput);
-            Assert.Equal(toParse.Length, input.Position.Offset);
+            Assert.Equal(toParse.Length, result.UnconsumedInput.Position.Offset);
         }
 
         [Theory]
@@ -65,12 +64,12 @@ namespace ParsecCoreTests
             var parser = Parsers.String(toParse);
             var input = ParserInput.Create(inputString);
 
-            IEither<ParseError, string> result = parser(input);
+            IResult<string, char> result = parser(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(toParse, result.Result);
 
-            Assert.True(input.EndOfInput);
+            Assert.True(result.UnconsumedInput.EndOfInput);
         }
 
         [Theory]
@@ -82,7 +81,7 @@ namespace ParsecCoreTests
             var parser = Parsers.String(toParse);
             var input = ParserInput.Create(inputString);
 
-            IEither<ParseError, string> result = parser(input);
+            IResult<string, char> result = parser(input);
 
             Assert.True(result.IsError);
         }
@@ -93,7 +92,7 @@ namespace ParsecCoreTests
             var parser = Parsers.String("abd");
             var input = ParserInput.Create("abcd");
 
-            IEither<ParseError, string> result = parser(input);
+            IResult<string, char> result = parser(input);
 
             Assert.True(result.IsError);
             Assert.Equal(2, result.Error.Position.Offset);

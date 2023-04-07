@@ -1,5 +1,4 @@
-﻿using ParsecCore.EitherNS;
-using ParsecCore.Input;
+﻿using ParsecCore.Input;
 using System;
 using System.Linq;
 
@@ -23,7 +22,7 @@ namespace ParsecCore
 
             return (input) =>
             {
-                return Either.Error<ParseError, T>(error);
+                return Result.Failure<T, TInputToken>(error, input);
             };
         }
 
@@ -75,8 +74,9 @@ namespace ParsecCore
                     return result;
                 }
 
-                return Either.Error<ParseError, T>(
-                    result.Error.Accept(FailWithVisitor.Instance, newExpectedMessage)
+                return Result.Failure<T, TInputToken>(
+                    result.Error.Accept(FailWithVisitor.Instance, newExpectedMessage),
+                    result.UnconsumedInput
                 );
             };
         }
@@ -158,11 +158,14 @@ namespace ParsecCore
             {
                 var position = input.Position;
                 var result = parser(input);
-                return result.Match(
-                    right: value => predicate(value)
-                        ? Either.Result<ParseError, T>(value)
-                        : Either.Error<ParseError, T>(generateError(value, position)),
-                    left: () => result
+                if (result.IsError || predicate(result.Result))
+                {
+                    return result;
+                }
+
+                return Result.Failure<T, TInputToken>(
+                    generateError(result.Result, result.UnconsumedInput.Position),
+                    input
                 );
             };
         }

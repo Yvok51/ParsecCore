@@ -3,36 +3,31 @@ using System.Collections.Generic;
 
 namespace ParsecCore.Input
 {
-    internal class TokenListParserInput<T> : IParserInput<T>
+    internal sealed class TokenListParserInput<T> : IParserInput<T>
     {
-        public TokenListParserInput(IReadOnlyList<T> input, Func<T, Position, Position> updatePosition)
+        public TokenListParserInput(IReadOnlyList<T> input, Position position, Func<T, Position, Position> updatePosition)
         {
             _input = input;
             _updatePosition = updatePosition;
-            _position = Position.Start();
+            _position = position;
+            EndOfInput = _position.Offset >= _input.Count; // we can cache result, since input is immutable
         }
 
-        public bool EndOfInput => _position.Offset >= _input.Count;
+        public TokenListParserInput(IReadOnlyList<T> input, Func<T, Position, Position> updatePosition)
+            : this(input, Position.Start(), updatePosition)
+        {
+        }
+
+        public bool EndOfInput { get; init; }
 
         public Position Position => _position;
 
-        public T Read()
+        public IParserInput<T> Advance()
         {
-            if (EndOfInput)
-            {
-                throw new InvalidOperationException("Read past the end of the input");
-            }
-            T readToken = _input[_position.Offset];
-            _position = _updatePosition(readToken, _position);
-            return readToken;
+            return new TokenListParserInput<T>(_input, _updatePosition(Current(), _position), _updatePosition);
         }
 
-        public void Seek(Position position)
-        {
-            _position = position;
-        }
-
-        public T Peek()
+        public T Current()
         {
             if (EndOfInput)
             {
@@ -42,8 +37,23 @@ namespace ParsecCore.Input
             return _input[_position.Offset];
         }
 
+        public bool Equals(IParserInput<T>? other)
+        {
+            return other is not null && Position.Offset == other.Position.Offset; // Presume we are not mixing inputs
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is TokenListParserInput<T> other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_input, _position, _updatePosition);
+        }
+
         private readonly Func<T, Position, Position> _updatePosition;
         private readonly IReadOnlyList<T> _input;
-        private Position _position;
+        private readonly Position _position;
     }
 }

@@ -1,5 +1,4 @@
-﻿using ParsecCore.EitherNS;
-using ParsecCore.ParsersHelp;
+﻿using ParsecCore.ParsersHelp;
 using System;
 using System.Collections.Generic;
 
@@ -33,9 +32,9 @@ namespace ParsecCore
                 var discardedResult = firstParser(input);
                 if (discardedResult.IsError)
                 {
-                    return Either.RetypeError<ParseError, T, R>(discardedResult);
+                    return Result.RetypeError<T, R, TInput>(discardedResult);
                 }
-                return secondParser(input);
+                return secondParser(discardedResult.UnconsumedInput);
             };
         }
 
@@ -68,13 +67,13 @@ namespace ParsecCore
                 {
                     return result;
                 }
-                var discardedResult = secondParser(input);
+                var discardedResult = secondParser(result.UnconsumedInput);
                 if (discardedResult.IsError)
                 {
-                    return Either.RetypeError<ParseError, R, T>(discardedResult);
+                    return Result.RetypeError<R, T, TInput>(discardedResult);
                 }
 
-                return result;
+                return Result.Success(result.Result, discardedResult.UnconsumedInput);
             };
         }
 

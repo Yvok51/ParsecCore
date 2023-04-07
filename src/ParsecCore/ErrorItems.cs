@@ -46,6 +46,42 @@ namespace ParsecCore
     }
 
     /// <summary>
+    /// A character in the message
+    /// </summary>
+    public sealed class CharToken : ErrorItem, IEquatable<CharToken>
+    {
+        public CharToken(char c)
+        {
+            _c = c;
+        }
+
+        public override string ToString()
+        {
+            return string.Concat("'", _c.ToString(), "'");
+        }
+
+
+        public override bool Equals(object? obj)
+        {
+            return obj is not null && Equals(obj as StringToken);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_c);
+        }
+
+        public bool Equals(CharToken? other)
+        {
+            return other is not null && _c == other._c;
+        }
+
+        public override int Size => 1;
+
+        private readonly char _c;
+    }
+
+    /// <summary>
     /// General message located in the error
     /// </summary>
     public sealed class StringToken : ErrorItem, IEquatable<StringToken>
@@ -57,7 +93,7 @@ namespace ParsecCore
 
         public override string ToString()
         {
-            return "\"" + _token + "\"";
+            return string.Concat("\"", _token, "\"");
         }
 
         public override bool Equals(object? obj)

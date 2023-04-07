@@ -17,7 +17,7 @@ namespace ParsecCoreTests
 
             Assert.True(result.IsResult);
             Assert.Equal("12", result.Result);
-            Assert.NotEqual(initialPosition, input.Position);
+            Assert.NotEqual(initialPosition, result.UnconsumedInput.Position);
         }
 
         [Fact]

@@ -1,5 +1,4 @@
 using ParsecCore;
-using ParsecCore.EitherNS;
 using ParsecCore.Input;
 using Xunit;
 
@@ -24,7 +23,7 @@ namespace ParsecCoreTests
             var parser = Parsers.Char(toParse);
             var input = ParserInput.Create(inputString);
 
-            IEither<ParseError, char> result = parser(input);
+            var result = parser(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(toParse, result.Result);
@@ -39,7 +38,7 @@ namespace ParsecCoreTests
                 (t, pos) => pos.WithIncreasedColumn().WithIncreasedOffset()
             );
 
-            IEither<ParseError, Tokens> result = parser(input);
+            var result = parser(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(Tokens.A, result.Result);
@@ -54,7 +53,7 @@ namespace ParsecCoreTests
             var parser = Parsers.Char(toParse);
             var input = ParserInput.Create(inputString);
 
-            IEither<ParseError, char> result = parser(input);
+            var result = parser(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(toParse, result.Result);
@@ -69,7 +68,7 @@ namespace ParsecCoreTests
                 (t, pos) => pos.WithIncreasedColumn().WithIncreasedOffset()
             );
 
-            IEither<ParseError, Tokens> result = parser(input);
+            var result = parser(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(Tokens.A, result.Result);
@@ -85,13 +84,13 @@ namespace ParsecCoreTests
             var parser = Parsers.Char(toParse);
             var input = ParserInput.Create(inputString);
 
-            IEither<ParseError, char> result = parser(input);
+            var result = parser(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(toParse, result.Result);
 
             Assert.False(input.EndOfInput);
-            Assert.Equal(1, input.Position.Offset);
+            Assert.Equal(1, result.UnconsumedInput.Position.Offset);
         }
 
         [Fact]
@@ -103,13 +102,13 @@ namespace ParsecCoreTests
                 (t, pos) => pos.WithIncreasedColumn().WithIncreasedOffset()
             );
 
-            IEither<ParseError, Tokens> result = parser(input);
+            var result = parser(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(Tokens.B, result.Result);
 
             Assert.False(input.EndOfInput);
-            Assert.Equal(1, input.Position.Offset);
+            Assert.Equal(1, result.UnconsumedInput.Position.Offset);
         }
 
         [Theory]
@@ -121,7 +120,7 @@ namespace ParsecCoreTests
             var parser = Parsers.Char(toParse);
             var input = ParserInput.Create(inputString);
 
-            IEither<ParseError, char> result = parser(input);
+            var result = parser(input);
 
             Assert.True(result.IsError);
         }
@@ -135,7 +134,7 @@ namespace ParsecCoreTests
                 (t, pos) => pos.WithIncreasedColumn().WithIncreasedOffset()
             );
 
-            IEither<ParseError, Tokens> result = parser(input);
+            var result = parser(input);
 
             Assert.True(result.IsError);
         }

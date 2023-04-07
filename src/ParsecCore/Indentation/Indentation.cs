@@ -1,5 +1,4 @@
-﻿using ParsecCore.EitherNS;
-using ParsecCore.MaybeNS;
+﻿using ParsecCore.MaybeNS;
 using System;
 using System.Collections.Generic;
 
@@ -306,30 +305,33 @@ namespace ParsecCore.Indentation
                 while (true)
                 {
                     var res = lineBeginningParser(input);
+                    input = res.UnconsumedInput;
                     if (res.IsError)
                     {
-                        return Either.Error<ParseError, List<TItem>>(res.Error);
+                        return Result.RetypeError<(IndentLevel, bool), List<TItem>, char>(res);
                     }
                     var (position, end) = res.Result;
 
                     if (end || position <= reference) // item is not indented
                     {
-                        return Either.Result<ParseError, List<TItem>>(items);
+                        return Result.Success(items, res.UnconsumedInput);
                     }
                     else if (position == required)
                     {
                         var itemRes = itemParser(input);
+                        input = itemRes.UnconsumedInput;
                         if (itemRes.IsError)
                         {
-                            return Either.RetypeError<ParseError, TItem, List<TItem>>(itemRes);
+                            return Result.RetypeError<TItem, List<TItem>, char>(itemRes);
                         }
 
                         items.Add(itemRes.Result);
                     }
                     else
                     {
-                        return Either.Error<ParseError, List<TItem>>(
-                            new CustomError(input.Position, new IndentationError(Relation.EQ, required, position))
+                        return Result.Failure<List<TItem>, char>(
+                            new CustomError(input.Position, new IndentationError(Relation.EQ, required, position)),
+                            input
                         );
                     }
                 }

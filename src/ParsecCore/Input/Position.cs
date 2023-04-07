@@ -82,10 +82,9 @@ namespace ParsecCore.Input
             HashCode.Combine(Line, Column, Offset);
 
         public static bool operator ==(Position left, Position right) =>
-            left.Equals(right);
-
+            left.Offset == right.Offset && left.Line == right.Line && left.Column == right.Column;
         public static bool operator !=(Position left, Position right) =>
-            !left.Equals(right);
+            left.Offset != right.Offset || left.Line != right.Line || left.Column != right.Column;
 
         public static bool operator <(Position left, Position right) =>
             left.Offset < right.Offset;

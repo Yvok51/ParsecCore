@@ -1,5 +1,4 @@
-﻿using ParsecCore.EitherNS;
-using System;
+﻿using System;
 
 namespace ParsecCore
 {
@@ -69,18 +68,16 @@ namespace ParsecCore
             if (parser is null) throw new ArgumentNullException(nameof(parser));
             if (value is null) throw new ArgumentNullException(nameof(value));
 
-            var valueEither = Either.Result<ParseError, TResult>(value);
-
             return (input) =>
             {
                 var res = parser(input);
                 if (res.IsResult)
                 {
-                    return valueEither;
+                    return Result.Success(value, res.UnconsumedInput);
                 }
                 else
                 {
-                    return Either.RetypeError<ParseError, T, TResult>(res);
+                    return Result.RetypeError<T, TResult, TInput>(res);
                 }
             };
         }

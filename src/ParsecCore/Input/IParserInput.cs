@@ -2,7 +2,7 @@
 
 namespace ParsecCore.Input
 {
-    public interface IParserInput<out T>
+    public interface IParserInput<T> : IEquatable<IParserInput<T>>
     {
         /// <summary>
         /// Reads and consumes a single symbol from the input.
@@ -10,7 +10,7 @@ namespace ParsecCore.Input
         /// then an <see cref="InvalidOperationException"/> is thrown
         /// </summary>
         /// <returns> The read character </returns>
-        public T Read();
+        public IParserInput<T> Advance();
 
         /// <summary>
         /// Reads a single symbol from the input but does not consume it.
@@ -18,14 +18,7 @@ namespace ParsecCore.Input
         /// then an <see cref="InvalidOperationException"/> is thrown
         /// </summary>
         /// <returns> The read character </returns>
-        public T Peek();
-
-        /// <summary>
-        /// Seeks to the given position. 
-        /// Whether the position is whithin the bound of the input is not checked until the next attempt to read
-        /// </summary>
-        /// <param name="position"> Position to seek to </param>
-        public void Seek(Position position);
+        public T Current();
 
         /// <summary>
         /// Answers whether the input has ended
@@ -33,7 +26,7 @@ namespace ParsecCore.Input
         public bool EndOfInput { get; }
 
         /// <summary>
-        /// The current position
+        /// The current position, see <see cref="Input.Position"/>
         /// </summary>
         public Position Position { get; }
     }

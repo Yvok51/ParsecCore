@@ -1,5 +1,4 @@
-﻿using ParsecCore.EitherNS;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ParsecCore.ParsersHelp
 {
@@ -19,22 +18,22 @@ namespace ParsecCore.ParsersHelp
                 var tillResult = tryTill(input);
                 while (tillResult.IsError)
                 {
+                    if (!input.Equals(tillResult.UnconsumedInput))
+                    {
+                        return Result.RetypeError<TEnd, IReadOnlyList<T>, TInputToken>(tillResult);
+                    }
                     var manyResult = many(input);
+                    input = manyResult.UnconsumedInput;
                     if (manyResult.IsError)
                     {
-                        return Either.RetypeError<ParseError, T, IReadOnlyList<T>>(manyResult);
+                        return Result.RetypeError<T, IReadOnlyList<T>, TInputToken>(manyResult);
                     }
-
                     result.Add(manyResult.Result);
-                    var position = input.Position;
+
                     tillResult = tryTill(input);
-                    if (input.Position != position && tillResult.IsError)
-                    {
-                        return Either.RetypeError<ParseError, TEnd, IReadOnlyList<T>>(tillResult);
-                    }
                 }
 
-                return Either.Result<ParseError, IReadOnlyList<T>>(result);
+                return Result.Success(result, tillResult.UnconsumedInput);
             };
         }
     }

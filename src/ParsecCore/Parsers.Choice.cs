@@ -1,5 +1,4 @@
-﻿using ParsecCore.EitherNS;
-using ParsecCore.ParsersHelp;
+﻿using ParsecCore.ParsersHelp;
 using System;
 using System.Collections.Generic;
 
@@ -34,9 +33,8 @@ namespace ParsecCore
 
             return (input) =>
             {
-                var initialPosition = input.Position;
                 var firstResult = firstParser(input);
-                if (firstResult.IsResult || (firstResult.IsError && initialPosition != input.Position))
+                if (firstResult.IsResult || (firstResult.IsError && !input.Equals(firstResult.UnconsumedInput)))
                 {
                     return firstResult;
                 }

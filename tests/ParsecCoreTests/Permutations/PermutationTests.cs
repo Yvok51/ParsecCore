@@ -1,5 +1,4 @@
 ﻿using ParsecCore;
-using ParsecCore.EitherNS;
 using ParsecCore.Input;
 using ParsecCore.Permutations;
 using Xunit;
@@ -17,7 +16,7 @@ namespace ParsecCoreTests.Permutations
             var parser = Permutation.NewPermutation(Parsers.Char(toParse)).GetParser();
             var input = ParserInput.Create(inputString);
 
-            IEither<ParseError, char> result = parser(input);
+            IResult<char, char> result = parser(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(toParse, result.Result);
@@ -32,7 +31,7 @@ namespace ParsecCoreTests.Permutations
             var parser = Permutation.NewPermutation(Parsers.Char(toParse)).GetParser();
             var input = ParserInput.Create(inputString);
 
-            IEither<ParseError, char> result = parser(input);
+            IResult<char, char> result = parser(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(toParse, result.Result);
@@ -53,7 +52,7 @@ namespace ParsecCoreTests.Permutations
                 .GetParser();
             var input = ParserInput.Create(inputString);
 
-            IEither<ParseError, (char, char, char)> result = parser(input);
+            IResult<(char, char, char), char> result = parser(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(('a', 'b', 'c'), result.Result);
@@ -77,7 +76,7 @@ namespace ParsecCoreTests.Permutations
                 .GetParser();
             var input = ParserInput.Create(inputString);
 
-            IEither<ParseError, (char, char, char)> result = parser(input);
+            IResult<(char, char, char), char> result = parser(input);
 
             Assert.True(result.IsResult);
             if (optionalNotInInput)
@@ -100,7 +99,7 @@ namespace ParsecCoreTests.Permutations
                 .GetParser();
             var input = ParserInput.Create(strInput);
 
-            IEither<ParseError, (string, string)> result = parser(input);
+            IResult<(string, string), char> result = parser(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(("while", "whence"), result.Result);
@@ -115,8 +114,8 @@ namespace ParsecCoreTests.Permutations
             var input1 = ParserInput.Create("whence  while");
             var input2 = ParserInput.Create("while whence");
 
-            IEither<ParseError, (string, string)> result1 = parser(input1);
-            IEither<ParseError, (string, string)> result2 = parser(input2);
+            IResult<(string, string), char> result1 = parser(input1);
+            IResult<(string, string), char> result2 = parser(input2);
 
             Assert.True(result1.IsError || result2.IsError);
         }
@@ -132,7 +131,7 @@ namespace ParsecCoreTests.Permutations
                 .GetParser();
             var input = ParserInput.Create(strInput);
 
-            IEither<ParseError, (string, string)> result = parser(input);
+            IResult<(string, string), char> result = parser(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(("while", "whence"), result.Result);

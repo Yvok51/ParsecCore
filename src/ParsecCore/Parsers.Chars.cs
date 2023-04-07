@@ -2,7 +2,6 @@
 using ParsecCore.ParsersHelp;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace ParsecCore
 {
@@ -153,10 +152,10 @@ namespace ParsecCore
         /// Does not check that any digits are after zero,
         /// use <see cref="NotFollowedBy{T, TInputToken}(Parser{T, TInputToken}, string)"/> if that is desirable.
         /// </summary>
-        public static readonly Parser<int, char> Natural = 
+        public static readonly Parser<int, char> Natural =
             (from nonzero in NonZeroDigit
-            from digits in Digit.Many()
-            select Int32.Parse(nonzero + digits)).Or(Zero.MapConstant(0));
+             from digits in Digit.Many()
+             select Int32.Parse(nonzero + digits)).Or(Zero.MapConstant(0));
 
         /// <summary>
         /// Parses an integer
