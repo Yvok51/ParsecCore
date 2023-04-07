@@ -23,6 +23,7 @@ namespace ParsecCore.ParsersHelp
 
         public static Parser<char, char> Parser(Predicate<char> predicate, string predicateDescription)
         {
+            var description = new StringToken(predicateDescription);
             return (input) =>
             {
                 if (input.EndOfInput)
@@ -31,7 +32,7 @@ namespace ParsecCore.ParsersHelp
                         new StandardError(
                             input.Position,
                             unexpected: Maybe.FromValue<ErrorItem>(EndOfFile.Instance),
-                            expected: new StringToken(predicateDescription)
+                            expected: description
                         ),
                         input
                     );
@@ -46,7 +47,7 @@ namespace ParsecCore.ParsersHelp
                         new StandardError(
                             input.Position,
                             unexpected: Maybe.FromValue<ErrorItem>(new StringToken(readChar)),
-                            expected: new StringToken(predicateDescription)
+                            expected: description
                         ),
                         input
                     );
@@ -58,6 +59,7 @@ namespace ParsecCore.ParsersHelp
 
         public static Parser<char, char> Parser(char expected, string predicateDescription)
         {
+            var description = new StringToken(predicateDescription);
             return (input) =>
             {
                 if (input.EndOfInput)
@@ -66,7 +68,7 @@ namespace ParsecCore.ParsersHelp
                         new StandardError(
                             input.Position,
                             unexpected: Maybe.FromValue<ErrorItem>(EndOfFile.Instance),
-                            expected: new StringToken(predicateDescription)
+                            expected: description
                         ),
                         input
                     );
@@ -81,7 +83,7 @@ namespace ParsecCore.ParsersHelp
                         new StandardError(
                             input.Position,
                             unexpected: Maybe.FromValue<ErrorItem>(new StringToken(readChar)),
-                            expected: new StringToken(predicateDescription)
+                            expected: description
                         ),
                         input
                     );
@@ -96,6 +98,7 @@ namespace ParsecCore.ParsersHelp
             string predicateDescription
         )
         {
+            var description = new StringToken(predicateDescription);
             return (input) =>
             {
                 if (input.EndOfInput)
@@ -104,7 +107,7 @@ namespace ParsecCore.ParsersHelp
                         new StandardError(
                             input.Position,
                             unexpected: Maybe.FromValue<ErrorItem>(EndOfFile.Instance),
-                            expected: new StringToken(predicateDescription)
+                            expected: description
                         ),
                         input
                     );
@@ -118,7 +121,7 @@ namespace ParsecCore.ParsersHelp
                         new StandardError(
                             input.Position,
                             unexpected: Maybe.FromValue<ErrorItem>(new Token<TInputToken>(new[] { read })),
-                            expected: new StringToken(predicateDescription)
+                            expected: description
                         ),
                         input
                     );
@@ -133,6 +136,7 @@ namespace ParsecCore.ParsersHelp
             string predicateDescription
         )
         {
+            var description = new StringToken(predicateDescription);
             return (input) =>
             {
                 if (input.EndOfInput)
@@ -141,7 +145,7 @@ namespace ParsecCore.ParsersHelp
                         new StandardError(
                             input.Position,
                             unexpected: Maybe.FromValue<ErrorItem>(EndOfFile.Instance),
-                            expected: new StringToken(predicateDescription)
+                            expected: description
                         ),
                         input
                     );
@@ -155,7 +159,7 @@ namespace ParsecCore.ParsersHelp
                         new StandardError(
                             input.Position,
                             unexpected: Maybe.FromValue<ErrorItem>(new Token<TInputToken>(new[] { read })),
-                            expected: new StringToken(predicateDescription)
+                            expected: description
                         ),
                         input
                     );

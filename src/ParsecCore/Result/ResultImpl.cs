@@ -31,7 +31,7 @@ namespace ParsecCore
         {
             get
             {
-                if (IsResult) throw new InvalidOperationException("Holds an error");
+                if (!IsError) throw new InvalidOperationException("Holds an error");
                 return _error;
             }
         }
