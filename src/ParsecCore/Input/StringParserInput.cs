@@ -9,6 +9,7 @@ namespace ParsecCore.Input
             _input = input;
             _updatePosition = updatePosition;
             _position = position;
+            EndOfInput = _position.Offset >= _input.Length; // we can cache result, since input is immutable
         }
 
         public StringParserInput(string input, Func<char, Position, Position> updatePosition)
@@ -29,9 +30,10 @@ namespace ParsecCore.Input
                 };
             };
             _position = Position.Start();
+            EndOfInput = _position.Offset >= _input.Length; // we can cache result, since input is immutable
         }
 
-        public bool EndOfInput => _position.Offset >= _input.Length;
+        public bool EndOfInput { get; init; }
 
         public Position Position => _position;
 

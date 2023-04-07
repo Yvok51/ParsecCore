@@ -21,19 +21,12 @@ namespace ParsecCore.Input
         public T Current();
 
         /// <summary>
-        /// Seeks to the given position. 
-        /// Whether the position is whithin the bound of the input is not checked until the next attempt to read
-        /// </summary>
-        /// <param name="position"> Position to seek to </param>
-        // public void Seek(Position position);
-
-        /// <summary>
         /// Answers whether the input has ended
         /// </summary>
         public bool EndOfInput { get; }
 
         /// <summary>
-        /// The current position
+        /// The current position, see <see cref="Input.Position"/>
         /// </summary>
         public Position Position { get; }
     }

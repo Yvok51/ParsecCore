@@ -10,6 +10,7 @@ namespace ParsecCore.Input
             _input = input;
             _updatePosition = updatePosition;
             _position = position;
+            EndOfInput = _position.Offset >= _input.Count; // we can cache result, since input is immutable
         }
 
         public TokenListParserInput(IReadOnlyList<T> input, Func<T, Position, Position> updatePosition)
@@ -17,7 +18,7 @@ namespace ParsecCore.Input
         {
         }
 
-        public bool EndOfInput => _position.Offset >= _input.Count;
+        public bool EndOfInput { get; init; }
 
         public Position Position => _position;
 
