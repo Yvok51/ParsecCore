@@ -35,7 +35,7 @@ namespace ParsecCore.MaybeNS
         /// The value contained.
         /// If <see cref="Maybe{T}"/> is empty, then trows <see cref="InvalidOperationException"/>.
         /// </summary>
-        public T Value { get { if (IsEmpty) throw new InvalidOperationException("Maybe is empty"); return _value; } }
+        public T Value { get { if (IsEmpty) throw new InvalidOperationException("Maybe is empty"); return _value!; } }
         /// <summary>
         /// Answers whether this <see cref="Maybe{T}"/> is empty - it does not contain a value
         /// </summary>

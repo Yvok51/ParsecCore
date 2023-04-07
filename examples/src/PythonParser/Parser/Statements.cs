@@ -119,7 +119,7 @@ namespace PythonParser.Parser
             Parsers.SepEndBy1(SimpleStatement, Control.Semicolon(Control.Lexeme));
 
         public static readonly Parser<Stmt, char> Statement =
-            Parsers.Indirect(() => CompoundStatement).Try().Or(
+            Parsers.Indirect(() => CompoundStatement!).Try().Or(
                 from list in StatementList
                 from eol in Control.EOL.Or(Parsers.EOF<char>().Map(_ => '\n'))
                 select new Suite(list)

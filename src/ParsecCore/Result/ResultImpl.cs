@@ -32,7 +32,7 @@ namespace ParsecCore
             get
             {
                 if (!IsError) throw new InvalidOperationException("Holds an error");
-                return _error;
+                return _error!;
             }
         }
 
@@ -41,7 +41,7 @@ namespace ParsecCore
             get
             {
                 if (IsError) throw new InvalidOperationException("Holds a result");
-                return _result;
+                return _result!;
             }
         }
 

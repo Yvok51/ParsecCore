@@ -129,7 +129,7 @@ namespace ParsecCore
 
         public override string ToString()
         {
-            return string.Join(", ", _tokens.Select(item => "\"" + item.ToString() + "\""));
+            return string.Join(", ", _tokens.Select(item => "\"" + item?.ToString() + "\""));
         }
 
         public override bool Equals(object? obj)
@@ -246,7 +246,7 @@ namespace ParsecCore
 
         public override string ToString()
         {
-            return "\"" + _item.ToString() + "\"";
+            return "\"" + _item?.ToString() + "\"";
         }
 
         public override bool Equals(object? obj)
@@ -261,7 +261,7 @@ namespace ParsecCore
 
         public bool Equals(ErrorCustom<T>? other)
         {
-            return other is not null && _item.Equals(other._item);
+            return other is not null && _item is not null && _item.Equals(other._item);
         }
 
         private T _item;
