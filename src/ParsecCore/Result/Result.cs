@@ -16,11 +16,6 @@ namespace ParsecCore
             return new ResultImpl<T, TInput>(error, unconsumedInput);
         }
 
-        //public static IResult<T, TInput> Create<T, TInput>(IEither<ParseError, T> parseResult, IParserInput<TInput> unconsumedInput)
-        //{
-        //    return new ResultImpl<T, TInput>(parseResult, unconsumedInput);
-        //}
-
         public static IResult<TNew, TInput> RetypeError<T, TNew, TInput>(
             IResult<T, TInput> result
         )

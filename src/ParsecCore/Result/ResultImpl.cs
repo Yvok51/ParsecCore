@@ -18,7 +18,7 @@ namespace ParsecCore
             UnconsumedInput = unconsumedInput;
             _result = default;
             _error = error;
-            IsError = false;
+            IsError = true;
         }
 
         public IParserInput<TInput> UnconsumedInput { get; init; }
