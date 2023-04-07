@@ -80,7 +80,7 @@ namespace ParsecCore.ParsersHelp
                     return Result.Failure<char, char>(
                         new StandardError(
                             input.Position,
-                            unexpected: Maybe.FromValue<ErrorItem>(EndOfFile.Instance),
+                            unexpected: Maybe.FromValue<ErrorItem>(new StringToken(readChar)),
                             expected: new StringToken(predicateDescription)
                         ),
                         input
