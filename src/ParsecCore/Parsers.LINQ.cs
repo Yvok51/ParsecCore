@@ -30,7 +30,14 @@ namespace ParsecCore
             return (input) =>
             {
                 var result = parser(input);
-                return result.Map(projection);
+                if (result.IsError)
+                {
+                    return Result.RetypeError<TSource, TResult, TInputToken>(result);
+                }
+                else
+                {
+                    return Result.Success(projection(result.Result), result.UnconsumedInput);
+                }
             };
         }
 
