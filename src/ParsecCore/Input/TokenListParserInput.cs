@@ -39,7 +39,7 @@ namespace ParsecCore.Input
 
         public bool Equals(IParserInput<T>? other)
         {
-            return other is not null && Position == other.Position; // Presume we are not mixing inputs
+            return other is not null && Position.Offset == other.Position.Offset; // Presume we are not mixing inputs
         }
 
         public override bool Equals(object? obj)
