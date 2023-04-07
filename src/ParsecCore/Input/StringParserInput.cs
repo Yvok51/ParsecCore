@@ -30,7 +30,7 @@ namespace ParsecCore.Input
                 {
                     '\n' => position.WithNewLine().WithIncreasedOffset(),
                     '\t' => position.WithTab(tabSize).WithIncreasedOffset(),
-                    _ => position.WithIncreasedColumn().WithIncreasedOffset()
+                    _ => new Position(position.Line, position.Column + 1, position.Offset + 1)
                 };
             };
         }

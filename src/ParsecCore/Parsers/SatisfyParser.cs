@@ -42,11 +42,11 @@ namespace ParsecCore.ParsersHelp
 
                 if (!predicate(read))
                 {
-                    string readChar = escapedChars.ContainsKey(read) ? escapedChars[read] : read.ToString();
+                    ErrorItem readChar = escapedChars.ContainsKey(read) ? new StringToken(escapedChars[read]) : new CharToken(read);
                     return Result.Failure<char, char>(
                         new StandardError(
                             input.Position,
-                            unexpected: Maybe.FromValue<ErrorItem>(new StringToken(readChar)),
+                            unexpected: Maybe.FromValue(readChar),
                             expected: description
                         ),
                         input
@@ -78,11 +78,11 @@ namespace ParsecCore.ParsersHelp
 
                 if (read != expected)
                 {
-                    string readChar = escapedChars.ContainsKey(read) ? escapedChars[read] : read.ToString();
+                    ErrorItem readChar = escapedChars.ContainsKey(read) ? new StringToken(escapedChars[read]) : new CharToken(read);
                     return Result.Failure<char, char>(
                         new StandardError(
                             input.Position,
-                            unexpected: Maybe.FromValue<ErrorItem>(new StringToken(readChar)),
+                            unexpected: Maybe.FromValue(readChar),
                             expected: description
                         ),
                         input

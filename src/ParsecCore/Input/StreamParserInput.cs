@@ -78,7 +78,7 @@ namespace ParsecCore.Input
                 {
                     '\n' => position.WithNewLine().WithIncreasedOffset(offsetBy),
                     '\t' => position.WithTab(tabSize).WithIncreasedOffset(offsetBy),
-                    _ => position.WithIncreasedColumn().WithIncreasedOffset(offsetBy)
+                    _ => new Position(position.Line, position.Column + 1, position.Offset + offsetBy)
                 };
             };
         }
