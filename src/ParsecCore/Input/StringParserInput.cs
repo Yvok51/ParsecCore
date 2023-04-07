@@ -17,20 +17,22 @@ namespace ParsecCore.Input
         {
         }
 
-        public StringParserInput(string input, int _tabSize)
+        public StringParserInput(string input, int tabSize) 
+            : this(input, Position.Start(), DefaultUpdatePosition(tabSize))
         {
-            _input = input;
-            _updatePosition = (readChar, position) =>
+        }
+
+        private static Func<char, Position, Position> DefaultUpdatePosition(int tabSize)
+        {
+            return (readChar, position) =>
             {
                 return readChar switch
                 {
                     '\n' => position.WithNewLine().WithIncreasedOffset(),
-                    '\t' => position.WithTab(_tabSize).WithIncreasedOffset(),
+                    '\t' => position.WithTab(tabSize).WithIncreasedOffset(),
                     _ => position.WithIncreasedColumn().WithIncreasedOffset()
                 };
             };
-            _position = Position.Start();
-            EndOfInput = _position.Offset >= _input.Length; // we can cache result, since input is immutable
         }
 
         public bool EndOfInput { get; init; }
