@@ -69,14 +69,12 @@ namespace ParsecCore
             if (parser is null) throw new ArgumentNullException(nameof(parser));
             if (value is null) throw new ArgumentNullException(nameof(value));
 
-            var valueEither = Either.Result<ParseError, TResult>(value);
-
             return (input) =>
             {
                 var res = parser(input);
                 if (res.IsResult)
                 {
-                    return Result.Create(valueEither, res.UnconsumedInput);
+                    return Result.Success(value, res.UnconsumedInput);
                 }
                 else
                 {

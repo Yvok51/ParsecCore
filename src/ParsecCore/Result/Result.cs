@@ -8,25 +8,25 @@ namespace ParsecCore
     {
         public static IResult<T, TInput> Success<T, TInput>(T result, IParserInput<TInput> unconsumedInput)
         {
-            return new ResultImpl<T, TInput>(Either.Result<ParseError, T>(result), unconsumedInput);
+            return new ResultImpl<T, TInput>(result, unconsumedInput);
         }
 
         public static IResult<T, TInput> Failure<T, TInput>(ParseError error, IParserInput<TInput> unconsumedInput)
         {
-            return new ResultImpl<T, TInput>(Either.Error<ParseError, T>(error), unconsumedInput);
+            return new ResultImpl<T, TInput>(error, unconsumedInput);
         }
 
-        public static IResult<T, TInput> Create<T, TInput>(IEither<ParseError, T> parseResult, IParserInput<TInput> unconsumedInput)
-        {
-            return new ResultImpl<T, TInput>(parseResult, unconsumedInput);
-        }
+        //public static IResult<T, TInput> Create<T, TInput>(IEither<ParseError, T> parseResult, IParserInput<TInput> unconsumedInput)
+        //{
+        //    return new ResultImpl<T, TInput>(parseResult, unconsumedInput);
+        //}
 
         public static IResult<TNew, TInput> RetypeError<T, TNew, TInput>(
             IResult<T, TInput> result
         )
         {
             return new ResultImpl<TNew, TInput>(
-                Either.RetypeError<ParseError, T, TNew>(result.ParseResult),
+                result.Error,
                 result.UnconsumedInput
             );
         }
@@ -41,7 +41,7 @@ namespace ParsecCore
             {
                 return right;
             }
-            return Failure<T, TInput>(left.ParseResult.CombineErrors(right.ParseResult), left.UnconsumedInput);
+            return Failure<T, TInput>(left.Error.Accept(right.Error, new None()), left.UnconsumedInput);
         }
 
         public static TNew Match<T, TNew, TInput>(
@@ -50,7 +50,14 @@ namespace ParsecCore
             Func<ParseError, TNew> failure
         )
         {
-            return result.ParseResult.Match(success, failure);
+            if (result.IsError)
+            {
+                return failure(result.Error);
+            }
+            else
+            {
+                return success(result.Result);
+            }
         }
 
         public static IResult<TNew, TInput> Map<T, TNew, TInput>(
@@ -58,7 +65,14 @@ namespace ParsecCore
             Func<T, TNew> map
         )
         {
-            return new ResultImpl<TNew, TInput>(result.ParseResult.Map(map), result.UnconsumedInput);
+            if (result.IsError)
+            {
+                return RetypeError<T, TNew, TInput>(result);
+            }
+            else
+            {
+                return Result.Success(map(result.Result), result.UnconsumedInput);
+            }
         }
     }
 }

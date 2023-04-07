@@ -1,26 +1,51 @@
-﻿using ParsecCore.EitherNS;
-using ParsecCore.Input;
+﻿using ParsecCore.Input;
+using System;
 
 namespace ParsecCore
 {
     internal class ResultImpl<T, TInput> : IResult<T, TInput>
     {
-        public ResultImpl(IEither<ParseError, T> parseResult, IParserInput<TInput> unconsumedInput)
+        public ResultImpl(T result, IParserInput<TInput> unconsumedInput)
         {
             UnconsumedInput = unconsumedInput;
-            ParseResult = parseResult;
+            _result = result;
+            _error = default;
+            IsError = false;
+        }
+
+        public ResultImpl(ParseError error, IParserInput<TInput> unconsumedInput)
+        {
+            UnconsumedInput = unconsumedInput;
+            _result = default;
+            _error = error;
+            IsError = false;
         }
 
         public IParserInput<TInput> UnconsumedInput { get; init; }
 
-        public IEither<ParseError, T> ParseResult { get; init; }
+        public bool IsError { get; init; }
 
-        public bool IsError => ParseResult.IsError;
+        public bool IsResult => !IsError;
 
-        public bool IsResult => ParseResult.IsResult;
+        public ParseError Error
+        {
+            get
+            {
+                if (IsResult) throw new InvalidOperationException("Holds an error");
+                return _error;
+            }
+        }
 
-        public ParseError Error => ParseResult.Error;
+        T IResult<T, TInput>.Result
+        {
+            get
+            {
+                if (IsError) throw new InvalidOperationException("Holds a result");
+                return _result;
+            }
+        }
 
-        T IResult<T, TInput>.Result => ParseResult.Result;
+        T? _result;
+        ParseError? _error;
     }
 }

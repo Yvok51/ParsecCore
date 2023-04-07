@@ -74,7 +74,7 @@ namespace ParsecCore
                     return Result.RetypeError<R, T, TInput>(discardedResult);
                 }
 
-                return Result.Create(result.ParseResult, discardedResult.UnconsumedInput);
+                return Result.Success(result.Result, discardedResult.UnconsumedInput);
             };
         }
 
