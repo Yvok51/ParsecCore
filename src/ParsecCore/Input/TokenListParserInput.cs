@@ -38,8 +38,7 @@ namespace ParsecCore.Input
 
         public bool Equals(IParserInput<T>? other)
         {
-            return other is TokenListParserInput<T> otherInput
-                && _input.Equals(otherInput._input) && Position == otherInput._position;
+            return other is not null && Position == other.Position; // Presume we are not mixing inputs
         }
 
         public override bool Equals(object? obj)

@@ -109,8 +109,7 @@ namespace ParsecCore.Input
 
         public bool Equals(IParserInput<char>? other)
         {
-            return other is StreamParserInput otherInput
-                && _reader.Equals(otherInput._reader) && Position == otherInput._position;
+            return other is not null && Position == other.Position; // Presume we are not mixing inputs
         }
 
         public override bool Equals(object? obj)
