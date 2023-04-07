@@ -1,6 +1,4 @@
-﻿using ParsecCore.EitherNS;
-using ParsecCore.Input;
-using ParsecCore.MaybeNS;
+﻿using ParsecCore.MaybeNS;
 using System;
 using System.Collections.Generic;
 

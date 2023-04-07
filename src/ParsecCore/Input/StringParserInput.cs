@@ -17,7 +17,7 @@ namespace ParsecCore.Input
         {
         }
 
-        public StringParserInput(string input, int tabSize) 
+        public StringParserInput(string input, int tabSize)
             : this(input, Position.Start(), DefaultUpdatePosition(tabSize))
         {
         }

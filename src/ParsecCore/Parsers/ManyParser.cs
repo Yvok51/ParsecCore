@@ -1,5 +1,4 @@
-﻿using ParsecCore.EitherNS;
-using ParsecCore.MaybeNS;
+﻿using ParsecCore.MaybeNS;
 using System.Collections.Generic;
 
 namespace ParsecCore.ParsersHelp

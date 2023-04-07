@@ -1,5 +1,4 @@
-﻿using ParsecCore.EitherNS;
-using ParsecCore.ParsersHelp;
+﻿using ParsecCore.ParsersHelp;
 using System;
 using System.Collections.Generic;
 

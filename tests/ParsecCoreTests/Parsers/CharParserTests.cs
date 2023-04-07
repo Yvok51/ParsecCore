@@ -1,5 +1,4 @@
 using ParsecCore;
-using ParsecCore.EitherNS;
 using ParsecCore.Input;
 using Xunit;
 
