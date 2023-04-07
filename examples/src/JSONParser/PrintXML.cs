@@ -10,7 +10,7 @@ namespace JSONtoXML
     {
         public static void Print(XMLNode node, TextWriter writer)
         {
-            var xmlDeclaration = $"<?xml version=\"1.0\" encoding=\"{writer.Encoding.WebName}\"?>";
+            var xmlDeclaration = $"<?xml version=\"1.0\" encoding=\"{writer.Encoding.WebName}\"?>\n";
             writer.Write(xmlDeclaration);
             writer.WriteLine(node.Accept(new XMLtoString(), 0));
             writer.Flush();
@@ -25,10 +25,12 @@ namespace JSONtoXML
 
             public string ElementVisit(XMLElementNode element, int indent)
             {
-                return GetIndentation(indent, _spacesPerIndent)
+                string indentation = GetIndentation(indent, _spacesPerIndent);
+                return indentation
                     + $"<{element.Tag}{AttributesToString(element.Attributes)}>\n"
                     + string.Concat(element.ChildNodes.Select(node => node.Accept(this, indent + 1)))
-                    + $"</{element.Tag}>";
+                    + indentation
+                    + $"</{element.Tag}>\n";
             }
 
             public string TextVisit(XMLTextNode text, int indent)
