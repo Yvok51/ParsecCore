@@ -32,15 +32,19 @@ namespace ParsecCore.Input
 
         private void BufferNextData(long startingOffset)
         {
-            _reader.BaseStream.Position = startingOffset;
-            _reader.DiscardBufferedData();
+            if (_reader.BaseStream.Position != startingOffset)
+            {
+                _reader.BaseStream.Position = startingOffset;
+                _reader.DiscardBufferedData();
+            }
             _offsetOfFirstChar = startingOffset;
             _lastReadChars = _reader.Read(_buffer, 0, BUFFER_SIZE);
         }
 
         public bool EndOfStream(long offset)
         {
-            // presumes that we only advance forward by one and also that the given offset follows this
+            // presumes that we only advance forward by max one position at a time
+            // and also that the given offset follows this pattern
             return _offsetOfFirstChar + _lastReadChars <= offset;
         }
 
