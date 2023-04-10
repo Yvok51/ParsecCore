@@ -125,13 +125,13 @@ namespace ParsecCore
     /// </summary>
     public sealed class CustomError : ParseError
     {
-        public CustomError(Position position, IEnumerable<FancyError> customErrors)
+        public CustomError(Position position, IEnumerable<CustomErrorItem> customErrors)
         {
             _position = position;
             Customs = customErrors;
         }
 
-        public CustomError(Position position, FancyError error) : this(position, error.ToEnumerable())
+        public CustomError(Position position, CustomErrorItem error) : this(position, error.ToEnumerable())
         {
         }
 
@@ -162,6 +162,6 @@ namespace ParsecCore
         }
 
         private Position _position;
-        public IEnumerable<FancyError> Customs { get; init; }
+        public IEnumerable<CustomErrorItem> Customs { get; init; }
     }
 }

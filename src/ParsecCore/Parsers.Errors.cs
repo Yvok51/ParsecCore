@@ -43,7 +43,7 @@ namespace ParsecCore
             if (msg is null) throw new ArgumentNullException(nameof(msg));
 
             return from pos in Position<TInputToken>()
-                   from err in ParserError<T, TInputToken>(new CustomError(pos, new FailWithError(msg)))
+                   from err in ParserError<T, TInputToken>(new CustomError(pos, new FailError(msg)))
                    select err;
         }
 
@@ -98,7 +98,7 @@ namespace ParsecCore
 
             public ParseError Visit(CustomError error, string msg)
             {
-                return new CustomError(error.Position, error.Customs.Append(new FailWithError(msg)));
+                return new CustomError(error.Position, error.Customs.Append(new FailError(msg)));
             }
         }
 
@@ -127,7 +127,7 @@ namespace ParsecCore
             if (predicate is null) throw new ArgumentNullException(nameof(predicate));
             if (errorMessage is null) throw new ArgumentNullException(nameof(errorMessage));
 
-            return parser.Assert(predicate, (_, pos) => new CustomError(pos, new FailWithError(errorMessage)));
+            return parser.Assert(predicate, (_, pos) => new CustomError(pos, new FailError(errorMessage)));
         }
 
         /// <summary>

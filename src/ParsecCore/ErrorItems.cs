@@ -46,7 +46,7 @@ namespace ParsecCore
     }
 
     /// <summary>
-    /// A character in the message
+    /// A character in the input
     /// </summary>
     public sealed class CharToken : ErrorItem, IEquatable<CharToken>
     {
@@ -155,16 +155,17 @@ namespace ParsecCore
     /// <summary>
     /// A fancy error item which is used in <see cref="CustomError"/>
     /// </summary>
-    public abstract class FancyError
+    public abstract class CustomErrorItem
     {
     }
 
     /// <summary>
-    /// A message used in <see cref="Parsers.FailWith{T, TInputToken}(Parser{T, TInputToken}, string)"/>
+    /// A message used in <see cref="Parsers.Fail{T, TInputToken}(string)"/> and
+    /// <see cref="Parsers.FailWith{T, TInputToken}(Parser{T, TInputToken}, string)"/>
     /// </summary>
-    public class FailWithError : FancyError, IEquatable<FailWithError>
+    public class FailError : CustomErrorItem, IEquatable<FailError>
     {
-        public FailWithError(string message)
+        public FailError(string message)
         {
             _message = message;
         }
@@ -176,7 +177,7 @@ namespace ParsecCore
 
         public override bool Equals(object? obj)
         {
-            return obj is not null && Equals(obj as FailWithError);
+            return obj is not null && Equals(obj as FailError);
         }
 
         public override int GetHashCode()
@@ -184,7 +185,7 @@ namespace ParsecCore
             return HashCode.Combine(_message);
         }
 
-        public bool Equals(FailWithError? other)
+        public bool Equals(FailError? other)
         {
             return other is not null && other.Equals(other._message);
         }
@@ -195,7 +196,7 @@ namespace ParsecCore
     /// <summary>
     /// Indentation error used by the indentation module.
     /// </summary>
-    public class IndentationError : FancyError, IEquatable<IndentationError>
+    public class IndentationError : CustomErrorItem, IEquatable<IndentationError>
     {
         public IndentationError(Relation relation, IndentLevel reference, IndentLevel actual)
         {
@@ -237,7 +238,7 @@ namespace ParsecCore
     /// Custom error that the user can specify
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ErrorCustom<T> : FancyError, IEquatable<ErrorCustom<T>>
+    public class ErrorCustom<T> : CustomErrorItem, IEquatable<ErrorCustom<T>>
     {
         public ErrorCustom(T item)
         {

@@ -39,7 +39,7 @@ namespace ParsecCore.ParsersHelp
                 }
                 if (parseResults.Count == 0)
                 {
-                    return Result.Failure<T, TInputToken>(new CustomError(input.Position, new FailWithError("No parser provided")), input);
+                    return Result.Failure<T, TInputToken>(new CustomError(input.Position, new FailError("No parser provided")), input);
                 }
 
                 return parseResults.Aggregate((left, right) => left.CombineErrors(right));
