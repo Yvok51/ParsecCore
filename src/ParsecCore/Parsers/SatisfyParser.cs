@@ -119,7 +119,7 @@ namespace ParsecCore.ParsersHelp
                     return Result.Failure<TInputToken, TInputToken>(
                         new StandardError(
                             input.Position,
-                            unexpected: Maybe.FromValue<ErrorItem>(new Token<TInputToken>(new[] { read })),
+                            unexpected: Maybe.FromValue<ErrorItem>(new SingleToken<TInputToken>(read)),
                             expected: description
                         ),
                         input
@@ -157,7 +157,7 @@ namespace ParsecCore.ParsersHelp
                     return Result.Failure<TInputToken, TInputToken>(
                         new StandardError(
                             input.Position,
-                            unexpected: Maybe.FromValue<ErrorItem>(new Token<TInputToken>(new[] { read })),
+                            unexpected: Maybe.FromValue<ErrorItem>(new SingleToken<TInputToken>(read)),
                             expected: description
                         ),
                         input

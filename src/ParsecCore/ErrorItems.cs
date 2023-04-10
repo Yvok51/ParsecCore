@@ -120,11 +120,11 @@ namespace ParsecCore
     /// A general token located in the error
     /// </summary>
     /// <typeparam name="T"> The type of token </typeparam>
-    public sealed class Token<T> : ErrorItem, IEquatable<Token<T>>
+    public sealed class ListToken<T> : ErrorItem, IEquatable<ListToken<T>>
     {
-        public Token(IReadOnlyList<T> token)
+        public ListToken(IReadOnlyList<T> tokens)
         {
-            _tokens = token;
+            _tokens = tokens;
         }
 
         public override string ToString()
@@ -134,7 +134,7 @@ namespace ParsecCore
 
         public override bool Equals(object? obj)
         {
-            return obj is not null && Equals(obj as Token<T>);
+            return obj is not null && Equals(obj as ListToken<T>);
         }
 
         public override int GetHashCode()
@@ -142,7 +142,7 @@ namespace ParsecCore
             return HashCode.Combine(_tokens);
         }
 
-        public bool Equals(Token<T>? other)
+        public bool Equals(ListToken<T>? other)
         {
             return other is not null && Enumerable.SequenceEqual(other._tokens, _tokens);
         }
@@ -150,6 +150,38 @@ namespace ParsecCore
         public override int Size => _tokens.Count;
 
         private readonly IReadOnlyList<T> _tokens;
+    }
+
+    public sealed class SingleToken<T> : ErrorItem, IEquatable<SingleToken<T>>
+    {
+        public SingleToken(T token)
+        {
+            _token = token;
+        }
+
+        public override string ToString()
+        {
+            return string.Concat("'", _token!.ToString(), "'");
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is not null && Equals(obj as SingleToken<T>);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_token);
+        }
+
+        public bool Equals(SingleToken<T>? other)
+        {
+            return other is not null && other._token is not null && other._token.Equals(_token);
+        }
+
+        public override int Size => 1;
+
+        private readonly T _token;
     }
 
     /// <summary>
