@@ -99,5 +99,25 @@ namespace ParsecCore.Help
         {
             return new[] { value };
         }
+
+        /// <summary>
+        /// Aggregate items in a list from right.
+        /// </summary>
+        /// <typeparam name="T"> The type in the list </typeparam>
+        /// <param name="list"> The list of items to aggreagate </param>
+        /// <param name="func"> The function to aggregate with </param>
+        /// <returns>
+        /// The aggregate of the <paramref name="list"/> items made by the function <paramref name="func"/>
+        /// </returns>
+        /// <exception cref="InvalidOperationException"> If the list is empty </exception>
+        public static T RightAggregate<T>(this IReadOnlyList<T> list, Func<T, T, T> func)
+        {
+            T accum = list[list.Count - 1];
+            for (int i = list.Count - 2; i >= 0; i--)
+            {
+                accum = func(accum, list[i]);
+            }
+            return accum;
+        }
     }
 }

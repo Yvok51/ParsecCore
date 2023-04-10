@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using ParsecCore.Help;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ParsecCore.ParsersHelp
@@ -32,7 +33,7 @@ namespace ParsecCore.ParsersHelp
                     }
                     if (!input.Equals(currentParseResult.UnconsumedInput))
                     {
-                        return parseResults.Aggregate((left, right) => left.CombineErrors(right));
+                        return parseResults.RightAggregate((left, right) => left.CombineErrors(right));
                     }
 
                 }
