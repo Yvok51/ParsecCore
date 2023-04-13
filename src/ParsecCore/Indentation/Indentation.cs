@@ -8,32 +8,6 @@ namespace ParsecCore.Indentation
     public static class Indentation
     {
         /// <summary>
-        /// Returns a parser which fails with an incorrect indentation message
-        /// </summary>
-        /// <typeparam name="T"> 
-        /// The type of parser to return (only present so that types match up)
-        /// </typeparam>
-        /// <typeparam name="TInput"> The type of the input stream </typeparam>
-        /// <param name="desiredRelation"> The desired relation between the indentations </param>
-        /// <param name="referencePosition"> The reference indentation level </param>
-        /// <param name="actualPosition"> The actual position measured </param>
-        /// <returns> Parser which fails with an incorrect indentation message </returns>
-        internal static Parser<T, TInput> IncorrectIndentation<T, TInput>(
-            Relation desiredRelation,
-            IndentLevel referencePosition,
-            IndentLevel actualPosition
-        )
-        {
-            return from pos in Parsers.Position<TInput>()
-                   from err in Parsers.ParserError<T, TInput>(
-                       new CustomError(
-                           pos,
-                           new IndentationError(desiredRelation, referencePosition, actualPosition))
-                       )
-                   select err;
-        }
-
-        /// <summary>
         /// Returns the position in the stream in a parser.
         /// Useful for use in the context of LINQ
         /// </summary>
@@ -95,9 +69,7 @@ namespace ParsecCore.Indentation
             if (spaceConsumer is null) throw new ArgumentNullException(nameof(spaceConsumer));
             if (parser is null) throw new ArgumentNullException(nameof(parser));
 
-            return from _ in IndentationGuard(spaceConsumer, Relation.EQ, IndentLevel.FirstPosition)
-                   from res in parser
-                   select res;
+            return IndentationGuard(spaceConsumer, Relation.EQ, IndentLevel.FirstPosition).Then(parser);
         }
 
         /// <summary>
@@ -119,10 +91,10 @@ namespace ParsecCore.Indentation
             Func<Parser<IndentLevel, TInput>, Parser<T, TInput>> linefoldParser
         )
         {
-            return from _ in spaceConsumer
+            return spaceConsumer.Then(
                    from indentLvl in IndentationLevel<TInput>()
                    from res in linefoldParser(IndentationGuard(spaceConsumer, Relation.GT, indentLvl))
-                   select res;
+                   select res);
         }
 
         /// <summary>
@@ -160,7 +132,7 @@ namespace ParsecCore.Indentation
             if (transform is null) throw new ArgumentNullException(nameof(transform));
             if (itemParser is null) throw new ArgumentNullException(nameof(itemParser));
 
-            return from _ in spaceConsumer
+            return spaceConsumer.Then(
                    from referenceLvl in IndentationLevel<char>()
                    from referenceItem in referenceParser // parse the head/reference item
                    from lvl in IndentationGuard(spaceConsumer, Relation.GT, referenceLvl)
@@ -169,7 +141,7 @@ namespace ParsecCore.Indentation
                    from res in ParseItems(
                        eof, referenceLvl, referenceItem, lvl, spaceConsumer, desiredIndentation, transform, itemParser
                        )
-                   select res;
+                   select res);
 
             static Parser<TResult, char> ParseItems(
                 bool eof,
@@ -189,8 +161,7 @@ namespace ParsecCore.Indentation
                            select transform(referenceItem, items);
                 }
 
-                return from _ in spaceConsumer
-                       select transform(referenceItem, Array.Empty<TItem>()); // no items found
+                return spaceConsumer.MapConstant(transform(referenceItem, Array.Empty<TItem>())); // no items found
             }
         }
 
@@ -229,34 +200,21 @@ namespace ParsecCore.Indentation
             if (transform is null) throw new ArgumentNullException(nameof(transform));
             if (itemParser is null) throw new ArgumentNullException(nameof(itemParser));
 
-            return from _ in spaceConsumer
+            return spaceConsumer.Then(
                    from referenceLvl in IndentationLevel<char>()
                    from referenceItem in referenceParser
-                   from currPosition in IndentationGuard(spaceConsumer, Relation.GT, referenceLvl)
-                   from firstItem in FirstItem(currPosition, referenceLvl, desiredIndentation.Else(currPosition), itemParser)
+                   from currPosition in IndentationGuard(spaceConsumer, Relation.GT, referenceLvl
+                       ).Assert( // the first item is more indented than the reference item
+                        curr => curr > referenceLvl,
+                        (curr, pos) => new CustomError(pos, new IndentationError(Relation.GT, referenceLvl, curr))
+                       ).Assert( // If desiredIndent is specified, then it is complied with
+                        curr => desiredIndentation.IsEmpty || curr == desiredIndentation.Value,
+                        (curr, pos) => 
+                            new CustomError(pos, new IndentationError(Relation.EQ, desiredIndentation.Value, curr))
+                       )
+                   from firstItem in itemParser
                    from items in IndentedItems(referenceLvl, desiredIndentation.Else(currPosition), spaceConsumer, itemParser)
-                   select transform(referenceItem, items.Prepend(firstItem));
-
-            static Parser<TItem, char> FirstItem(
-                IndentLevel currentPosition,
-                IndentLevel referenceLevel,
-                IndentLevel desiredLevel,
-                Parser<TItem, char> itemParser
-            )
-            {
-                if (currentPosition <= referenceLevel)
-                {
-                    return IncorrectIndentation<TItem, char>(Relation.GT, referenceLevel, currentPosition);
-                }
-                else if (currentPosition == desiredLevel)
-                {
-                    return itemParser;
-                }
-                else
-                {
-                    return IncorrectIndentation<TItem, char>(Relation.EQ, desiredLevel, currentPosition);
-                }
-            }
+                   select transform(referenceItem, items.Prepend(firstItem)));
         }
 
         /// <summary>
