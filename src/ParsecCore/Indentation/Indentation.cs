@@ -1,4 +1,5 @@
-﻿using ParsecCore.MaybeNS;
+﻿using ParsecCore.Help;
+using ParsecCore.MaybeNS;
 using System;
 using System.Collections.Generic;
 
@@ -17,7 +18,7 @@ namespace ParsecCore.Indentation
         /// <param name="referencePosition"> The reference indentation level </param>
         /// <param name="actualPosition"> The actual position measured </param>
         /// <returns> Parser which fails with an incorrect indentation message </returns>
-        internal static Parser<T, TInput> IncorrectIndent<T, TInput>(
+        internal static Parser<T, TInput> IncorrectIndentation<T, TInput>(
             Relation desiredRelation,
             IndentLevel referencePosition,
             IndentLevel actualPosition
@@ -57,7 +58,7 @@ namespace ParsecCore.Indentation
         /// or a parser that fails with incorrect indentation message
         /// </returns>
         /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
-        public static Parser<IndentLevel, TInput> IndentGuard<TSpace, TInput>(
+        public static Parser<IndentLevel, TInput> IndentationGuard<TSpace, TInput>(
             Parser<TSpace, TInput> spaceConsumer,
             Relation relation,
             IndentLevel reference
@@ -65,21 +66,15 @@ namespace ParsecCore.Indentation
         {
             if (spaceConsumer is null) throw new ArgumentNullException(nameof(spaceConsumer));
 
-            return from _ in spaceConsumer
-                   from position in IndentationLevel<TInput>()
-                   from res in TestCorrectIndentation(relation, reference, position)
-                   select res;
-
-            static Parser<IndentLevel, TInput> TestCorrectIndentation(
-                Relation relation,
-                IndentLevel reference,
-                IndentLevel actual
-            )
-            {
-                return relation.Satisfies(reference, actual)
-                    ? Parsers.Return<IndentLevel, TInput>(actual)
-                    : IncorrectIndent<IndentLevel, TInput>(relation, reference, actual);
-            }
+            return spaceConsumer.Then(
+                IndentationLevel<TInput>().Assert(
+                    indent => relation.Satisfies(reference, indent),
+                    (indent, pos) => new CustomError(
+                            pos,
+                            new IndentationError(relation, reference, indent)
+                    )
+                )
+            );
         }
 
         /// <summary>
@@ -100,7 +95,7 @@ namespace ParsecCore.Indentation
             if (spaceConsumer is null) throw new ArgumentNullException(nameof(spaceConsumer));
             if (parser is null) throw new ArgumentNullException(nameof(parser));
 
-            return from _ in IndentGuard(spaceConsumer, Relation.EQ, ParsecCore.Indentation.IndentLevel.FirstPosition)
+            return from _ in IndentationGuard(spaceConsumer, Relation.EQ, IndentLevel.FirstPosition)
                    from res in parser
                    select res;
         }
@@ -126,7 +121,7 @@ namespace ParsecCore.Indentation
         {
             return from _ in spaceConsumer
                    from indentLvl in IndentationLevel<TInput>()
-                   from res in linefoldParser(IndentGuard(spaceConsumer, Relation.GT, indentLvl))
+                   from res in linefoldParser(IndentationGuard(spaceConsumer, Relation.GT, indentLvl))
                    select res;
         }
 
@@ -152,7 +147,7 @@ namespace ParsecCore.Indentation
         /// <param name="itemParser"> Parser for individual items </param>
         /// <returns> Parser which parses a head and zero or more subsequent items at a greater indentation </returns>
         /// <exception cref="ArgumentNullException"> If any of the parameters are null </exception>
-        public static Parser<TResult, char> IndentBlockMany<TSpace, TItem, TReference, TResult>(
+        public static Parser<TResult, char> IndentationBlockMany<TSpace, TItem, TReference, TResult>(
             Parser<TSpace, char> spaceConsumer,
             Parser<TReference, char> referenceParser,
             Maybe<IndentLevel> desiredIndentation,
@@ -167,14 +162,12 @@ namespace ParsecCore.Indentation
 
             return from _ in spaceConsumer
                    from referenceLvl in IndentationLevel<char>()
-                   from referenceItem in referenceParser
-                   from lvl in (
-                        from __ in Parsers.EOL
-                        from lvl in IndentGuard(spaceConsumer, Relation.GT, referenceLvl)
-                        select lvl).Try().Optional()
-                   from done in Parsers.IsEOF<char>()
+                   from referenceItem in referenceParser // parse the head/reference item
+                   from lvl in IndentationGuard(spaceConsumer, Relation.GT, referenceLvl)
+                        .Try().Optional() // check for any items
+                   from eof in Parsers.IsEOF<char>()
                    from res in ParseItems(
-                       done, referenceLvl, referenceItem, lvl, spaceConsumer, desiredIndentation, transform, itemParser
+                       eof, referenceLvl, referenceItem, lvl, spaceConsumer, desiredIndentation, transform, itemParser
                        )
                    select res;
 
@@ -189,7 +182,7 @@ namespace ParsecCore.Indentation
                 Parser<TItem, char> itemParser
             )
             {
-                if (!eof && !current.IsEmpty)
+                if (!eof && !current.IsEmpty) // an item found
                 {
                     return from items in IndentedItems(
                         reference, desiredIndentation.Else(current.Value), spaceConsumer, itemParser)
@@ -197,7 +190,7 @@ namespace ParsecCore.Indentation
                 }
 
                 return from _ in spaceConsumer
-                       select transform(referenceItem, Array.Empty<TItem>());
+                       select transform(referenceItem, Array.Empty<TItem>()); // no items found
             }
         }
 
@@ -223,7 +216,7 @@ namespace ParsecCore.Indentation
         /// <param name="itemParser"> Parser for individual items </param>
         /// <returns> Parser which parses a head and one or more subsequent items at a greater indentation </returns>
         /// <exception cref="ArgumentNullException"> If any of the parameters are null </exception>
-        public static Parser<TResult, char> IndentBlockMany1<TSpace, TItem, TResult, TReference>(
+        public static Parser<TResult, char> IndentationBlockMany1<TSpace, TItem, TResult, TReference>(
             Parser<TSpace, char> spaceConsumer,
             Parser<TReference, char> referenceParser,
             Maybe<IndentLevel> desiredIndentation,
@@ -239,11 +232,10 @@ namespace ParsecCore.Indentation
             return from _ in spaceConsumer
                    from referenceLvl in IndentationLevel<char>()
                    from referenceItem in referenceParser
-                   from __ in Parsers.EOL
-                   from currPosition in IndentGuard(spaceConsumer, Relation.GT, referenceLvl)
+                   from currPosition in IndentationGuard(spaceConsumer, Relation.GT, referenceLvl)
                    from firstItem in FirstItem(currPosition, referenceLvl, desiredIndentation.Else(currPosition), itemParser)
                    from items in IndentedItems(referenceLvl, desiredIndentation.Else(currPosition), spaceConsumer, itemParser)
-                   select transform(referenceItem, Prepend(items, firstItem));
+                   select transform(referenceItem, items.Prepend(firstItem));
 
             static Parser<TItem, char> FirstItem(
                 IndentLevel currentPosition,
@@ -254,7 +246,7 @@ namespace ParsecCore.Indentation
             {
                 if (currentPosition <= referenceLevel)
                 {
-                    return IncorrectIndent<TItem, char>(Relation.GT, referenceLevel, currentPosition);
+                    return IncorrectIndentation<TItem, char>(Relation.GT, referenceLevel, currentPosition);
                 }
                 else if (currentPosition == desiredLevel)
                 {
@@ -262,14 +254,8 @@ namespace ParsecCore.Indentation
                 }
                 else
                 {
-                    return IncorrectIndent<TItem, char>(Relation.EQ, desiredLevel, currentPosition);
+                    return IncorrectIndentation<TItem, char>(Relation.EQ, desiredLevel, currentPosition);
                 }
-            }
-
-            static List<T> Prepend<T>(List<T> rest, T value)
-            {
-                rest.Insert(0, value);
-                return rest;
             }
         }
 
@@ -314,7 +300,7 @@ namespace ParsecCore.Indentation
 
                     if (end || position <= reference) // item is not indented
                     {
-                        return Result.Success(items, res.UnconsumedInput);
+                        return Result.Success(items, input);
                     }
                     else if (position == required)
                     {

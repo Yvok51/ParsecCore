@@ -117,7 +117,10 @@ namespace ParsecCore.Permutations
             if (parser is null) throw new ArgumentNullException(nameof(parser));
             if (combine is null) throw new ArgumentNullException(nameof(combine));
 
-            return new PermutationParser<R, TInput>(AddParserToBranches(_branches, parser, combine), Maybe.Nothing<R>());
+            return new PermutationParser<R, TInput>(
+                AddParserToBranches(_branches, parser, combine),
+                Maybe.Nothing<R>()
+            );
         }
         /// <summary>
         /// Add a new parser that can fail while not consuming any input.

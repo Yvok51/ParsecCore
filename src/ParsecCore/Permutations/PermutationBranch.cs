@@ -13,7 +13,7 @@ namespace ParsecCore.Permutations
     {
         /// <summary>
         /// Add a new parser to branches.
-        /// This will create a new branch with <paramref name="parser"/> as the first parser tried
+        /// This will create a new subbranch with <paramref name="parser"/> as the first parser tried
         /// and also add <paramref name="parser"/> to every branch at different positions.
         /// </summary>
         /// <remarks>
@@ -49,7 +49,7 @@ namespace ParsecCore.Permutations
 
         /// <summary>
         /// Add a new parser to branches.
-        /// This will create a new branch with <paramref name="parser"/> as the first parser tried
+        /// This will create a new subbranch with <paramref name="parser"/> as the first parser tried
         /// and also add <paramref name="parser"/> to every branch at different positions.
         /// </summary>
         /// <remarks>
@@ -71,8 +71,8 @@ namespace ParsecCore.Permutations
         ///       \
         ///         - B -- A
         /// </remarks>
-        /// <typeparam name="Between"> The type of the first parser </typeparam>
-        /// <typeparam name="Result"> The result type of the entire permutation parser </typeparam>
+        /// <typeparam name="Between"> The result type of the added parser </typeparam>
+        /// <typeparam name="Result"> The new result type of the entire permutation parser </typeparam>
         /// <param name="parser"> The parser to add </param>
         /// <param name="combine">
         /// The function used to combine the results of the given parser and rest of the branch
@@ -91,6 +91,18 @@ namespace ParsecCore.Permutations
         public abstract Parser<T, TInput> GetParser();
     }
 
+    /// <summary>
+    /// The implementation is split into an interface and implementing class so that we hide the types
+    /// <typeparamref name="Current"/> and <typeparamref name="Rest"/> from the rest of the implementation.
+    /// This simulates existential types used in the original algorithm "Parsing permutation phrases"
+    /// </summary>
+    /// <typeparam name="Current"> The result type of the first parser in the branch </typeparam>
+    /// <typeparam name="Rest">
+    /// The result type of the rest of the branch
+    /// (the <see cref="PermutationParser{T, TInput}"/> which represents the rest of the branch)
+    /// </typeparam>
+    /// <typeparam name="Final"> The return type of the entire branch </typeparam>
+    /// <typeparam name="TInput"> The input type of the parsers </typeparam>
     internal class PermutationBranch<Current, Rest, Final, TInput> : IPermutationBranch<Final, TInput>
     {
         public PermutationBranch(

@@ -132,7 +132,7 @@ namespace PythonParser.Parser
             select test;
 
         private static readonly Parser<(Expr, Suite), char> If =
-            Indentation.IndentBlockMany1(
+            Indentation.IndentationBlockMany1(
                 Control.EOLWhitespace,
                 ConditionHead("if"),
                 Maybe.Nothing<IndentLevel>(),
@@ -141,7 +141,7 @@ namespace PythonParser.Parser
             );
 
         private static readonly Parser<(Expr, Suite), char> Elif =
-            Indentation.IndentBlockMany1(
+            Indentation.IndentationBlockMany1(
                 Control.EOLWhitespace,
                 ConditionHead("elif"),
                 Maybe.Nothing<IndentLevel>(),
@@ -150,7 +150,7 @@ namespace PythonParser.Parser
             );
 
         private static readonly Parser<Suite, char> Else =
-            Indentation.IndentBlockMany1(
+            Indentation.IndentationBlockMany1(
                 Control.EOLWhitespace,
                 from _ in Control.Keyword("else") from __ in Control.Colon(Control.Lexeme) select None.Instance,
                 Maybe.Nothing<IndentLevel>(),
@@ -166,7 +166,7 @@ namespace PythonParser.Parser
             select new If(@if.Item1, @if.Item2, elifs, @else);
 
         private static readonly Parser<(Expr, Suite), char> While =
-            Indentation.IndentBlockMany1(
+            Indentation.IndentationBlockMany1(
                 Control.EOLWhitespace,
                 ConditionHead("while"),
                 Maybe.Nothing<IndentLevel>(),
@@ -189,7 +189,7 @@ namespace PythonParser.Parser
             select (targets, exprs);
 
         private static readonly Parser<(IReadOnlyList<Expr>, IReadOnlyList<Expr>, Suite), char> For =
-            Indentation.IndentBlockMany1(
+            Indentation.IndentationBlockMany1(
                 Control.EOLWhitespace,
                 ForHead,
                 Maybe.Nothing<IndentLevel>(),
@@ -217,7 +217,7 @@ namespace PythonParser.Parser
             select (funcname, parameterList);
 
         private static readonly Parser<Function, char> FuncDefStatement =
-            Indentation.IndentBlockMany1(
+            Indentation.IndentationBlockMany1(
                 Control.EOLWhitespace,
                 FuncHead,
                 Maybe.Nothing<IndentLevel>(),

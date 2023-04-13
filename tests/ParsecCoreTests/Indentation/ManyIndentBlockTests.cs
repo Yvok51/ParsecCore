@@ -22,7 +22,7 @@ namespace ParsecCoreTests.Indentation
         {
             var items = Array.Empty<string>();
             var input = ParserInput.Create(inputStr);
-            var parser = from list in ParsecCore.Indentation.Indentation.IndentBlockMany(
+            var parser = from list in ParsecCore.Indentation.Indentation.IndentationBlockMany(
                 Parsers.Spaces, Parsers.String("def"), Maybe.Nothing<IndentLevel>(), (head, list) => list, Word)
                          select list;
             var res = parser(input);
@@ -38,7 +38,7 @@ namespace ParsecCoreTests.Indentation
         public void ManyIndentBlockRejectsNoHead(string inputStr)
         {
             var input = ParserInput.Create(inputStr);
-            var parser = from list in ParsecCore.Indentation.Indentation.IndentBlockMany(
+            var parser = from list in ParsecCore.Indentation.Indentation.IndentationBlockMany(
                 Parsers.Spaces, Parsers.String("def"), Maybe.Nothing<IndentLevel>(), (head, list) => list, Word)
                          select list;
             var res = parser(input);
@@ -55,7 +55,7 @@ namespace ParsecCoreTests.Indentation
         {
             var items = parsedItems.Split(' ');
             var input = ParserInput.Create(inputStr);
-            var parser = from list in ParsecCore.Indentation.Indentation.IndentBlockMany(
+            var parser = from list in ParsecCore.Indentation.Indentation.IndentationBlockMany(
                 Parsers.Spaces, Parsers.String("def"), Maybe.Nothing<IndentLevel>(), (head, list) => list, Word)
                          select list;
             var res = parser(input);
@@ -71,7 +71,7 @@ namespace ParsecCoreTests.Indentation
         public void ManyIndentBlockRejectsDifferentlyIndentedItems(string inputStr)
         {
             var input = ParserInput.Create(inputStr);
-            var parser = from list in ParsecCore.Indentation.Indentation.IndentBlockMany(
+            var parser = from list in ParsecCore.Indentation.Indentation.IndentationBlockMany(
                 Parsers.Spaces, Parsers.String("def"), Maybe.Nothing<IndentLevel>(), (head, list) => list, Word)
                          select list;
             var res = parser(input);
@@ -84,7 +84,7 @@ namespace ParsecCoreTests.Indentation
         {
             var items = new List<string>() { "hey", "hello", "hi" };
             var input = ParserInput.Create("def\n  hey\n  hello\n  hi");
-            var parser = from list in ParsecCore.Indentation.Indentation.IndentBlockMany(
+            var parser = from list in ParsecCore.Indentation.Indentation.IndentationBlockMany(
                 Parsers.Spaces, Parsers.String("def"), Maybe.FromValue((IndentLevel)3), (head, list) => list, Word)
                          select list;
             var res = parser(input);
@@ -100,7 +100,7 @@ namespace ParsecCoreTests.Indentation
         public void ManyIndentBlockRejectsNonSpecifiedIndentation(string inputStr)
         {
             var input = ParserInput.Create(inputStr);
-            var parser = from list in ParsecCore.Indentation.Indentation.IndentBlockMany(
+            var parser = from list in ParsecCore.Indentation.Indentation.IndentationBlockMany(
                 Parsers.Spaces, Parsers.String("def"), Maybe.FromValue((IndentLevel)3), (head, list) => list, Word)
                          select list;
             var res = parser(input);

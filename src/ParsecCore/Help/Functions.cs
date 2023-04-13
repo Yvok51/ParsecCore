@@ -46,6 +46,19 @@ namespace ParsecCore.Help
         }
 
         /// <summary>
+        /// Prepend a list with a value
+        /// </summary>
+        /// <typeparam name="T"> The type of list </typeparam>
+        /// <param name="rest"> The list to prepend </param>
+        /// <param name="value"> The value to add to the beginning of the list </param>
+        /// <returns> The same list with <paramref name="value"/> prepended to the beginning of the list </returns>
+        public static List<T> Prepend<T>(this List<T> rest, T value)
+        {
+            rest.Insert(0, value);
+            return rest;
+        }
+
+        /// <summary>
         /// Append <see cref="IReadOnlyList{T}"/> with a value
         /// </summary>
         /// <typeparam name="T"> Type stored inside list </typeparam>

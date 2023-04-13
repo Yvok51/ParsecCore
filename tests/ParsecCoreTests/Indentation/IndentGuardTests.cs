@@ -21,7 +21,7 @@ namespace ParsecCoreTests.Indentation
         public void EqualityRelationAcceptsCorrectIndentation(string inputStr, int referenceIndentation)
         {
             var input = ParserInput.Create(inputStr, tabSize: 4);
-            var parser = from indent in ParsecCore.Indentation.Indentation.IndentGuard(
+            var parser = from indent in ParsecCore.Indentation.Indentation.IndentationGuard(
                             Parsers.Spaces, Relation.EQ, (IndentLevel)referenceIndentation)
                          select indent;
             var res = parser(input);
@@ -43,7 +43,7 @@ namespace ParsecCoreTests.Indentation
         public void GreaterThanRelationAcceptsCorrectIndentation(string inputStr, int referenceIndentation)
         {
             var input = ParserInput.Create(inputStr, tabSize: 4);
-            var parser = from indent in ParsecCore.Indentation.Indentation.IndentGuard(
+            var parser = from indent in ParsecCore.Indentation.Indentation.IndentationGuard(
                             Parsers.Spaces, Relation.GT, (IndentLevel)referenceIndentation)
                          select indent;
             var res = parser(input);
@@ -66,7 +66,7 @@ namespace ParsecCoreTests.Indentation
         public void GreaterEqualToRelationAcceptsCorrectIndentation(string inputStr, int referenceIndentation)
         {
             var input = ParserInput.Create(inputStr, tabSize: 4);
-            var parser = from indent in ParsecCore.Indentation.Indentation.IndentGuard(
+            var parser = from indent in ParsecCore.Indentation.Indentation.IndentationGuard(
                             Parsers.Spaces, Relation.GE, (IndentLevel)referenceIndentation)
                          select indent;
             var res = parser(input);
@@ -85,7 +85,7 @@ namespace ParsecCoreTests.Indentation
         public void EqualityRelationRejectsIncorrectIndentation(string inputStr, int referenceIndentation)
         {
             var input = ParserInput.Create(inputStr, tabSize: 4);
-            var parser = from indent in ParsecCore.Indentation.Indentation.IndentGuard(
+            var parser = from indent in ParsecCore.Indentation.Indentation.IndentationGuard(
                             Parsers.Spaces, Relation.EQ, (IndentLevel)referenceIndentation)
                          select indent;
             var res = parser(input);
@@ -102,7 +102,7 @@ namespace ParsecCoreTests.Indentation
         public void GreaterThanRelationRejectsIncorrectIndentation(string inputStr, int referenceIndentation)
         {
             var input = ParserInput.Create(inputStr, tabSize: 4);
-            var parser = from indent in ParsecCore.Indentation.Indentation.IndentGuard(
+            var parser = from indent in ParsecCore.Indentation.Indentation.IndentationGuard(
                             Parsers.Spaces, Relation.GT, (IndentLevel)referenceIndentation)
                          select indent;
             var res = parser(input);
@@ -121,7 +121,7 @@ namespace ParsecCoreTests.Indentation
         public void GreaterEqualToRelationRejectsIncorrectIndentation(string inputStr, int referenceIndentation)
         {
             var input = ParserInput.Create(inputStr, tabSize: 4);
-            var parser = from indent in ParsecCore.Indentation.Indentation.IndentGuard(
+            var parser = from indent in ParsecCore.Indentation.Indentation.IndentationGuard(
                             Parsers.Spaces, Relation.GE, (IndentLevel)referenceIndentation)
                          select indent;
             var res = parser(input);
