@@ -8,20 +8,20 @@ namespace PythonParser.Parser
     {
         public static readonly Parser<char, char> EOL = Parsers.EOL;
 
-        public static readonly Parser<None, char> Comment =
+        public static readonly Parser<char, char> Comment =
             from start in Parsers.Char('#')
             from content in Parsers.NoneOf('\n', '\r').Many()
-            select None.Instance;
+            select ' ';
 
         private static readonly Parser<char, char> WhitespaceChar =
             Parsers.Satisfy(c => c == ' ' || c == '\t' || c == '\f', "whitespace")
             .Or(from escape in Parsers.Char('\\') from eol in EOL select ' ');
 
         private static readonly Parser<string, char> Whitespace =
-            WhitespaceChar.Many();
+            WhitespaceChar.Or(Comment).Many();
 
         public static readonly Parser<string, char> EOLWhitespace =
-            WhitespaceChar.Or(EOL).Many();
+            WhitespaceChar.Or(EOL).Or(Comment).Many();
 
 
         public static IReadOnlySet<string> Keywords = new HashSet<string>()
