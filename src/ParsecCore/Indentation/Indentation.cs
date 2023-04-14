@@ -73,8 +73,9 @@ namespace ParsecCore.Indentation
         }
 
         /// <summary>
-        /// Parser for line folding. The user creates a parser which receives a space consumer which consumes
-        /// whitespace between parts of the linefold and manually specifies how the statement can be folded.
+        /// Parser for line folding. The user creates a parser which receives a space consumer. 
+        /// This space consumer consumes whitespace between parts of the linefold.
+        /// User further manually specifies how the statement can be folded.
         /// </summary>
         /// <typeparam name="T"> The return type of the line fold parser </typeparam>
         /// <typeparam name="TSpace"> Type returned by the space consumer </typeparam>
@@ -135,11 +136,11 @@ namespace ParsecCore.Indentation
             return spaceConsumer.Then(
                    from referenceLvl in IndentationLevel<char>()
                    from referenceItem in referenceParser // parse the head/reference item
-                   from lvl in IndentationGuard(spaceConsumer, Relation.GT, referenceLvl)
+                   from currLvl in IndentationGuard(spaceConsumer, Relation.GT, referenceLvl)
                         .Try().Optional() // check for any items
                    from eof in Parsers.IsEOF<char>()
                    from res in ParseItems(
-                       eof, referenceLvl, referenceItem, lvl, spaceConsumer, desiredIndentation, transform, itemParser
+                       eof, referenceLvl, referenceItem, currLvl, spaceConsumer, desiredIndentation, transform, itemParser
                        )
                    select res);
 
@@ -203,15 +204,8 @@ namespace ParsecCore.Indentation
             return spaceConsumer.Then(
                    from referenceLvl in IndentationLevel<char>()
                    from referenceItem in referenceParser
-                   from currPosition in IndentationGuard(spaceConsumer, Relation.GT, referenceLvl
-                       ).Assert( // the first item is more indented than the reference item
-                        curr => curr > referenceLvl,
-                        (curr, pos) => new CustomError(pos, new IndentationError(Relation.GT, referenceLvl, curr))
-                       ).Assert( // If desiredIndent is specified, then it is complied with
-                        curr => desiredIndentation.IsEmpty || curr == desiredIndentation.Value,
-                        (curr, pos) => 
-                            new CustomError(pos, new IndentationError(Relation.EQ, desiredIndentation.Value, curr))
-                       )
+                   from currPosition in IndentationGuard(spaceConsumer, Relation.GT, referenceLvl)
+                   from _ in IndentationGuard(spaceConsumer, Relation.EQ, desiredIndentation.Else(currPosition))
                    from firstItem in itemParser
                    from items in IndentedItems(referenceLvl, desiredIndentation.Else(currPosition), spaceConsumer, itemParser)
                    select transform(referenceItem, items.Prepend(firstItem)));
