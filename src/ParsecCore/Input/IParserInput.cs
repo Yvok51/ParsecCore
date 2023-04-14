@@ -2,6 +2,11 @@
 
 namespace ParsecCore.Input
 {
+    /// <summary>
+    /// Interface for parser inputs.
+    /// The interface is designed to be immutable and that is also expected of the implementing classes.
+    /// </summary>
+    /// <typeparam name="T"> The type of the input symbols </typeparam>
     public interface IParserInput<T> : IEquatable<IParserInput<T>>
     {
         /// <summary>

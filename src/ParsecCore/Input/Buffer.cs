@@ -19,7 +19,7 @@ namespace ParsecCore.Input
 
         public char Read(long offset)
         {
-            if (offset >= _offsetOfFirstChar && offset < _offsetOfFirstChar + BUFFER_SIZE)
+            if (offset >= _offsetOfFirstChar && offset < _offsetOfFirstChar + _lastReadChars)
             {
                 return _buffer[offset - _offsetOfFirstChar];
             }
