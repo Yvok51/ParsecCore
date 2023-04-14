@@ -7,19 +7,19 @@ namespace ParsecCore
     {
         public static IResult<T, TInput> Success<T, TInput>(T result, IParserInput<TInput> unconsumedInput)
         {
-            return new ResultImpl<T, TInput>(result, unconsumedInput);
+            return new Success<T, TInput>(result, unconsumedInput);
         }
 
         public static IResult<T, TInput> Failure<T, TInput>(ParseError error, IParserInput<TInput> unconsumedInput)
         {
-            return new ResultImpl<T, TInput>(error, unconsumedInput);
+            return new Failure<T, TInput>(error, unconsumedInput);
         }
 
         public static IResult<TNew, TInput> RetypeError<T, TNew, TInput>(
             IResult<T, TInput> result
         )
         {
-            return new ResultImpl<TNew, TInput>(
+            return new Failure<TNew, TInput>(
                 result.Error,
                 result.UnconsumedInput
             );
