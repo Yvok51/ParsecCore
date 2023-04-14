@@ -1,4 +1,6 @@
-﻿using ParsecCore.MaybeNS;
+﻿using ParsecCore.Help;
+using ParsecCore.Input;
+using ParsecCore.MaybeNS;
 using System;
 using System.Collections.Generic;
 
@@ -20,21 +22,30 @@ namespace ParsecCore.ParsersHelp
             { '\v', "\\v" },
         };
 
+        private static IResult<T, T> Error<T>(
+            IParserInput<T> input,
+            ErrorItem unexpected,
+            IEnumerable<ErrorItem> description
+        )
+        {
+            return Result.Failure<T, T>(
+                new StandardError(
+                    input.Position,
+                    unexpected: Maybe.FromValue(unexpected),
+                    expected: description
+                ),
+                input
+            );
+        }
+
         public static Parser<char, char> Parser(Predicate<char> predicate, string predicateDescription)
         {
-            var description = new StringToken(predicateDescription);
+            var description = new StringToken(predicateDescription).ToEnumerable();
             return (input) =>
             {
                 if (input.EndOfInput)
                 {
-                    return Result.Failure<char, char>(
-                        new StandardError(
-                            input.Position,
-                            unexpected: Maybe.FromValue<ErrorItem>(EndOfFile.Instance),
-                            expected: description
-                        ),
-                        input
-                    );
+                    return Error(input, EndOfFile.Instance, description);
                 }
 
                 char read = input.Current();
@@ -42,14 +53,7 @@ namespace ParsecCore.ParsersHelp
                 if (!predicate(read))
                 {
                     ErrorItem readChar = escapedChars.ContainsKey(read) ? new StringToken(escapedChars[read]) : new CharToken(read);
-                    return Result.Failure<char, char>(
-                        new StandardError(
-                            input.Position,
-                            unexpected: Maybe.FromValue(readChar),
-                            expected: description
-                        ),
-                        input
-                    );
+                    return Error(input, readChar, description);
                 }
 
                 return Result.Success(read, input.Advance());
@@ -58,19 +62,12 @@ namespace ParsecCore.ParsersHelp
 
         public static Parser<char, char> Parser(char expected, string predicateDescription)
         {
-            var description = new StringToken(predicateDescription);
+            var description = new StringToken(predicateDescription).ToEnumerable();
             return (input) =>
             {
                 if (input.EndOfInput)
                 {
-                    return Result.Failure<char, char>(
-                        new StandardError(
-                            input.Position,
-                            unexpected: Maybe.FromValue<ErrorItem>(EndOfFile.Instance),
-                            expected: description
-                        ),
-                        input
-                    );
+                    return Error(input, EndOfFile.Instance, description);
                 }
 
                 char read = input.Current();
@@ -78,14 +75,7 @@ namespace ParsecCore.ParsersHelp
                 if (read != expected)
                 {
                     ErrorItem readChar = escapedChars.ContainsKey(read) ? new StringToken(escapedChars[read]) : new CharToken(read);
-                    return Result.Failure<char, char>(
-                        new StandardError(
-                            input.Position,
-                            unexpected: Maybe.FromValue(readChar),
-                            expected: description
-                        ),
-                        input
-                    );
+                    return Error(input, readChar, description);
                 }
 
                 return Result.Success(read, input.Advance());
@@ -97,33 +87,19 @@ namespace ParsecCore.ParsersHelp
             string predicateDescription
         )
         {
-            var description = new StringToken(predicateDescription);
+            var description = new StringToken(predicateDescription).ToEnumerable();
             return (input) =>
             {
                 if (input.EndOfInput)
                 {
-                    return Result.Failure<TInputToken, TInputToken>(
-                        new StandardError(
-                            input.Position,
-                            unexpected: Maybe.FromValue<ErrorItem>(EndOfFile.Instance),
-                            expected: description
-                        ),
-                        input
-                    );
+                    return Error(input, EndOfFile.Instance, description);
                 }
 
                 TInputToken read = input.Current();
 
                 if (!predicate(read))
                 {
-                    return Result.Failure<TInputToken, TInputToken>(
-                        new StandardError(
-                            input.Position,
-                            unexpected: Maybe.FromValue<ErrorItem>(new SingleToken<TInputToken>(read)),
-                            expected: description
-                        ),
-                        input
-                    );
+                    return Error(input, new SingleToken<TInputToken>(read), description);
                 }
 
                 return Result.Success(read, input.Advance());
@@ -135,33 +111,19 @@ namespace ParsecCore.ParsersHelp
             string predicateDescription
         )
         {
-            var description = new StringToken(predicateDescription);
+            var description = new StringToken(predicateDescription).ToEnumerable();
             return (input) =>
             {
                 if (input.EndOfInput)
                 {
-                    return Result.Failure<TInputToken, TInputToken>(
-                        new StandardError(
-                            input.Position,
-                            unexpected: Maybe.FromValue<ErrorItem>(EndOfFile.Instance),
-                            expected: description
-                        ),
-                        input
-                    );
+                    return Error(input, EndOfFile.Instance, description);
                 }
 
                 TInputToken read = input.Current();
 
                 if (!EqualityComparer<TInputToken>.Default.Equals(read, expected))
                 {
-                    return Result.Failure<TInputToken, TInputToken>(
-                        new StandardError(
-                            input.Position,
-                            unexpected: Maybe.FromValue<ErrorItem>(new SingleToken<TInputToken>(read)),
-                            expected: description
-                        ),
-                        input
-                    );
+                    return Error(input, new SingleToken<TInputToken>(read), description);
                 }
 
                 return Result.Success(read, input.Advance());
