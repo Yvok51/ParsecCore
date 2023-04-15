@@ -4,25 +4,24 @@ namespace ParsecCore
 {
     public struct Position : IEquatable<Position>
     {
+
+        public static readonly int BeginningColumn = 1;
+
         /// <summary>
         /// Get the default starting position
         /// </summary>
         /// <param name="offset"> Specify the offset the starting position starts at. By default 1 </param>
         /// <returns> The default starting position </returns>
-        public static Position Start(int offset = 0) => new Position(line: 1, column: BeginningColumn, offset: offset);
+        public static readonly Position Start = new Position(line: 1, column: BeginningColumn);
 
-        public Position(int line, int column, int offset)
+        public Position(int line, int column)
         {
             Line = line;
             Column = column;
-            Offset = offset;
         }
 
         public int Line { get; init; }
         public int Column { get; init; }
-        internal int Offset { get; init; }
-
-        public static readonly int BeginningColumn = 1;
 
         /// <summary>
         /// Forward the position by a given amount of characters in the same row as before
@@ -31,7 +30,7 @@ namespace ParsecCore
         /// <returns> The forwarded position </returns>
         public Position WithIncreasedColumn(int columnIncrease = 1)
         {
-            return new Position(line: Line, column: Column + columnIncrease, offset: Offset);
+            return new Position(line: Line, column: Column + columnIncrease);
         }
 
         /// <summary>
@@ -44,7 +43,7 @@ namespace ParsecCore
         /// <returns> The forwarded position </returns>
         public Position WithTab(int tabSize)
         {
-            return new Position(line: Line, column: Column + tabSize - ((Column - 1) % tabSize), offset: Offset);
+            return new Position(line: Line, column: Column + tabSize - ((Column - 1) % tabSize));
         }
 
         /// <summary>
@@ -54,17 +53,7 @@ namespace ParsecCore
         /// <returns> The forwared position </returns>
         public Position WithNewLine(int lineIncrease = 1)
         {
-            return new Position(line: Line + lineIncrease, column: BeginningColumn, offset: Offset);
-        }
-
-        /// <summary>
-        /// Increase the amount of read tokens (bytes, ...) from the input stream
-        /// </summary>
-        /// <param name="offsetBy"> How much to offset by (how many bytes the character took up) </param>
-        /// <returns> The forwared position </returns>
-        public Position WithIncreasedOffset(int offsetBy = 1)
-        {
-            return new Position(line: Line, column: Column, offset: Offset + offsetBy);
+            return new Position(line: Line + lineIncrease, column: BeginningColumn);
         }
 
         public override string ToString()
@@ -76,21 +65,21 @@ namespace ParsecCore
             !(obj is null) && obj is Position other && Equals(other);
 
         public bool Equals(Position other) =>
-            other.Offset == Offset && other.Line == Line && other.Column == Column;
+            other.Line == Line && other.Column == Column;
 
         public override int GetHashCode() =>
-            HashCode.Combine(Line, Column, Offset);
+            HashCode.Combine(Line, Column);
 
         public static bool operator ==(Position left, Position right) =>
-            left.Offset == right.Offset && left.Line == right.Line && left.Column == right.Column;
+            left.Line == right.Line && left.Column == right.Column;
         public static bool operator !=(Position left, Position right) =>
-            left.Offset != right.Offset || left.Line != right.Line || left.Column != right.Column;
+            left.Line != right.Line || left.Column != right.Column;
 
         public static bool operator <(Position left, Position right) =>
-            left.Offset < right.Offset;
+            left.Line < right.Line || (left.Line == right.Line && left.Column < right.Column);
 
         public static bool operator >(Position left, Position right) =>
-            left.Offset > right.Offset;
+            left.Line > right.Line || (left.Line == right.Line && left.Column > right.Column);
 
         /// <summary>
         /// Returns the minimum position based on the offset number

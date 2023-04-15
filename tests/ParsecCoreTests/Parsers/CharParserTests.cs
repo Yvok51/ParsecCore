@@ -34,7 +34,7 @@ namespace ParsecCoreTests
             var parser = Parsers.Char(Tokens.A);
             var input = ParserInput.Create(
                 new Tokens[] { Tokens.A },
-                (t, pos) => pos.WithIncreasedColumn().WithIncreasedOffset()
+                (t, pos) => pos.WithIncreasedColumn()
             );
 
             var result = parser(input);
@@ -64,7 +64,7 @@ namespace ParsecCoreTests
             var parser = Parsers.Char(Tokens.A);
             var input = ParserInput.Create(
                 new Tokens[] { Tokens.A, Tokens.B, Tokens.C },
-                (t, pos) => pos.WithIncreasedColumn().WithIncreasedOffset()
+                (t, pos) => pos.WithIncreasedColumn()
             );
 
             var result = parser(input);
@@ -89,7 +89,7 @@ namespace ParsecCoreTests
             Assert.Equal(toParse, result.Result);
 
             Assert.False(input.EndOfInput);
-            Assert.Equal(1, result.UnconsumedInput.Position.Offset);
+            Assert.Equal(1, result.UnconsumedInput.Offset);
         }
 
         [Fact]
@@ -98,7 +98,7 @@ namespace ParsecCoreTests
             var parser = Parsers.Char(Tokens.B);
             var input = ParserInput.Create(
                 new Tokens[] { Tokens.B, Tokens.B, Tokens.C },
-                (t, pos) => pos.WithIncreasedColumn().WithIncreasedOffset()
+                (t, pos) => pos.WithIncreasedColumn()
             );
 
             var result = parser(input);
@@ -107,7 +107,7 @@ namespace ParsecCoreTests
             Assert.Equal(Tokens.B, result.Result);
 
             Assert.False(input.EndOfInput);
-            Assert.Equal(1, result.UnconsumedInput.Position.Offset);
+            Assert.Equal(1, result.UnconsumedInput.Offset);
         }
 
         [Theory]
@@ -130,7 +130,7 @@ namespace ParsecCoreTests
             var parser = Parsers.Char(Tokens.B);
             var input = ParserInput.Create(
                 new Tokens[] { Tokens.A, Tokens.B, Tokens.C },
-                (t, pos) => pos.WithIncreasedColumn().WithIncreasedOffset()
+                (t, pos) => pos.WithIncreasedColumn()
             );
 
             var result = parser(input);

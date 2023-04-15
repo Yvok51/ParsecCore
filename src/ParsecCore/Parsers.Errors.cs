@@ -155,7 +155,6 @@ namespace ParsecCore
 
             return (input) =>
             {
-                var position = input.Position;
                 var result = parser(input);
                 if (result.IsError || predicate(result.Result))
                 {

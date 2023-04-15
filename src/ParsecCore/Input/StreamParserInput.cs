@@ -28,11 +28,12 @@ namespace ParsecCore.Input
                 throw new ArgumentException("Provided reader must be able to read, and must be able to seek");
             }
 
-            _position = Position.Start((int)reader.BaseStream.Position); // has to be before creation of Buffer
-                                                                         // as it reads in constructor
+            _position = Position.Start;
+            _offset = (int)reader.BaseStream.Position; // has to be before creation of Buffer
+                                                       // as it reads in constructor
             _reader = new Buffer(reader);
             _updatePosition = updatePosition;
-            EndOfInput = _reader.EndOfStream(_position.Offset); // cache result, since input is immutable
+            EndOfInput = _reader.EndOfStream(_offset); // cache result, since input is immutable
         }
 
         /// <summary>
@@ -57,12 +58,13 @@ namespace ParsecCore.Input
         {
         }
 
-        private StreamParserInput(Buffer reader, Position position, Func<char, Position, Position> updatePosition)
+        private StreamParserInput(Buffer reader, Position position, Func<char, Position, Position> updatePosition, int offset)
         {
             _reader = reader;
             _position = position;
             _updatePosition = updatePosition;
-            EndOfInput = _reader.EndOfStream(_position.Offset);
+            _offset = offset;
+            EndOfInput = _reader.EndOfStream(_offset);
         }
 
         /// <summary>
@@ -73,12 +75,11 @@ namespace ParsecCore.Input
         {
             return (readChar, position) =>
             {
-                int offsetBy = encoding.GetByteCount(new char[] { readChar });
                 return readChar switch
                 {
-                    '\n' => position.WithNewLine().WithIncreasedOffset(offsetBy),
-                    '\t' => position.WithTab(tabSize).WithIncreasedOffset(offsetBy),
-                    _ => new Position(position.Line, position.Column + 1, position.Offset + offsetBy)
+                    '\n' => position.WithNewLine(),
+                    '\t' => position.WithTab(tabSize),
+                    _ => position.WithIncreasedColumn()
                 };
             };
         }
@@ -87,9 +88,11 @@ namespace ParsecCore.Input
 
         public Position Position => _position;
 
+        public int Offset => _offset;
+
         public IParserInput<char> Advance()
         {
-            return new StreamParserInput(_reader, _updatePosition(Current(), _position), _updatePosition);
+            return new StreamParserInput(_reader, _updatePosition(Current(), _position), _updatePosition, _offset + 1);
         }
 
         public char Current()
@@ -99,12 +102,12 @@ namespace ParsecCore.Input
                 throw new InvalidOperationException("Read past the end of the input");
             }
 
-            return _reader.Read(_position.Offset);
+            return _reader.Read(_offset);
         }
 
         public bool Equals(IParserInput<char>? other)
         {
-            return other is not null && Position.Offset == other.Position.Offset; // Presume we are not mixing inputs
+            return other is not null && _offset == other.Offset; // Presume we are not mixing inputs
         }
 
         public override bool Equals(object? obj)
@@ -120,5 +123,6 @@ namespace ParsecCore.Input
         private readonly Func<char, Position, Position> _updatePosition;
         private readonly Buffer _reader;
         private readonly Position _position;
+        private readonly int _offset;
     }
 }

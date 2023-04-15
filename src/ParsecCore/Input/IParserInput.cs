@@ -34,5 +34,10 @@ namespace ParsecCore
         /// The current position, see <see cref="Input.Position"/>
         /// </summary>
         public Position Position { get; }
+
+        /// <summary>
+        /// The current offset of the input position
+        /// </summary>
+        public int Offset { get; }
     }
 }

@@ -51,7 +51,7 @@ namespace ParsecCoreTests
             Assert.Equal(toParse, result.Result);
 
             Assert.False(input.EndOfInput);
-            Assert.Equal(toParse.Length, result.UnconsumedInput.Position.Offset);
+            Assert.Equal(toParse.Length, result.UnconsumedInput.Offset);
         }
 
         [Theory]
@@ -94,7 +94,7 @@ namespace ParsecCoreTests
             IResult<string, char> result = parser(input);
 
             Assert.True(result.IsError);
-            Assert.Equal(2, result.Error.Position.Offset);
+            Assert.Equal(2, result.UnconsumedInput.Offset);
         }
     }
 }

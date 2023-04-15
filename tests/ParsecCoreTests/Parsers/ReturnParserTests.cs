@@ -25,7 +25,7 @@ namespace ParsecCoreTests
 
             var _ = parser(input);
 
-            Assert.Equal(0, input.Position.Offset);
+            Assert.Equal(0, input.Offset);
         }
     }
 }
