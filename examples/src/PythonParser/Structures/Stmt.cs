@@ -1,4 +1,4 @@
-﻿using ParsecCore.MaybeNS;
+﻿using ParsecCore;
 
 namespace PythonParser.Structures
 {

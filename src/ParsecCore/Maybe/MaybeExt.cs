@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ParsecCore.MaybeNS
+namespace ParsecCore
 {
     public static class MaybeExt
     {

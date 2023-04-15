@@ -2,7 +2,7 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Running;
-using ParsecCore.Input;
+using ParsecCore;
 
 namespace JSONtoXML.Benchmarks
 {

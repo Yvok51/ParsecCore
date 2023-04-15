@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ParsecCore.Input
+namespace ParsecCore
 {
     /// <summary>
     /// Interface for parser inputs.

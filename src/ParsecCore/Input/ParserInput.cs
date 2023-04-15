@@ -1,9 +1,10 @@
-﻿using System;
+﻿using ParsecCore.Input;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace ParsecCore.Input
+namespace ParsecCore
 {
     public class ParserInput
     {

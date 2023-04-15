@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ParsecCore.Input
+namespace ParsecCore
 {
     public struct Position : IEquatable<Position>
     {

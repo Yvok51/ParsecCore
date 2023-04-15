@@ -1,6 +1,4 @@
-﻿using ParsecCore.MaybeNS;
-
-namespace ParsecCore.ParsersHelp
+﻿namespace ParsecCore.ParsersHelp
 {
     internal class OptionalParser
     {

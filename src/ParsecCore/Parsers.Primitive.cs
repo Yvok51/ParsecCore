@@ -1,5 +1,4 @@
-﻿using ParsecCore.Input;
-using ParsecCore.ParsersHelp;
+﻿using ParsecCore.ParsersHelp;
 using System;
 
 namespace ParsecCore

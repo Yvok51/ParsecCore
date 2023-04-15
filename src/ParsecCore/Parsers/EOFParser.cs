@@ -1,6 +1,4 @@
-﻿using ParsecCore.MaybeNS;
-
-namespace ParsecCore.ParsersHelp
+﻿namespace ParsecCore.ParsersHelp
 {
     /// <summary>
     /// Parser which parses the end of the file.

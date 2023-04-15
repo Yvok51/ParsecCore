@@ -1,5 +1,4 @@
-﻿using ParsecCore.Input;
-using ParsecCore.MaybeNS;
+﻿using ParsecCore;
 using PythonParser.Parser;
 using PythonParser.Structures;
 

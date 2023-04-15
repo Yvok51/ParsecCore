@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace ParsecCore.MaybeNS
+namespace ParsecCore
 {
     /// <summary>
     /// Represents a value that may not exist.

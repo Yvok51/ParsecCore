@@ -1,4 +1,4 @@
-﻿using ParsecCore.Input;
+﻿using ParsecCore;
 using PythonParser.Parser;
 
 namespace PythonParserTests.Parser.LiteralTests

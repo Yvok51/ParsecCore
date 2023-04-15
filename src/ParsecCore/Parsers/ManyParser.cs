@@ -1,5 +1,4 @@
-﻿using ParsecCore.MaybeNS;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ParsecCore.ParsersHelp
 {

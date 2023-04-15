@@ -1,4 +1,4 @@
-﻿namespace ParsecCore.MaybeNS
+﻿namespace ParsecCore
 {
     public static class Maybe
     {

@@ -1,6 +1,4 @@
-﻿using ParsecCore.Input;
-
-namespace ParsecCore
+﻿namespace ParsecCore
 {
     public delegate IResult<T, TInput> Parser<out T, TInput>(IParserInput<TInput> input);
 }

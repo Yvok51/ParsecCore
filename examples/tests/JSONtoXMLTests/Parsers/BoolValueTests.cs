@@ -1,5 +1,5 @@
 ﻿using JSONtoXML;
-using ParsecCore.Input;
+using ParsecCore;
 using Xunit;
 
 namespace JSONtoXMLTests.Parsers

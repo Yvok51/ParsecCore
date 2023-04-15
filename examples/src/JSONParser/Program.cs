@@ -1,4 +1,4 @@
-﻿using ParsecCore.Input;
+﻿using ParsecCore;
 using System;
 using System.IO;
 

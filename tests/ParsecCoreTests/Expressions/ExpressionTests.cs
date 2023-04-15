@@ -1,6 +1,5 @@
 ﻿using ParsecCore;
 using ParsecCore.Expressions;
-using ParsecCore.Input;
 using System.Collections.Generic;
 using Xunit;
 

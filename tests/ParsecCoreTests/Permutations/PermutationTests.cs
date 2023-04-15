@@ -1,5 +1,4 @@
 ﻿using ParsecCore;
-using ParsecCore.Input;
 using ParsecCore.Permutations;
 using Xunit;
 
