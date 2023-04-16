@@ -43,10 +43,11 @@ namespace JSONtoXML
 
         ////////// NUMBER //////////
         private static readonly Parser<string, char> zero = CharString('0');
+        private static readonly Parser<string, char> digits = Parsers.Digit.Many();
         private static readonly Parser<string, char> nonZeroInteger =
-            from firstDigit in Parsers.Satisfy(c => c >= '1' && c <= '9', "non-zero digit")
-            from nextDigits in Parsers.Digit.Many()
-            select firstDigit.ToString() + nextDigits;
+            from firstDigit in Parsers.NonZeroDigit
+            from nextDigits in digits
+            select firstDigit + nextDigits;
         private static readonly Parser<string, char> integer = nonZeroInteger.Or(zero);
 
         private static readonly Parser<string, char> minus = CharString('-');
@@ -166,8 +167,7 @@ namespace JSONtoXML
             betweenBrackets(Parsers.SepBy(valueParser, valueSeparator));
 
         public static readonly Parser<ArrayValue, char> ArrayValue =
-            from values in ListOfParser(JsonValue)
-            select new ArrayValue(values);
+            ListOfParser(JsonValue).Map(values => new ArrayValue(values));
 
         ////////// OBJECT //////////
         private static Parser<T, char> betweenBraces<T>(Parser<T, char> betweenParser) =>
@@ -184,11 +184,11 @@ namespace JSONtoXML
             select new ObjectKeyValuePair { Key = key, Value = value };
 
         public static readonly Parser<ObjectValue, char> ObjectValue =
-            from members in ObjectOfParser(member)
-            select new ObjectValue(members);
+            ObjectOfParser(member).Map(members => new ObjectValue(members));
 
         ////////// JSON DOCUMENT //////////
 
-        public static readonly Parser<JsonValue, char> JsonDocument = whitespace.Then(JsonValue).FollowedBy(Parsers.EOF<char>());
+        public static readonly Parser<JsonValue, char> JsonDocument =
+            whitespace.Then(JsonValue).FollowedBy(Parsers.EOF<char>());
     }
 }
