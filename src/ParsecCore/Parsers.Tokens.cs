@@ -17,13 +17,11 @@ namespace ParsecCore
         {
             if (stringToParse is null) throw new ArgumentNullException(nameof(stringToParse));
 
-            var stringParser = AllParser.Parser(ToCharParsers(stringToParse));
-            return from chars in stringParser
-                   select string.Concat(chars);
+            return AllParser.Parser(ToCharParsers(stringToParse)).MapConstant(stringToParse);
         }
 
-        private static IEnumerable<Parser<char, char>> ToCharParsers(IEnumerable<char> chars)
-            => chars.Select(c => Char(c));
+        private static IReadOnlyList<Parser<char, char>> ToCharParsers(IEnumerable<char> chars)
+            => chars.Select(c => Char(c)).ToArray();
 
         /// <summary>
         /// Returns a parser which ignores any whitespace after the parsed value.

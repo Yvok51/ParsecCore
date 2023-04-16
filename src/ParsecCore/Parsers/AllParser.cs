@@ -12,7 +12,7 @@ namespace ParsecCore.ParsersHelp
             params Parser<T, TInputToken>[] parsers
         )
         {
-            return Parser((IEnumerable<Parser<T, TInputToken>>)parsers);
+            return Parser((IReadOnlyList<Parser<T, TInputToken>>)parsers);
         }
 
         public static Parser<IReadOnlyList<T>, TInputToken> Parser<T, TInputToken>(
@@ -33,6 +33,30 @@ namespace ParsecCore.ParsersHelp
                     }
 
                     result.Add(parsedResult.Result);
+                }
+
+                return Result.Success(result, input);
+            };
+        }
+
+        public static Parser<IReadOnlyList<T>, TInputToken> Parser<T, TInputToken>(
+            IReadOnlyList<Parser<T, TInputToken>> parsers
+        )
+        {
+            return (input) =>
+            {
+                T[] result = new T[parsers.Count];
+
+                for (int i = 0; i < result.Length; i++)
+                {
+                    var parsedResult = parsers[i](input);
+                    input = parsedResult.UnconsumedInput;
+                    if (parsedResult.IsError)
+                    {
+                        return Result.RetypeError<T, IReadOnlyList<T>, TInputToken>(parsedResult);
+                    }
+
+                    result[i] = parsedResult.Result;
                 }
 
                 return Result.Success(result, input);
