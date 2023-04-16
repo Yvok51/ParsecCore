@@ -12,6 +12,14 @@ namespace ParsecCore
         /// Afterward, apply the <paramref name="secondParser"/> and return its result.
         /// If any of the parser fails, then the entire parser fails.
         /// </summary>
+        /// <remarks>
+        /// equivalent to:
+        /// <code>
+        /// from _ in <paramref name="firstParser"/><br/>
+        /// from second in <paramref name="secondParser"/><br/>
+        /// select second;
+        /// </code>
+        /// </remarks>
         /// <typeparam name="T"> The result type of the first parser </typeparam>
         /// <typeparam name="R"> The result type of the second parser </typeparam>
         /// <typeparam name="TInput"> The input type of the parsers </typeparam>
@@ -45,6 +53,14 @@ namespace ParsecCore
         /// If both parsers succeeded return the result of the first one.
         /// If any of the parser fails, then the entire parser fails.
         /// </summary>
+        /// <remarks>
+        /// equivalent to:
+        /// <code>
+        /// from first in <paramref name="firstParser"/><br/>
+        /// from _ in <paramref name="secondParser"/><br/>
+        /// select first;
+        /// </code>
+        /// </remarks>
         /// <typeparam name="T"> The result type of the first parser </typeparam>
         /// <typeparam name="R"> The result type of the second parser </typeparam>
         /// <typeparam name="TInput"> The input type of the parsers </typeparam>
