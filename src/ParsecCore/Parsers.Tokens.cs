@@ -26,25 +26,6 @@ namespace ParsecCore
             => chars.Select(c => Char(c));
 
         /// <summary>
-        /// Sequence many parsers. This combinator tries to parse all of the given parsers in a sequence.
-        /// If any of the parsers fail, then the entire parser fails.
-        /// Returns the list of results.
-        /// </summary>
-        /// <typeparam name="T"> The result type of the parsers to sequence </typeparam>
-        /// <typeparam name="TInputToken"> The input of the parsers </typeparam>
-        /// <param name="parsers"> The parsers to sequence </param>
-        /// <returns> Parser that parses all given parsers in a sequence</returns>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static Parser<IReadOnlyList<T>, TInputToken> Sequence<T, TInputToken>(
-            IEnumerable<Parser<T, TInputToken>> parsers
-        )
-        {
-            if (parsers is null) throw new ArgumentNullException(nameof(parsers));
-
-            return AllParser.Parser(parsers);
-        }
-
-        /// <summary>
         /// Returns a parser which ignores any whitespace after the parsed value.
         /// Uses the <see cref="Spaces"/> parser to parse subesquent whitespace.
         /// </summary>
