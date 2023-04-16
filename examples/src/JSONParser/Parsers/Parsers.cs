@@ -57,7 +57,7 @@ namespace JSONtoXML
         private static readonly Parser<string, char> decimalPoint = CharString('.');
         private static readonly Parser<string, char> fractionalPart =
             from point in decimalPoint
-            from digits in Parsers.Digits
+            from digits in Parsers.Digits1
             select point + digits;
 
         private static readonly Parser<string, char> exponentSymbol =
@@ -65,7 +65,7 @@ namespace JSONtoXML
         private static readonly Parser<string, char> exponent =
             from symbol in exponentSymbol
             from sign in plusOrMinus.Option(string.Empty)
-            from digits in Parsers.Digits
+            from digits in Parsers.Digits1
             select string.Concat(symbol, sign, digits);
 
         private static readonly CultureInfo USCulture = new CultureInfo("en-US");

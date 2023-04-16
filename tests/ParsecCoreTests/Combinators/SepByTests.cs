@@ -9,7 +9,7 @@ namespace ParsecCoreTests
         [Fact]
         public void EmptyListParsed()
         {
-            var valueParser = Parsers.Digits;
+            var valueParser = Parsers.Digits1;
             var sepParser = Parsers.Char(',');
             var parser = Parsers.SepBy(valueParser, sepParser);
             var input = ParserInput.Create("");
@@ -23,7 +23,7 @@ namespace ParsecCoreTests
         [Fact]
         public void SingleValueListParsed()
         {
-            var valueParser = Parsers.Digits;
+            var valueParser = Parsers.Digits1;
             var sepParser = Parsers.Char(',');
             var parser = Parsers.SepBy(valueParser, sepParser);
             var input = ParserInput.Create("123");
@@ -38,7 +38,7 @@ namespace ParsecCoreTests
         [Fact]
         public void SeveralValueListParsed()
         {
-            var valueParser = Parsers.Digits;
+            var valueParser = Parsers.Digits1;
             var sepParser = Parsers.Char(',');
             var parser = Parsers.SepBy(valueParser, sepParser);
             var input = ParserInput.Create("123,159,357,456,789");
@@ -64,7 +64,7 @@ namespace ParsecCoreTests
         [Fact]
         public void SeperatorAtTheEndFailure()
         {
-            var valueParser = Parsers.Digits;
+            var valueParser = Parsers.Digits1;
             var sepParser = Parsers.Char(',');
             var parser = Parsers.SepBy(valueParser, sepParser);
             var input = ParserInput.Create("123,159,357,456,789,");
@@ -77,7 +77,7 @@ namespace ParsecCoreTests
         [Fact]
         public void ValueNotParsedFailure()
         {
-            var valueParser = Parsers.Digits;
+            var valueParser = Parsers.Digits1;
             var sepParser = Parsers.Char(',');
             var parser = Parsers.SepBy(valueParser, sepParser);
             var input = ParserInput.Create("123,159,357,a45,789");

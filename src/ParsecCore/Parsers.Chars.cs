@@ -143,9 +143,14 @@ namespace ParsecCore
         public static readonly Parser<char, char> Zero = Char('0');
 
         /// <summary>
+        /// Parses as many digits as possible
+        /// </summary>
+        public static readonly Parser<string, char> Digits = Digit.Many();
+
+        /// <summary>
         /// Parses as many digits as possible, but at least one
         /// </summary>
-        public static readonly Parser<string, char> Digits = Digit.Many1();
+        public static readonly Parser<string, char> Digits1 = Digit.Many1();
 
         /// <summary>
         /// Parses a natural number (sequence of digits starting with a non-zero digit or zero).
@@ -162,7 +167,7 @@ namespace ParsecCore
         /// </summary>
         public static readonly Parser<int, char> DecimalInteger =
             from op in Symbol("-").Or(Symbol("+")).Option(string.Empty)
-            from digits in Token(Digits)
+            from digits in Token(Digits1)
             select Int32.Parse(op + digits);
 
         /// <summary>
