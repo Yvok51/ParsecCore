@@ -81,7 +81,15 @@ namespace ParsecCore
         {
             if (getParser is null) throw new ArgumentNullException(nameof(getParser));
 
-            return (input) => getParser()(input);
+            Parser<T, TInputToken>? cached = null;
+            return (input) =>
+            {
+                if (cached is null)
+                {
+                    cached = getParser();
+                }
+                return cached(input);
+            };
         }
     }
 }
