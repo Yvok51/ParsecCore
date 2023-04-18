@@ -98,8 +98,10 @@ namespace ParsecCore.Indentation
         }
 
         /// <summary>
-        /// Returns a parser which parses zero or more items in subsequent lines.
-        /// All of the items must start on the same indentation which given by <paramref name="desiredIndentation"/>.
+        /// Returns a parser which parses a head of a statement and
+        /// afterward zero or more further indented items in subsequent lines.
+        /// All of the items must start on the same indentation.
+        /// The indentation is given by the first item in the block.
         /// <paramref name="spaceConsumer"/> is used to consume whitespace between lines and as such should consume
         /// newlines.
         /// </summary>
@@ -108,38 +110,33 @@ namespace ParsecCore.Indentation
         /// <typeparam name="TReference"> Type returned by the parser of the reference item </typeparam>
         /// <typeparam name="TResult"> The return type of the parser </typeparam>
         /// <param name="spaceConsumer"> Parser consuming whitespace </param>
-        /// <param name="referenceParser"> Parser for the reference item </param>
-        /// <param name="desiredIndentation">
-        /// The desired indentation of the lines. If it is empty the desired indentation is taken as the indentation
-        /// of the first line
-        /// </param>
+        /// <param name="headParser"> Parser for the reference head item </param>
+        /// <param name="itemParser"> Parser for individual items </param>
         /// <param name="transform">
         /// Function which transforms the reference item and list into the return type
         /// </param>
-        /// <param name="itemParser"> Parser for individual items </param>
         /// <returns> Parser which parses a head and zero or more subsequent items at a greater indentation </returns>
         /// <exception cref="ArgumentNullException"> If any of the parameters are null </exception>
         public static Parser<TResult, char> IndentationBlockMany<TSpace, TItem, TReference, TResult>(
             Parser<TSpace, char> spaceConsumer,
-            Parser<TReference, char> referenceParser,
-            Maybe<IndentLevel> desiredIndentation,
-            Func<TReference, IList<TItem>, TResult> transform,
-            Parser<TItem, char> itemParser
+            Parser<TReference, char> headParser,
+            Parser<TItem, char> itemParser,
+            Func<TReference, IList<TItem>, TResult> transform
         )
         {
             if (spaceConsumer is null) throw new ArgumentNullException(nameof(spaceConsumer));
-            if (referenceParser is null) throw new ArgumentNullException(nameof(referenceParser));
+            if (headParser is null) throw new ArgumentNullException(nameof(headParser));
             if (transform is null) throw new ArgumentNullException(nameof(transform));
             if (itemParser is null) throw new ArgumentNullException(nameof(itemParser));
 
             return spaceConsumer.Then(
                    from referenceLvl in IndentationLevel<char>()
-                   from referenceItem in referenceParser // parse the head/reference item
+                   from referenceItem in headParser // parse the head/reference item
                    from currLvl in IndentationGuard(spaceConsumer, Relation.GT, referenceLvl)
                         .Try().Optional() // check for any items
                    from eof in Parsers.IsEOF<char>()
                    from res in ParseItems(
-                       eof, referenceLvl, referenceItem, currLvl, spaceConsumer, desiredIndentation, transform, itemParser
+                       eof, referenceLvl, referenceItem, currLvl, spaceConsumer, transform, itemParser
                        )
                    select res);
 
@@ -149,15 +146,14 @@ namespace ParsecCore.Indentation
                 TReference referenceItem,
                 Maybe<IndentLevel> current,
                 Parser<TSpace, char> spaceConsumer,
-                Maybe<IndentLevel> desiredIndentation,
                 Func<TReference, IList<TItem>, TResult> transform,
                 Parser<TItem, char> itemParser
             )
             {
                 if (!eof && !current.IsEmpty) // an item found
                 {
-                    return from items in IndentedItems(
-                        reference, desiredIndentation.Else(current.Value), spaceConsumer, itemParser)
+                    return from items in BlockItems(
+                        reference, current.Value, spaceConsumer, itemParser)
                            select transform(referenceItem, items);
                 }
 
@@ -166,8 +162,10 @@ namespace ParsecCore.Indentation
         }
 
         /// <summary>
-        /// Returns a parser which parses one or more items in subsequent lines.
-        /// All of the items must start on the same indentation which given by <paramref name="desiredIndentation"/>.
+        /// Returns a parser which parses head of a statement and
+        /// one or more further indented items in subsequent lines.
+        /// All of the items must start on the same indentation.
+        /// The indentation is given by the first parsed item
         /// <paramref name="spaceConsumer"/> is used to consume whitespace between lines and as such should consume
         /// newlines.
         /// </summary>
@@ -176,37 +174,32 @@ namespace ParsecCore.Indentation
         /// <typeparam name="TReference"> Type returned by the parser of the reference item </typeparam>
         /// <typeparam name="TResult"> The return type of the parser </typeparam>
         /// <param name="spaceConsumer"> Parser consuming whitespace </param>
-        /// <param name="referenceParser"> Parser for the reference item </param>
-        /// <param name="desiredIndentation">
-        /// The desired indentation of the lines. If it is empty the desired indentation is taken as the indentation
-        /// of the first line
-        /// </param>
+        /// <param name="headParser"> Parser for the reference head item </param>
+        /// <param name="itemParser"> Parser for individual items </param>
         /// <param name="transform">
         /// Function which transforms the reference item and list into the return type
         /// </param>
-        /// <param name="itemParser"> Parser for individual items </param>
         /// <returns> Parser which parses a head and one or more subsequent items at a greater indentation </returns>
         /// <exception cref="ArgumentNullException"> If any of the parameters are null </exception>
         public static Parser<TResult, char> IndentationBlockMany1<TSpace, TItem, TResult, TReference>(
             Parser<TSpace, char> spaceConsumer,
-            Parser<TReference, char> referenceParser,
-            Maybe<IndentLevel> desiredIndentation,
-            Func<TReference, IList<TItem>, TResult> transform,
-            Parser<TItem, char> itemParser
+            Parser<TReference, char> headParser,
+            Parser<TItem, char> itemParser,
+            Func<TReference, IList<TItem>, TResult> transform
         )
         {
             if (spaceConsumer is null) throw new ArgumentNullException(nameof(spaceConsumer));
-            if (referenceParser is null) throw new ArgumentNullException(nameof(referenceParser));
+            if (headParser is null) throw new ArgumentNullException(nameof(headParser));
             if (transform is null) throw new ArgumentNullException(nameof(transform));
             if (itemParser is null) throw new ArgumentNullException(nameof(itemParser));
 
             return spaceConsumer.Then(
                    from referenceLvl in IndentationLevel<char>()
-                   from referenceItem in referenceParser
+                   from referenceItem in headParser
                    from currPosition in IndentationGuard(spaceConsumer, Relation.GT, referenceLvl)
-                   from _ in IndentationGuard(spaceConsumer, Relation.EQ, desiredIndentation.Else(currPosition))
+                   from _ in IndentationGuard(spaceConsumer, Relation.EQ, currPosition)
                    from firstItem in itemParser
-                   from items in IndentedItems(referenceLvl, desiredIndentation.Else(currPosition), spaceConsumer, itemParser)
+                   from items in BlockItems(referenceLvl, currPosition, spaceConsumer, itemParser)
                    select transform(referenceItem, items.Prepend(firstItem)));
         }
 
@@ -223,7 +216,7 @@ namespace ParsecCore.Indentation
         /// <param name="spaceConsumer"> Parser consuming whitespace </param>
         /// <param name="itemParser"> Parser for individual items </param>
         /// <returns> Parser which parsers a list of items all of which are on the same indentation </returns>
-        private static Parser<List<TItem>, char> IndentedItems<TSpace, TItem>(
+        private static Parser<List<TItem>, char> BlockItems<TSpace, TItem>(
             IndentLevel reference,
             IndentLevel required,
             Parser<TSpace, char> spaceConsumer,

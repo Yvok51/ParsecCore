@@ -1,6 +1,5 @@
 ﻿using ParsecCore;
 using ParsecCore.Expressions;
-using System.Collections.Generic;
 using Xunit;
 
 namespace ParsecCoreTests.Expressions
@@ -9,12 +8,12 @@ namespace ParsecCoreTests.Expressions
     {
         public ExpressionTests()
         {
-            OperatorTable = OperatorTable<int, char>.Create(new List<List<Operator<int, char>>>
+            OperatorTable = OperatorTable<int, char>.Create(new Operator<int, char>[][]
                 {
-                    new List<Operator<int, char>>() { Expression.PrefixOperator<int>("+", x => x), Expression.PrefixOperator<int>("-", x => -x) },
-                    new List<Operator<int, char>>() { Expression.PostfixOperator<int>("++", x => x + 1) },
-                    new List<Operator<int, char>>() { Expression.BinaryOperator<int>("*", (x, y) => x * y, Associativity.Left), Expression.BinaryOperator<int>("/", (x, y) => x / y, Associativity.Left) },
-                    new List <Operator<int, char>>() { Expression.BinaryOperator < int >("+",(x, y) => x + y, Associativity.Left), Expression.BinaryOperator < int >("-",(x, y) => x - y, Associativity.Left) }
+                    new Operator<int, char>[] { Expression.PrefixOperator<int>("+", x => x), Expression.PrefixOperator<int>("-", x => -x) },
+                    new Operator<int, char>[] { Expression.PostfixOperator<int>("++", x => x + 1) },
+                    new Operator<int, char>[] { Expression.BinaryOperator<int>("*", (x, y) => x * y, Associativity.Left), Expression.BinaryOperator<int>("/", (x, y) => x / y, Associativity.Left) },
+                    new Operator<int, char>[] { Expression.BinaryOperator <int>("+",(x, y) => x + y, Associativity.Left), Expression.BinaryOperator <int>("-",(x, y) => x - y, Associativity.Left) }
                 }
             );
 

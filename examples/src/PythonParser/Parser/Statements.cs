@@ -134,27 +134,24 @@ namespace PythonParser.Parser
             Indentation.IndentationBlockMany1(
                 Control.EOLWhitespace,
                 ConditionHead("if"),
-                Maybe.Nothing<IndentLevel>(),
-                (test, stmts) => (test, new Suite(new List<Stmt>(stmts))),
-                Statement
+                Statement,
+                (test, stmts) => (test, new Suite(new List<Stmt>(stmts)))
             );
 
         private static readonly Parser<(Expr, Suite), char> Elif =
             Indentation.IndentationBlockMany1(
                 Control.EOLWhitespace,
                 ConditionHead("elif"),
-                Maybe.Nothing<IndentLevel>(),
-                (test, stmts) => (test, new Suite(new List<Stmt>(stmts))),
-                Statement
+                Statement,
+                (test, stmts) => (test, new Suite(new List<Stmt>(stmts)))
             );
 
         private static readonly Parser<Suite, char> Else =
             Indentation.IndentationBlockMany1(
                 Control.EOLWhitespace,
                 from _ in Control.Keyword("else") from __ in Control.Colon(Control.Lexeme) select None.Instance,
-                Maybe.Nothing<IndentLevel>(),
-                (_, stmts) => new Suite(new List<Stmt>(stmts)),
-                Statement
+                Statement,
+                (_, stmts) => new Suite(new List<Stmt>(stmts))
             );
 
         // TODO: add support for If on one line
@@ -168,9 +165,8 @@ namespace PythonParser.Parser
             Indentation.IndentationBlockMany1(
                 Control.EOLWhitespace,
                 ConditionHead("while"),
-                Maybe.Nothing<IndentLevel>(),
-                (test, stmts) => (test, new Suite(new List<Stmt>(stmts))),
-                Statement
+                Statement,
+                (test, stmts) => (test, new Suite(new List<Stmt>(stmts)))
             );
 
         // TODO: add support for While on one line
@@ -191,9 +187,8 @@ namespace PythonParser.Parser
             Indentation.IndentationBlockMany1(
                 Control.EOLWhitespace,
                 ForHead,
-                Maybe.Nothing<IndentLevel>(),
-                (head, stmts) => (head.Item1, head.Item2, new Suite(new List<Stmt>(stmts))),
-                Statement
+                Statement,
+                (head, stmts) => (head.Item1, head.Item2, new Suite(new List<Stmt>(stmts)))
             );
 
         private static readonly Parser<For, char> ForStatement =
@@ -219,9 +214,12 @@ namespace PythonParser.Parser
             Indentation.IndentationBlockMany1(
                 Control.EOLWhitespace,
                 FuncHead,
-                Maybe.Nothing<IndentLevel>(),
-                (head, body) => new Function(head.Item1, head.Item2, Array.Empty<(IdentifierLiteral, Expr)>(), new Suite(new List<Stmt>(body))),
-                Statement
+                Statement,
+                (head, body) => new Function(
+                    head.Item1,
+                    head.Item2,
+                    Array.Empty<(IdentifierLiteral, Expr)>(), new Suite(new List<Stmt>(body))
+                )
             );
 
         private static readonly Parser<Stmt, char> CompoundStatement =
