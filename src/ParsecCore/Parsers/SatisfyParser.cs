@@ -10,7 +10,7 @@ namespace ParsecCore.ParsersHelp
     /// </summary>
     internal class SatisfyParser
     {
-        private static Dictionary<char, string> escapedChars = new Dictionary<char, string>()
+        private static readonly Dictionary<char, string> escapedChars = new Dictionary<char, string>()
         {
             { '\n', "\\n" },
             { '\b', "\\b" },

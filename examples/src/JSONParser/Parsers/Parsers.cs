@@ -176,7 +176,7 @@ namespace JSONtoXML
         private static Parser<IReadOnlyList<T>, char> ObjectOfParser<T>(Parser<T, char> valueParser) =>
             betweenBraces(Parsers.SepBy(valueParser, valueSeparator));
 
-        private static readonly Parser<string, char> nameSeperator = Token(Parsers.String(":"));
+        private static readonly Parser<string, char> nameSeperator = Symbol(":");
         private static readonly Parser<ObjectKeyValuePair, char> member =
             from key in Token(StringValue)
             from sep in nameSeperator

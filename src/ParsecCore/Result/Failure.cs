@@ -19,5 +19,10 @@ namespace ParsecCore
         public ParseError Error { get; init; }
 
         public T Result => throw new InvalidOperationException("Holds an error");
+
+        public override string? ToString()
+        {
+            return Error.ToString();
+        }
     }
 }
