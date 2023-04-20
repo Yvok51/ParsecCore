@@ -93,7 +93,7 @@ namespace ParsecCore.Indentation
         {
             return spaceConsumer.Then(
                    from indentLvl in IndentationLevel<TInput>()
-                   from res in linefoldParser(IndentationGuard(spaceConsumer, Relation.GT, indentLvl))
+                   from res in linefoldParser(IndentationGuard(spaceConsumer, Relation.GT, indentLvl).Try())
                    select res);
         }
 
