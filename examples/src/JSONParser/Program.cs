@@ -1,4 +1,5 @@
 ﻿using ParsecCore;
+using ParsecCore.Permutations;
 using System;
 using System.IO;
 
@@ -33,24 +34,31 @@ namespace JSONtoXML
 //";
         static void Main(string[] args)
         {
-            if (args.Length == 1 && (args[0] == "-h" || args[0] == "--help"))
+            var parser = CommandLineParser();
+            var result = parser(ParserInput.Create(string.Join(' ', args)));
+
+            if (result.IsError)
+            {
+                Console.WriteLine("Incorrect usage");
+                PrintUsage();
+                return;
+            }
+
+            var commands = result.Result;
+
+            if (commands.help)
             {
                 PrintUsage();
                 return;
             }
-            if (args.Length != 2)
-            {
-                Console.WriteLine("Not the right number of arguments");
-                PrintUsage();
-                return;
-            }
-            var inputFile = args[0];
-            var outputFile = args[1];
 
             try
             {
-                using (StreamReader input = new StreamReader(inputFile))
-                using (StreamWriter output = new StreamWriter(outputFile))
+                using (StreamReader input = new StreamReader(commands.input))
+                using (TextWriter output = commands.output.Match(
+                    just: outputFile => new StreamWriter(outputFile),
+                    nothing: () => Console.Out
+                ))
                 {
                     ConvertToXML(input, output);
                 }
@@ -78,13 +86,39 @@ namespace JSONtoXML
             PrintXML.Print(xml, output);
         }
 
+        static Parser<(bool help, string input, Maybe<string> output), char> CommandLineParser()
+        {
+            var NonWhitespace = Parsers.Satisfy(c => !char.IsWhiteSpace(c), "not whitespace").Many1();
+            Func<string, Parser<string, char>> argumentParser =
+                (argument) => Parsers.Symbol("--" + argument).Try().Then(Parsers.Token(NonWhitespace));
+
+            var perm = Permutation.NewPermutation(
+                argumentParser("input")
+            ).AddOptional(
+                argumentParser("output").Map(arg => Maybe.FromValue(arg)),
+                Maybe.Nothing<string>()
+            ).AddOptional(
+                Parsers.Token(
+                    Parsers.Char('-').Then(
+                        Parsers.String("h").Or(Parsers.String("-help"))
+                    )
+                ).MapConstant(true),
+                false,
+                (pair, help) => (help, pair.Item1, pair.Item2)
+            );
+
+            return perm.GetParser().FollowedBy(Parsers.EOF<char>());
+        }
+
 
         public static void PrintUsage()
         {
-            Console.WriteLine("JSONtoXML usage:");
-            Console.WriteLine("JSONtoXML.exe {inputFile} {outputFile}");
-            Console.WriteLine("- Input file has to exist");
-            Console.WriteLine("- Output file will be overwritten or created");
+            Console.WriteLine("JSONtoXML: JSONtoXML.exe --input {inputFile} [--output {outputFile}]");
+            Console.WriteLine("    Convert a JSON file into the XML format");
+            Console.WriteLine();
+            Console.WriteLine("    Input file has to exist.");
+            Console.WriteLine("    Output file will be overwritten or created.");
+            Console.WriteLine("    If no output file is specified, prints to standard output");
         }
 
         public static void Test(string input)
