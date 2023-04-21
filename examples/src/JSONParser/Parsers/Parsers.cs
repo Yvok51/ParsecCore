@@ -14,28 +14,38 @@ namespace JSONtoXML
     {
         // We don't use Parser.Spaces since the its definition of whitespace is different
         // to the definition found in the JSON RFC.
-        // Subsequently we also don't use Token and Symbol but instead Between and custom Symbol
+        // Subsequently we define custom Symbol and Token
         private static readonly Parser<IReadOnlyList<char>, char> whitespace =
             Parsers.Satisfy(c => c == ' ' || c == '\n' || c == '\t' || c == '\r', "whitespace").Many<char, char>();
 
         private static Parser<T, char> Token<T>(Parser<T, char> parser) =>
-            parser.FollowedBy(whitespace);
+            Parsers.Token(parser, whitespace);
 
         private static Parser<string, char> Symbol(string s) =>
-            Token(Parsers.String(s));
+            Parsers.Symbol(s, whitespace);
 
+        /// <summary>
+        /// Custom parser to convert a single parsed character into a string.
+        /// A bit faster than parsing <paramref name="c"/> and afterwards converting it into a string.
+        /// Maybe an overoptimalization, but also showcases a slightly different possibility to parse characters
+        /// </summary>
+        /// <param name="c"> char to parse </param>
+        /// <returns></returns>
         private static Parser<string, char> CharString(char c) =>
             Parsers.Char(c).MapConstant(c.ToString());
 
-        private static readonly Parser<string, char> valueSeparator = Token(CharString(','));
+        private static readonly Parser<char, char> valueSeparator = Token(Parsers.Char(','));
 
         ////////// NULL //////////
+
+        // Using `MapConstant` as it is faster then `Map` / `Select` and we do not need the parsed value
         public static readonly Parser<NullValue, char> NullValue = Symbol("null").MapConstant(new NullValue());
 
         ////////// BOOLEAN //////////
         private static readonly Parser<bool, char> trueParser = Symbol("true").MapConstant(true);
         private static readonly Parser<bool, char> falseParser = Symbol("false").MapConstant(false);
 
+        // 'true' and 'false' differ in the first character -> we do not need lookahead and simple `Or` suffices
         private static readonly Parser<bool, char> Boolean = trueParser.Or(falseParser);
         public static Parser<BoolValue, char> BoolValue =
             from b in Boolean
@@ -128,8 +138,11 @@ namespace JSONtoXML
             from escapedChar in charToEscape
             select toEscaped[escapedChar];
 
+        // Example of left-factoring. We first parse the esacape character `\`
+        // and only afterward parse one of the escape sequences
         private static readonly Parser<char, char> escaped = escape.Then(hexEncoded.Or(escapedChar));
 
+        // Notice we put insideStringChar first as it is by far the more likely option
         private static readonly Parser<char, char> stringChar = insideStringChar.Or(escaped);
         private static readonly Parser<string, char> String = Parsers.Between(quote, stringChar.Many());
 
@@ -161,7 +174,7 @@ namespace JSONtoXML
 
         ////////// ARRAY //////////
         private static Parser<T, char> betweenBrackets<T>(Parser<T, char> betweenParser) =>
-            Parsers.Between(Symbol("["), betweenParser, Symbol("]"));
+            Parsers.Between(Token(CharString('[')), betweenParser, Token(CharString(']')));
 
         private static Parser<IReadOnlyList<T>, char> ListOfParser<T>(Parser<T, char> valueParser) =>
             betweenBrackets(Parsers.SepBy(valueParser, valueSeparator));
@@ -171,14 +184,15 @@ namespace JSONtoXML
 
         ////////// OBJECT //////////
         private static Parser<T, char> betweenBraces<T>(Parser<T, char> betweenParser) =>
-            Parsers.Between(Symbol("{"), betweenParser, Symbol("}"));
+            Parsers.Between(Token(CharString('{')), betweenParser, Token(CharString('}')));
 
         private static Parser<IReadOnlyList<T>, char> ObjectOfParser<T>(Parser<T, char> valueParser) =>
             betweenBraces(Parsers.SepBy(valueParser, valueSeparator));
 
-        private static readonly Parser<string, char> nameSeperator = Symbol(":");
+        private static readonly Parser<string, char> nameSeperator = Token(CharString(':'));
+        private static readonly Parser<StringValue, char> StringToken = Token(StringValue);
         private static readonly Parser<ObjectKeyValuePair, char> member =
-            from key in Token(StringValue)
+            from key in StringToken
             from sep in nameSeperator
             from value in JsonValue
             select new ObjectKeyValuePair { Key = key, Value = value };

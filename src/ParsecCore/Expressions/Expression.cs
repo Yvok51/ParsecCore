@@ -79,11 +79,12 @@ namespace ParsecCore.Expressions
         /// Help function to define a prefix operator.
         /// </summary>
         /// <typeparam name="T"> The typed parsed by the simple term parser of the expression </typeparam>
+        /// <typeparam name="TSpace"> The return type of the <paramref name="spaceConsumer"/> </typeparam>
         /// <param name="op"> The operator symbol </param>
         /// <param name="spaceConsumer"> The parser that will parse whitespace after the operator </param>
         /// <param name="func"> The function which will be applied on the term </param>
         /// <returns> Prefix operator </returns>
-        public static PrefixUnary<T, char> PrefixOperator<T, TSpace>(
+        public static PrefixUnary<T, char> PrefixOperator<T, TSpace, TInput>(
             string op,
             Parser<TSpace, char> spaceConsumer,
             Func<T, T> func
@@ -104,6 +105,7 @@ namespace ParsecCore.Expressions
         /// Help function to define a postfix operator.
         /// </summary>
         /// <typeparam name="T"> The typed parsed by the simple term parser of the expression </typeparam>
+        /// <typeparam name="TSpace"> The return type of the <paramref name="spaceConsumer"/> </typeparam>
         /// <param name="op"> The operator symbol </param>
         /// <param name="spaceConsumer"> The parser that will parse whitespace after the operator </param>
         /// <param name="func"> The function which will be applied on the term </param>
@@ -130,6 +132,7 @@ namespace ParsecCore.Expressions
         /// Help function to define a binary operator.
         /// </summary>
         /// <typeparam name="T"> The typed parsed by the simple term parser of the expression </typeparam>
+        /// <typeparam name="TSpace"> The return type of the <paramref name="spaceConsumer"/> </typeparam>
         /// <param name="op"> The operator symbol </param>
         /// <param name="spaceConsumer"> The parser that will parse whitespace after the operator </param>
         /// <param name="func"> The function which will be applied on the terms </param>
