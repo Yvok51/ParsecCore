@@ -232,29 +232,59 @@ namespace ParsecCore.Expressions
             Parser<T, TInput> ambiguousNone
         )
         {
-            var operandParser = from z in termParser
-                                from rest in ParseAnotherRightAssoc(
-                                    z, termParser, rAssocParser, ambiguousLeft, ambiguousNone
-                                )
-                                select rest;
+            Parser<(Func<T, T, T> op, T right), TInput> opParser =
+                from f in rAssocParser
+                from right in termParser
+                select (f, right);
+            Parser<Maybe<(Func<T, T, T> op, T right)>, TInput> opParserOptional =
+                opParser.Optional();
 
-            var parser = from f in rAssocParser
-                         from y in operandParser
-                         select f(value, y);
+            Parser<T, TInput> parser = (input) =>
+            {
+                var firstResult = opParser(input);
+                if (firstResult.IsError)
+                {
+                    return Result.RetypeError<(Func<T, T, T>, T), T, TInput>(firstResult);
+                }
+                List<(Func<T, T, T> op, T value)> parsedResults = new() { firstResult.Result };
+
+                var rightSideResult = opParserOptional(input);
+                while (rightSideResult.IsResult && rightSideResult.Result.HasValue)
+                {
+                    parsedResults.Add(rightSideResult.Result.Value);
+                    rightSideResult = opParserOptional(rightSideResult.UnconsumedInput);
+                }
+
+                if (rightSideResult.IsError)
+                {
+                    return Result.RetypeError<Maybe<(Func<T, T, T>, T)>, T, TInput>(rightSideResult);
+                }
+
+                if (parsedResults.Count == 0)
+                {
+                    return Result.Success(value, rightSideResult.UnconsumedInput);
+                }
+                else if (parsedResults.Count == 1)
+                {
+                    return Result.Success(
+                        parsedResults[0].op(value, parsedResults[0].value),
+                        rightSideResult.UnconsumedInput
+                    );
+                }
+
+                T accum = parsedResults[parsedResults.Count - 1].op(
+                    parsedResults[parsedResults.Count - 2].value,
+                    parsedResults[parsedResults.Count - 1].value
+                );
+                for (int i = parsedResults.Count - 2; i >= 1; i--)
+                {
+                    accum = parsedResults[i].op(parsedResults[i - 1].value, accum);
+                }
+
+                return Result.Success(parsedResults[0].op(value, accum), rightSideResult.UnconsumedInput);
+            };
 
             return parser.Or(ambiguousLeft).Or(ambiguousNone);
-        }
-
-        private static Parser<T, TInput> ParseAnotherRightAssoc<T, TInput>(
-            T value,
-            Parser<T, TInput> termParser,
-            Parser<Func<T, T, T>, TInput> rAssocParser,
-            Parser<T, TInput> ambiguousLeft,
-            Parser<T, TInput> ambiguousNone
-        )
-        {
-            return CreateRightAssocParser(value, termParser, rAssocParser, ambiguousLeft, ambiguousNone)
-                .Or(Parsers.Return<T, TInput>(value));
         }
 
         /// <summary>
@@ -284,27 +314,37 @@ namespace ParsecCore.Expressions
             Parser<T, TInput> ambiguousNone
         )
         {
+            Parser<(Func<T, T, T> op, T right), TInput> opParser =
+                from f in lAssocParser
+                from right in termParser
+                select (f, right);
+            Parser<Maybe<(Func<T, T, T> op, T right)>, TInput> opParserOptional =
+                opParser.Optional();
 
-            var parser = from f in lAssocParser
-                         from y in termParser
-                         from res in ParseAnotherLeftAssoc(
-                             f(value, y), termParser, lAssocParser, ambiguousRight, ambiguousNone
-                         )
-                         select res;
+            Parser<T, TInput> parser = (input) =>
+            {
+                var firstResult = opParser(input);
+                if (firstResult.IsError)
+                {
+                    return Result.RetypeError<(Func<T, T, T> op, T right), T, TInput>(firstResult);
+                }
+                T accum = firstResult.Result.op(value, firstResult.Result.right);
+                var rightSideResult = opParserOptional(firstResult.UnconsumedInput);
+                while (rightSideResult.IsResult && rightSideResult.Result.HasValue)
+                {
+                    accum = rightSideResult.Result.Value.op(accum, rightSideResult.Result.Value.right);
+                    rightSideResult = opParserOptional(rightSideResult.UnconsumedInput);
+                }
+
+                if (rightSideResult.IsError)
+                {
+                    return Result.RetypeError<Maybe<(Func<T, T, T>, T)>, T, TInput>(rightSideResult);
+                }
+
+                return Result.Success(accum, rightSideResult.UnconsumedInput);
+            };
 
             return parser.Or(ambiguousRight).Or(ambiguousNone);
-        }
-
-        private static Parser<T, TInput> ParseAnotherLeftAssoc<T, TInput>(
-            T value,
-            Parser<T, TInput> termParser,
-            Parser<Func<T, T, T>, TInput> lAssocParser,
-            Parser<T, TInput> ambiguousRight,
-            Parser<T, TInput> ambiguousNone
-        )
-        {
-            return CreateLeftAssocParser(value, termParser, lAssocParser, ambiguousRight, ambiguousNone)
-                .Or(Parsers.Return<T, TInput>(value));
         }
 
         /// <summary>
