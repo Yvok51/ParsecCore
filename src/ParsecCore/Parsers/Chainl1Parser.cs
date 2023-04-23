@@ -10,26 +10,39 @@ namespace ParsecCore.ParsersHelp
     /// </summary>
     internal class Chainl1Parser
     {
-        private static Parser<T, TInputToken> parseNextOpValue<T, TInputToken>(
-            T left,
-            Parser<T, TInputToken> value,
-            Parser<Func<T, T, T>, TInputToken> op
-        )
-        {
-            var nexOpParser = from f in op
-                              from right in value
-                              from result in parseNextOpValue(f(left, right), value, op)
-                              select result;
-            return Parsers.Choice(nexOpParser, Parsers.Return<T, TInputToken>(left));
-        }
         public static Parser<T, TInputToken> Parser<T, TInputToken>(
             Parser<T, TInputToken> value,
             Parser<Func<T, T, T>, TInputToken> op
         )
         {
-            return from left in value
-                   from result in parseNextOpValue(left, value, op)
-                   select result;
+            Parser<Maybe<(Func<T, T, T> op, T right)>, TInputToken> opParser = 
+                (from f in op
+                from right in value
+                select (f, right)).Optional();
+
+            return (input) =>
+            {
+                var leftValue = value(input);
+                if (leftValue.IsError)
+                {
+                    return leftValue;
+                }
+
+                T accum = leftValue.Result;
+                var rightSideResult = opParser(leftValue.UnconsumedInput);
+                while (rightSideResult.IsResult && rightSideResult.Result.HasValue)
+                {
+                    accum = rightSideResult.Result.Value.op(accum, rightSideResult.Result.Value.right);
+                    rightSideResult = opParser(rightSideResult.UnconsumedInput);
+                }
+
+                if (rightSideResult.IsError)
+                {
+                    return Result.RetypeError<Maybe<(Func<T, T, T>, T)>, T, TInputToken>(rightSideResult);
+                }
+
+                return Result.Success(accum, rightSideResult.UnconsumedInput);
+            };
         }
     }
 }
