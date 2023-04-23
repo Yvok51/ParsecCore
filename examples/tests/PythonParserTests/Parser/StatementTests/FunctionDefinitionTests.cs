@@ -18,7 +18,7 @@ namespace PythonParserTests.Parser.StatementTests
                     new IdentifierLiteral("func"),
                     Array.Empty<IdentifierLiteral>(),
                     Array.Empty<(IdentifierLiteral, Expr)>(),
-                    new Suite(new List<Stmt>() { new Suite(new List<Stmt>() { new Pass() }) })
+                    new Suite(new List<Stmt>() { new Pass() })
                 ),
                 result.Result
             );
@@ -41,7 +41,7 @@ namespace PythonParserTests.Parser.StatementTests
                         new IdentifierLiteral("c")
                     },
                     Array.Empty<(IdentifierLiteral, Expr)>(),
-                    new Suite(new List<Stmt>() { new Suite(new List<Stmt>() { new Pass() }) })
+                    new Suite(new List<Stmt>() { new Pass() })
                 ),
                 result.Result
             );
@@ -66,7 +66,7 @@ namespace PythonParserTests.Parser.StatementTests
                         new IdentifierLiteral("c")
                     },
                     Array.Empty<(IdentifierLiteral, Expr)>(),
-                    new Suite(new List<Stmt>() { new Suite(new List<Stmt>() { new Pass() }) })
+                    new Suite(new List<Stmt>() { new Pass() })
                 ),
                 result.Result
             );
@@ -86,11 +86,11 @@ namespace PythonParserTests.Parser.StatementTests
                     Array.Empty<(IdentifierLiteral, Expr)>(),
                     new Suite(new List<Stmt>()
                     {
-                        new Suite(new List<Stmt>() {new Assignment(
+                        new Assignment(
                             new List<List<Expr>>() { new List<Expr>() { new IdentifierLiteral("x") } },
-                            new List<Expr>() { new IntegerLiteral(1)}
-                        )}),
-                        new Suite(new List<Stmt>() {new Return(Maybe.Nothing<IReadOnlyList<Expr>>())})
+                            new List<Expr>() { new IntegerLiteral(1) }
+                        ),
+                        new Return (Maybe.Nothing <IReadOnlyList<Expr>>())
                     })
                 ),
                 result.Result
@@ -111,11 +111,11 @@ namespace PythonParserTests.Parser.StatementTests
                     Array.Empty<(IdentifierLiteral, Expr)>(),
                     new Suite(new List<Stmt>()
                     {
-                        new Suite(new List<Stmt>() {new Assignment(
+                        new Assignment(
                             new List<List<Expr>>() { new List<Expr>() { new IdentifierLiteral("x") } },
                             new List<Expr>() { new IntegerLiteral(1)}
-                        )}),
-                        new Suite(new List<Stmt>() {new Return(Maybe.Nothing<IReadOnlyList<Expr>>())})
+                        ),
+                        new Return (Maybe.Nothing<IReadOnlyList<Expr>>())
                     })
                 ),
                 result.Result

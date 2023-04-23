@@ -14,16 +14,13 @@ namespace PythonParserTests.Parser.StatementTests
 
             Assert.True(result.IsResult);
             Assert.Equal(
-                new Suite(new List<Stmt>()
-                {
-                    new ImportModule(
-                        new List<IdentifierLiteral>()
-                        {
-                            new IdentifierLiteral("numpy")
-                        },
-                        Maybe.Nothing<IdentifierLiteral>()
-                    )
-                }),
+                new ImportModule(
+                    new List<IdentifierLiteral>()
+                    {
+                        new IdentifierLiteral("numpy")
+                    },
+                    Maybe.Nothing<IdentifierLiteral>()
+                ),
                 result.Result
             );
         }
@@ -36,16 +33,13 @@ namespace PythonParserTests.Parser.StatementTests
 
             Assert.True(result.IsResult);
             Assert.Equal(
-                new Suite(new List<Stmt>()
-                {
-                    new ImportModule(
-                        new List<IdentifierLiteral>()
-                        {
-                            new IdentifierLiteral("numpy"), new IdentifierLiteral("typing")
-                        },
-                        Maybe.Nothing<IdentifierLiteral>()
-                    )
-                }),
+                new ImportModule(
+                    new List<IdentifierLiteral>()
+                    {
+                        new IdentifierLiteral("numpy"), new IdentifierLiteral("typing")
+                    },
+                    Maybe.Nothing<IdentifierLiteral>()
+                ),
                 result.Result
             );
         }
@@ -58,16 +52,13 @@ namespace PythonParserTests.Parser.StatementTests
 
             Assert.True(result.IsResult);
             Assert.Equal(
-                new Suite(new List<Stmt>()
-                {
-                    new ImportModule(
-                        new List<IdentifierLiteral>()
-                        {
-                            new IdentifierLiteral("numpy")
-                        },
-                        Maybe.FromValue(new IdentifierLiteral("np"))
-                    )
-                }),
+                new ImportModule(
+                    new List<IdentifierLiteral>()
+                    {
+                        new IdentifierLiteral("numpy")
+                    },
+                    Maybe.FromValue(new IdentifierLiteral("np"))
+                ),
                 result.Result
             );
         }
@@ -80,17 +71,14 @@ namespace PythonParserTests.Parser.StatementTests
 
             Assert.True(result.IsResult);
             Assert.Equal(
-                new Suite(new List<Stmt>()
-                {
-                    new ImportSpecific(
-                        new List<IdentifierLiteral>()
-                        {
-                            new IdentifierLiteral("numpy")
-                        },
-                        new IdentifierLiteral("Inf"),
-                        Maybe.Nothing<IdentifierLiteral>()
-                    )
-                }),
+                new ImportSpecific(
+                    new List<IdentifierLiteral>()
+                    {
+                        new IdentifierLiteral("numpy")
+                    },
+                    new IdentifierLiteral("Inf"),
+                    Maybe.Nothing<IdentifierLiteral>()
+                ),
                 result.Result
             );
         }
@@ -103,17 +91,14 @@ namespace PythonParserTests.Parser.StatementTests
 
             Assert.True(result.IsResult);
             Assert.Equal(
-                new Suite(new List<Stmt>()
-                {
-                    new ImportSpecific(
-                        new List<IdentifierLiteral>()
-                        {
-                            new IdentifierLiteral("numpy"), new IdentifierLiteral("typing")
-                        },
-                        new IdentifierLiteral("NBitBase"),
-                        Maybe.Nothing<IdentifierLiteral>()
-                    )
-                }),
+                new ImportSpecific(
+                    new List<IdentifierLiteral>()
+                    {
+                        new IdentifierLiteral("numpy"), new IdentifierLiteral("typing")
+                    },
+                    new IdentifierLiteral("NBitBase"),
+                    Maybe.Nothing<IdentifierLiteral>()
+                ),
                 result.Result
             );
         }
@@ -126,17 +111,14 @@ namespace PythonParserTests.Parser.StatementTests
 
             Assert.True(result.IsResult);
             Assert.Equal(
-                new Suite(new List<Stmt>()
-                {
-                    new ImportSpecific(
-                        new List<IdentifierLiteral>()
-                        {
-                            new IdentifierLiteral("numpy")
-                        },
-                        new IdentifierLiteral("Inf"),
-                        Maybe.FromValue(new IdentifierLiteral("NPInf"))
-                    )
-                }),
+                new ImportSpecific(
+                    new List<IdentifierLiteral>()
+                    {
+                        new IdentifierLiteral("numpy")
+                    },
+                    new IdentifierLiteral("Inf"),
+                    Maybe.FromValue(new IdentifierLiteral("NPInf"))
+                ),
                 result.Result
             );
         }
@@ -149,15 +131,12 @@ namespace PythonParserTests.Parser.StatementTests
 
             Assert.True(result.IsResult);
             Assert.Equal(
-                new Suite(new List<Stmt>()
-                {
-                    new ImportSpecificAll(
-                        new List<IdentifierLiteral>()
-                        {
-                            new IdentifierLiteral("numpy")
-                        }
-                    )
-                }),
+                new ImportSpecificAll(
+                    new List<IdentifierLiteral>()
+                    {
+                        new IdentifierLiteral("numpy")
+                    }
+                ),
                 result.Result
             );
         }

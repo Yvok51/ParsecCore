@@ -14,10 +14,7 @@ namespace PythonParserTests.Parser.StatementTests
 
             Assert.True(result.IsResult);
             Assert.Equal(
-                new Suite(new List<Stmt>()
-                {
-                    new Pass()
-                }),
+                new Pass(),
                 result.Result
             );
         }
@@ -39,10 +36,7 @@ namespace PythonParserTests.Parser.StatementTests
 
             Assert.True(result.IsResult);
             Assert.Equal(
-                new Suite(new List<Stmt>()
-                {
-                    new Break()
-                }),
+                new Break(),
                 result.Result
             );
         }
@@ -64,10 +58,7 @@ namespace PythonParserTests.Parser.StatementTests
 
             Assert.True(result.IsResult);
             Assert.Equal(
-                new Suite(new List<Stmt>()
-                {
-                    new Continue()
-                }),
+                new Continue(),
                 result.Result
             );
         }

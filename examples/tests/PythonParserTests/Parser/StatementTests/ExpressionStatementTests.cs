@@ -14,18 +14,15 @@ namespace PythonParserTests.Parser.StatementTests
 
             Assert.True(result.IsResult);
             Assert.Equal(
-                new Suite(new List<Stmt>()
+                new ExpressionStmt(new List<Expr>()
                 {
-                    new ExpressionStmt(new List<Expr>()
-                    {
-                        new Call(
-                            new IdentifierLiteral("call"),
-                            Maybe.Nothing<IReadOnlyList<Expr>>(),
-                            Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
-                            Maybe.Nothing<Expr>(),
-                            Maybe.Nothing<Expr>()
-                        )
-                    })
+                    new Call(
+                        new IdentifierLiteral("call"),
+                        Maybe.Nothing<IReadOnlyList<Expr>>(),
+                        Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
+                        Maybe.Nothing<Expr>(),
+                        Maybe.Nothing<Expr>()
+                    )
                 }),
                 result.Result
             );

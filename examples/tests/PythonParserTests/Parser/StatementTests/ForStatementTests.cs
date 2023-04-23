@@ -19,10 +19,7 @@ namespace PythonParserTests.Parser.StatementTests
                 new For(
                     new List<Expr>() { new IdentifierLiteral("x") },
                     new List<Expr>() { new IdentifierLiteral("xs") },
-                    new Suite(new List<Stmt>()
-                    {
-                        new Suite( new List<Stmt>() {new Pass() })
-                    }),
+                    new Suite(new List<Stmt>() { new Pass() }),
                     Maybe.Nothing<Suite>()
                 ),
                 result.Result
@@ -44,24 +41,19 @@ namespace PythonParserTests.Parser.StatementTests
                     new List<Expr>() { new IdentifierLiteral("xs") },
                     new Suite(new List<Stmt>()
                     {
-                        new Suite(
-                            new List<Stmt>()
+                        new ExpressionStmt(
+                            new List<Expr>()
                             {
-                                new ExpressionStmt(
-                                    new List<Expr>()
-                                    {
-                                        new Call(
-                                            new IdentifierLiteral("call"),
-                                            Maybe.Nothing<IReadOnlyList<Expr>>(),
-                                            Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
-                                            Maybe.Nothing<Expr>(),
-                                            Maybe.Nothing<Expr>()
-                                        )
-                                    }
+                                new Call(
+                                    new IdentifierLiteral("call"),
+                                    Maybe.Nothing<IReadOnlyList<Expr>>(),
+                                    Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
+                                    Maybe.Nothing<Expr>(),
+                                    Maybe.Nothing<Expr>()
                                 )
                             }
                         ),
-                        new Suite( new List<Stmt>() { new Return(Maybe.Nothing<IReadOnlyList<Expr>>()) })
+                        new Return(Maybe.Nothing<IReadOnlyList<Expr>>())
                     }),
                     Maybe.Nothing<Suite>()
                 ),
@@ -85,24 +77,19 @@ namespace PythonParserTests.Parser.StatementTests
                     new List<Expr>() { new IdentifierLiteral("xs") },
                     new Suite(new List<Stmt>()
                     {
-                        new Suite(
-                            new List<Stmt>()
+                        new ExpressionStmt(
+                            new List<Expr>()
                             {
-                                new ExpressionStmt(
-                                    new List<Expr>()
-                                    {
-                                        new Call(
-                                            new IdentifierLiteral("call"),
-                                            Maybe.Nothing<IReadOnlyList<Expr>>(),
-                                            Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
-                                            Maybe.Nothing<Expr>(),
-                                            Maybe.Nothing<Expr>()
-                                        )
-                                    }
+                                new Call(
+                                    new IdentifierLiteral("call"),
+                                    Maybe.Nothing<IReadOnlyList<Expr>>(),
+                                    Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
+                                    Maybe.Nothing<Expr>(),
+                                    Maybe.Nothing<Expr>()
                                 )
                             }
                         ),
-                        new Suite( new List<Stmt>() { new Return(Maybe.Nothing<IReadOnlyList<Expr>>()) })
+                        new Return (Maybe.Nothing < IReadOnlyList < Expr > >())
                     }),
                     Maybe.Nothing<Suite>()
                 ),
@@ -126,12 +113,12 @@ namespace PythonParserTests.Parser.StatementTests
                     new List<Expr>() { new IdentifierLiteral("xs") },
                     new Suite(new List<Stmt>()
                     {
-                        new Suite( new List<Stmt>() {new Pass() })
+                        new Pass ()
                     }),
                     Maybe.FromValue(
                         new Suite(new List<Stmt>()
                         {
-                            new Suite( new List<Stmt>() {new Pass() })
+                            new Pass()
                         })
                     )
                 ),
@@ -152,7 +139,7 @@ namespace PythonParserTests.Parser.StatementTests
                     new List<Expr>() { new AttributeRef(new IdentifierLiteral("xs"), new IdentifierLiteral("list")) },
                     new Suite(new List<Stmt>()
                     {
-                        new Suite( new List<Stmt>() {new Pass() })
+                        new Pass()
                     }),
                     Maybe.Nothing<Suite>()
                 ),

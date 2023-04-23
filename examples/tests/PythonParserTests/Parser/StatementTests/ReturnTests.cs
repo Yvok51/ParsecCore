@@ -14,10 +14,7 @@ namespace PythonParserTests.Parser.StatementTests
 
             Assert.True(result.IsResult);
             Assert.Equal(
-                new Suite(new List<Stmt>()
-                {
-                    new Return(Maybe.Nothing<IReadOnlyList<Expr>>())
-                }),
+                new Return(Maybe.Nothing<IReadOnlyList<Expr>>()),
                 result.Result
             );
         }
@@ -30,10 +27,7 @@ namespace PythonParserTests.Parser.StatementTests
 
             Assert.True(result.IsResult);
             Assert.Equal(
-                new Suite(new List<Stmt>()
-                {
-                    new Return(Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>() { new IdentifierLiteral("x") }))
-                }),
+                new Return(Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>() { new IdentifierLiteral("x") })),
                 result.Result
             );
         }
@@ -46,13 +40,10 @@ namespace PythonParserTests.Parser.StatementTests
 
             Assert.True(result.IsResult);
             Assert.Equal(
-                new Suite(new List<Stmt>()
+                new Return(Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>()
                 {
-                    new Return(Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>()
-                    {
-                        new Binary(new IntegerLiteral(2), BinaryOperator.Star, new IdentifierLiteral("x"))
-                    }))
-                }),
+                    new Binary(new IntegerLiteral(2), BinaryOperator.Star, new IdentifierLiteral("x"))
+                })),
                 result.Result
             );
         }

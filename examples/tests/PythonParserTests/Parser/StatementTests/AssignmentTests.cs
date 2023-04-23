@@ -14,16 +14,13 @@ namespace PythonParserTests.Parser.StatementTests
 
             Assert.True(result.IsResult);
             Assert.Equal(
-                new Suite(new List<Stmt>()
-                {
-                    new Assignment(
-                        new List<List<Expr>>()
-                        {
-                            new List<Expr>() { new IdentifierLiteral("x") }
-                        },
-                        new List<Expr>() { new IntegerLiteral(4) }
-                    )
-                }),
+                new Assignment(
+                    new List<List<Expr>>()
+                    {
+                        new List<Expr>() { new IdentifierLiteral("x") }
+                    },
+                    new List<Expr>() { new IntegerLiteral(4) }
+                ),
                 result.Result
             );
         }
@@ -36,16 +33,13 @@ namespace PythonParserTests.Parser.StatementTests
 
             Assert.True(result.IsResult);
             Assert.Equal(
-                new Suite(new List<Stmt>()
-                {
-                    new Assignment(
-                        new List<List<Expr>>()
-                        {
-                            new List<Expr>() { new IdentifierLiteral("x") }
-                        },
-                        new List<Expr>() { new IdentifierLiteral("y") }
-                    )
-                }),
+                new Assignment(
+                    new List<List<Expr>>()
+                    {
+                        new List<Expr>() { new IdentifierLiteral("x") }
+                    },
+                    new List<Expr>() { new IdentifierLiteral("y") }
+                ),
                 result.Result
             );
         }
@@ -57,17 +51,14 @@ namespace PythonParserTests.Parser.StatementTests
             var result = Statements.Statement(input);
 
             Assert.True(result.IsResult);
-            Assert.Equal(
-                new Suite(new List<Stmt>()
-                {
-                    new Assignment(
-                        new List<List<Expr>>()
-                        {
-                            new List<Expr>() { new IdentifierLiteral("x"), new IdentifierLiteral("y") }
-                        },
-                        new List<Expr>() { new IdentifierLiteral("pair") }
-                    )
-                }),
+            Assert.Equal(              
+                new Assignment(
+                    new List<List<Expr>>()
+                    {
+                        new List<Expr>() { new IdentifierLiteral("x"), new IdentifierLiteral("y") }
+                    },
+                    new List<Expr>() { new IdentifierLiteral("pair") }
+                ),
                 result.Result
             );
         }

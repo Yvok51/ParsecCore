@@ -33,10 +33,7 @@ namespace PythonParserTests.Parser
                             new Binary(new IdentifierLiteral("num"), BinaryOperator.GT, new IntegerLiteral(0)),
                             new Suite(new List<Stmt>()
                             {
-                                new Suite(new List<Stmt>()
-                                {
-                                    new Return(Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>() { new IntegerLiteral(1) }))
-                                })
+                                new Return (Maybe.FromValue < IReadOnlyList < Expr > >(new List < Expr >() { new IntegerLiteral(1) }))
                             }),
                             new List<(Expr, Suite)>()
                             {
@@ -44,19 +41,13 @@ namespace PythonParserTests.Parser
                                     new Binary(new IdentifierLiteral("num"), BinaryOperator.Equal, new IntegerLiteral(0)),
                                     new Suite(new List<Stmt>()
                                     {
-                                        new Suite(new List<Stmt>()
-                                        {
-                                            new Return(Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>() { new IntegerLiteral(0) }))
-                                        })
+                                        new Return (Maybe.FromValue < IReadOnlyList < Expr > >(new List < Expr >() { new IntegerLiteral(0) }))
                                     })
                                 )
                             },
                             Maybe.FromValue(new Suite(new List<Stmt>()
                             {
-                                new Suite(new List<Stmt>()
-                                    {
-                                        new Return(Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>() { new Unary(new IntegerLiteral(1), UnaryOperator.Minus) }))
-                                    })
+                                new Return (Maybe.FromValue < IReadOnlyList < Expr > >(new List < Expr >() { new Unary(new IntegerLiteral(1), UnaryOperator.Minus) }))
                             }))
                         )
                     })
@@ -74,30 +65,27 @@ namespace PythonParserTests.Parser
 
             Assert.True(result.IsResult);
             Assert.Equal(
-                new Suite(new List<Stmt>()
+                new ExpressionStmt(new List<Expr>()
                 {
-                    new ExpressionStmt(new List<Expr>()
-                    {
-                        new Call(
-                            new IdentifierLiteral("print"),
-                            Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>()
-                            {
-                                new Call(
-                                    new IdentifierLiteral("sign"),
-                                    Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>()
-                                    {
-                                        new IntegerLiteral(0)
-                                    }),
-                                    Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
-                                    Maybe.Nothing<Expr>(),
-                                    Maybe.Nothing<Expr>()
-                                )
-                            }),
-                            Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
-                            Maybe.Nothing<Expr>(),
-                            Maybe.Nothing<Expr>()
-                        )
-                    })
+                    new Call(
+                        new IdentifierLiteral("print"),
+                        Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>()
+                        {
+                            new Call(
+                                new IdentifierLiteral("sign"),
+                                Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>()
+                                {
+                                    new IntegerLiteral(0)
+                                }),
+                                Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
+                                Maybe.Nothing<Expr>(),
+                                Maybe.Nothing<Expr>()
+                            )
+                        }),
+                        Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
+                        Maybe.Nothing<Expr>(),
+                        Maybe.Nothing<Expr>()
+                    )
                 }),
                 result.Result);
         }
@@ -137,10 +125,7 @@ print(sign(0))
                                 new Binary(new IdentifierLiteral("num"), BinaryOperator.GT, new IntegerLiteral(0)),
                                 new Suite(new List<Stmt>()
                                 {
-                                    new Suite(new List<Stmt>()
-                                    {
-                                        new Return(Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>() { new IntegerLiteral(1) }))
-                                    })
+                                    new Return(Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>() { new IntegerLiteral(1) }))
                                 }),
                                 new List<(Expr, Suite)>()
                                 {
@@ -148,47 +133,38 @@ print(sign(0))
                                         new Binary(new IdentifierLiteral("num"), BinaryOperator.Equal, new IntegerLiteral(0)),
                                         new Suite(new List<Stmt>()
                                         {
-                                            new Suite(new List<Stmt>()
-                                            {
-                                                new Return(Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>() { new IntegerLiteral(0) }))
-                                            })
+                                            new Return(Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>() { new IntegerLiteral(0) }))
                                         })
                                     )
                                 },
                                 Maybe.FromValue(new Suite(new List<Stmt>()
                                 {
-                                    new Suite(new List<Stmt>()
-                                        {
-                                            new Return(Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>() { new Unary(new IntegerLiteral(1), UnaryOperator.Minus) }))
-                                        })
+                                    new Return (Maybe.FromValue < IReadOnlyList < Expr > >(new List < Expr >() { new Unary(new IntegerLiteral(1), UnaryOperator.Minus) }))
                                 }))
                             )
                         })
                     ),
-                    new Suite(new List<Stmt>()
+                    new ExpressionStmt(new List<Expr>()
                     {
-                        new ExpressionStmt(new List<Expr>()
-                        {
-                            new Call(
-                                new IdentifierLiteral("print"),
-                                Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>()
-                                {
-                                    new Call(
-                                        new IdentifierLiteral("sign"),
-                                        Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>()
-                                        {
-                                            new IntegerLiteral(0)
-                                        }),
-                                        Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
-                                        Maybe.Nothing<Expr>(),
-                                        Maybe.Nothing<Expr>()
-                                    )
-                                }),
-                                Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
-                                Maybe.Nothing<Expr>(),
-                                Maybe.Nothing<Expr>()
-                            )
-                        })
+                        new Call(
+                            new IdentifierLiteral("print"),
+                            Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>()
+                            {
+                                new Call(
+                                    new IdentifierLiteral("sign"),
+                                    Maybe.FromValue<IReadOnlyList<Expr>>(new List<Expr>()
+                                    {
+                                        new IntegerLiteral(0)
+                                    }),
+                                    Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
+                                    Maybe.Nothing<Expr>(),
+                                    Maybe.Nothing<Expr>()
+                                )
+                            }),
+                            Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
+                            Maybe.Nothing<Expr>(),
+                            Maybe.Nothing<Expr>()
+                        )
                     })
                 },
                 result.Result

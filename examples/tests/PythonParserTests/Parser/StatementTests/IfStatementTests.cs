@@ -20,7 +20,7 @@ namespace PythonParserTests.Parser.StatementTests
                     new IdentifierLiteral("x"),
                     new Suite(new List<Stmt>()
                     {
-                        new Suite( new List<Stmt>() {new Pass() })
+                        new Pass()
                     }),
                     Array.Empty<(Expr, Suite)>(),
                     Maybe.Nothing<Suite>()
@@ -43,24 +43,19 @@ namespace PythonParserTests.Parser.StatementTests
                     new IdentifierLiteral("x"),
                     new Suite(new List<Stmt>()
                     {
-                        new Suite(
-                            new List<Stmt>()
+                        new ExpressionStmt(
+                            new List<Expr>()
                             {
-                                new ExpressionStmt(
-                                    new List<Expr>()
-                                    {
-                                        new Call(
-                                            new IdentifierLiteral("call"),
-                                            Maybe.Nothing<IReadOnlyList<Expr>>(),
-                                            Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
-                                            Maybe.Nothing<Expr>(),
-                                            Maybe.Nothing<Expr>()
-                                        )
-                                    }
+                                new Call(
+                                    new IdentifierLiteral("call"),
+                                    Maybe.Nothing<IReadOnlyList<Expr>>(),
+                                    Maybe.Nothing<IReadOnlyList<KeywordArgument>>(),
+                                    Maybe.Nothing<Expr>(),
+                                    Maybe.Nothing<Expr>()
                                 )
                             }
                         ),
-                        new Suite( new List<Stmt>() { new Return(Maybe.Nothing<IReadOnlyList<Expr>>()) })
+                        new Return(Maybe.Nothing<IReadOnlyList<Expr>>())
                     }),
                     Array.Empty<(Expr, Suite)>(),
                     Maybe.Nothing<Suite>()
@@ -81,7 +76,7 @@ namespace PythonParserTests.Parser.StatementTests
                     new Binary(new IdentifierLiteral("x"), BinaryOperator.And, new IdentifierLiteral("y")),
                     new Suite(new List<Stmt>()
                     {
-                        new Suite( new List<Stmt>() {new Pass() })
+                        new Pass()
                     }),
                     Array.Empty<(Expr, Suite)>(),
                     Maybe.Nothing<Suite>()
@@ -102,13 +97,13 @@ namespace PythonParserTests.Parser.StatementTests
                     new IdentifierLiteral("x"),
                     new Suite(new List<Stmt>()
                     {
-                        new Suite( new List<Stmt>() { new Pass() })
+                        new Pass()
                     }),
                     Array.Empty<(Expr, Suite)>(),
                     Maybe.FromValue(
                         new Suite(new List<Stmt>()
                         {
-                            new Suite(new List<Stmt>() { new Pass() })
+                            new Pass()
                         })
                     )
                 ),
@@ -128,13 +123,13 @@ namespace PythonParserTests.Parser.StatementTests
                     new IdentifierLiteral("x"),
                     new Suite(new List<Stmt>()
                     {
-                        new Suite( new List<Stmt>() { new Pass() })
+                        new Pass()
                     }),
                     new List<(Expr, Suite)>()
                     {
                         (
                             new IdentifierLiteral("y"),
-                            new Suite(new List<Stmt>() { new Suite(new List<Stmt>() { new Pass() })})
+                            new Suite(new List<Stmt>() { new Pass() })
                         )
                     },
                     Maybe.Nothing<Suite>()
@@ -155,17 +150,17 @@ namespace PythonParserTests.Parser.StatementTests
                     new IdentifierLiteral("x"),
                     new Suite(new List<Stmt>()
                     {
-                        new Suite( new List<Stmt>() { new Pass() })
+                        new Pass()
                     }),
                     new List<(Expr, Suite)>()
                     {
                         (
                             new IdentifierLiteral("y"),
-                            new Suite(new List<Stmt>() { new Suite(new List<Stmt>() { new Pass() })})
+                            new Suite(new List<Stmt>() { new Pass() })
                         ),
                         (
                             new IdentifierLiteral("z"),
-                            new Suite(new List<Stmt>() { new Suite(new List<Stmt>() { new Pass() })})
+                            new Suite(new List<Stmt>() { new Pass() })
                         )
                     },
                     Maybe.Nothing<Suite>()
@@ -186,19 +181,19 @@ namespace PythonParserTests.Parser.StatementTests
                     new IdentifierLiteral("x"),
                     new Suite(new List<Stmt>()
                     {
-                        new Suite( new List<Stmt>() { new Pass() })
+                        new Pass()
                     }),
                     new List<(Expr, Suite)>()
                     {
                         (
                             new IdentifierLiteral("y"),
-                            new Suite(new List<Stmt>() { new Suite(new List<Stmt>() { new Pass() })})
+                            new Suite(new List<Stmt>() { new Pass() })
                         )
                     },
                     Maybe.FromValue(
                         new Suite(new List<Stmt>()
                         {
-                            new Suite(new List<Stmt>() { new Pass() })
+                            new Pass()
                         })
                     )
                 ),
