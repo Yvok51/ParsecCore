@@ -12,7 +12,13 @@ namespace PythonParser
             if (args.Length != 1)
             {
                 Console.WriteLine("Please supply exactly one file to parse");
-                Console.WriteLine(args);
+                PrintUsage();
+                return;
+            }
+
+            if (args[0] == "-h" || args[0] == "--help")
+            {
+                PrintUsage();
                 return;
             }
 
@@ -23,12 +29,18 @@ namespace PythonParser
                     var input = ParserInput.Create(sourceReader);
                     var parseResult = TopLevelParser.PythonFile(input);
 
-                    var result = parseResult.Match(
-                        success: stmts => string.Join("\n", stmts.Select(stmt => stmt.Accept(new PrintVisitor(), 0))),
-                        failure: error => error.ToString()
-                    );
-
-                    Console.WriteLine(result);
+                    if (parseResult.IsError)
+                    {
+                        Console.WriteLine(parseResult.Error);
+                    }
+                    else
+                    {
+                        var visitor = new PrintVisitor();
+                        foreach (var stmt in parseResult.Result)
+                        {
+                            Console.WriteLine(stmt.Accept(visitor, 0));
+                        }
+                    }
                 }
             }
             catch (Exception ex) when (ex is IOException)
@@ -37,9 +49,17 @@ namespace PythonParser
             }
         }
 
+        public static void PrintUsage()
+        {
+            Console.WriteLine("PythonParser: PythonParser {inputFile}");
+            Console.WriteLine("    Parses a python file");
+            Console.WriteLine();
+            Console.WriteLine("    Input file has to exist.");
+        }
+
         private class PrintVisitor : ExprVisitor<string, int>, StmtVisitor<string, int>
         {
-            public PrintVisitor(int indentationPerLevel = 4)
+            public PrintVisitor(int indentationPerLevel = 2)
             {
                 m_indentationPerLevel = indentationPerLevel;
             }
@@ -100,7 +120,7 @@ namespace PythonParser
 
             public string VisitAtrributeRef(AttributeRef attributeRef, int indentation)
             {
-                return attributeRef.Obj.Accept(this, indentation) + attributeRef.Attribute.Accept(this, indentation);
+                return attributeRef.Obj.Accept(this, indentation) + "." + attributeRef.Attribute.Accept(this, indentation);
             }
 
             public string VisitBinary(Binary binary, int indentation)

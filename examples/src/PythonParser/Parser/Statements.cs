@@ -121,7 +121,8 @@ namespace PythonParser.Parser
             Parsers.Indirect(() => CompoundStatement!).Try().Or(
                 from list in StatementList
                 from eol in Control.EOL.Or(Parsers.EOF<char>().Map(_ => '\n'))
-                select new Suite(list)
+                let stmt = list.Count == 1 ? list[0] : new Suite(list)
+                select stmt
             );
 
         private static Parser<Expr, char> ConditionHead(string keyword) =>

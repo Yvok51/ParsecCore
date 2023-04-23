@@ -113,7 +113,7 @@ namespace JSONtoXML
 
         public static void PrintUsage()
         {
-            Console.WriteLine("JSONtoXML: JSONtoXML.exe --input {inputFile} [--output {outputFile}]");
+            Console.WriteLine("JSONtoXML: JSONtoXML --input {inputFile} [--output {outputFile}]");
             Console.WriteLine("    Convert a JSON file into the XML format");
             Console.WriteLine();
             Console.WriteLine("    Input file has to exist.");
