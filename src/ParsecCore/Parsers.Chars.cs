@@ -122,8 +122,8 @@ namespace ParsecCore
         /// <summary>
         /// Parses end of line ('\n', '\r' or '\r\n') and returns '\n'
         /// </summary>
-        public static readonly Parser<char, char> EOL = // made so that we don't need lookahead
-            NewLine.Or(
+        public static readonly Parser<char, char> EOL =
+            NewLine.Or( // made such that we don't need lookahead
                 CarriageReturn.Then(NewLine.Or(Return<char, char>('\n')))
             );
 
@@ -159,15 +159,16 @@ namespace ParsecCore
         /// </summary>
         public static readonly Parser<int, char> Natural =
             (from nonzero in NonZeroDigit
-             from digits in Digit.Many()
+             from digits in Digits
              select Int32.Parse(nonzero + digits)).Or(Zero.MapConstant(0));
 
+        private static readonly Parser<string, char> sign = Symbol("-").Or(Symbol("+")).Option(string.Empty);
         /// <summary>
         /// Parses an integer
         /// </summary>
         public static readonly Parser<int, char> DecimalInteger =
-            from op in Symbol("-").Or(Symbol("+")).Option(string.Empty)
-            from digits in Token(Digits1)
+            from op in sign
+            from digits in Digits1
             select Int32.Parse(op + digits);
 
         /// <summary>
