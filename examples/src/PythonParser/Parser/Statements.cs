@@ -1,5 +1,4 @@
-﻿
-using ParsecCore;
+﻿using ParsecCore;
 using ParsecCore.Help;
 using ParsecCore.Indentation;
 using PythonParser.Structures;
@@ -16,8 +15,7 @@ namespace PythonParser.Parser
         private static readonly Parser<Expr, char> ComplexTarget =
             from primary in Expressions.Primary(Control.Lexeme)
             from rest in Parsers.Choice(
-                from dot in Control.Dot(Control.Lexeme)
-                from id in Literals.Identifier(Control.Lexeme)
+                from id in Control.Dot(Control.Lexeme).Then(Literals.Identifier(Control.Lexeme))
                 select new Func<Expr, Expr>((Expr expr) => new AttributeRef(expr, id)),
                 (from subscript in Parsers.Between(
                     Control.OpenBracket(Control.EOLLexeme),
@@ -51,7 +49,7 @@ namespace PythonParser.Parser
             select new Assignment(new List<IReadOnlyList<Expr>>() { targets }, exprs);
 
         private static readonly Parser<Pass, char> Pass =
-            Control.Lexeme.Create(Control.Keyword("pass")).Map(_ => new Pass());
+            Control.Lexeme.Create(Control.Keyword("pass")).MapConstant(new Pass());
 
         private static readonly Parser<Return, char> Return =
             from ret in Control.Lexeme.Create(Control.Keyword("return"))
@@ -59,10 +57,10 @@ namespace PythonParser.Parser
             select new Return(exprs);
 
         private static readonly Parser<Break, char> Break =
-            Control.Keyword("break").Map(_ => new Break());
+            Control.Keyword("break").MapConstant(new Break());
 
         private static readonly Parser<Continue, char> Continue =
-            Control.Keyword("continue").Map(_ => new Continue());
+            Control.Keyword("continue").MapConstant(new Continue());
 
         private static readonly Parser<IReadOnlyList<IdentifierLiteral>, char> ModulePath =
             Parsers.SepBy1(Literals.Identifier(Control.Lexeme), Control.Dot(Control.Lexeme));
@@ -70,27 +68,22 @@ namespace PythonParser.Parser
         private static readonly Parser<ImportModule, char> ImportModule =
             from import in Control.Keyword("import")
             from modulePath in ModulePath
-            from alias in (from _ in Control.Keyword("as")
-                           from name in Literals.Identifier(Control.Lexeme)
-                           select name).Optional()
+            from alias in Control.Keyword("as").Then(Literals.Identifier(Control.Lexeme)).Optional()
             select new ImportModule(modulePath, alias);
 
         private static readonly Parser<ImportSpecific, char> ImportSpecific =
-            from _ in Control.Keyword("from")
-            from modulePath in ModulePath
-            from __ in Control.Keyword("import")
+            from modulePath in Parsers.Between(Control.Keyword("from"), ModulePath, Control.Keyword("import"))
             from name in Literals.Identifier(Control.Lexeme)
-            from alias in (from _ in Control.Keyword("as")
-                           from name in Literals.Identifier(Control.Lexeme)
-                           select name).Optional()
+            from alias in Control.Keyword("as").Then(Literals.Identifier(Control.Lexeme)).Optional()
             select new ImportSpecific(modulePath, name, alias);
 
         private static readonly Parser<ImportSpecificAll, char> ImportSpecificAll =
-            from _ in Control.Keyword("from")
-            from modulePath in ModulePath
-            from __ in Control.Keyword("import")
-            from star in Control.Asterisk(Control.Lexeme)
-            select new ImportSpecificAll(modulePath);
+            Parsers.Between(
+                Control.Keyword("from"),
+                ModulePath,
+                Control.Keyword("import")
+            ).FollowedBy(Control.Asterisk(Control.Lexeme)
+            ).Map(modulePath => new ImportSpecificAll(modulePath));
 
         private static readonly Parser<Stmt, char> Import =
             Parsers.Choice<Stmt, char>(
@@ -126,12 +119,9 @@ namespace PythonParser.Parser
             );
 
         private static Parser<Expr, char> ConditionHead(string keyword) =>
-            from _ in Control.Keyword(keyword)
-            from test in Expressions.Expression(Control.Lexeme)
-            from __ in Control.Colon(Control.Lexeme)
-            select test;
+            Parsers.Between(Control.Keyword(keyword), Expressions.Expression(Control.Lexeme), Control.Colon(Control.Lexeme));
 
-        private static readonly Parser<(Expr, Suite), char> If =
+        private static readonly Parser<(Expr cond, Suite body), char> If =
             Indentation.IndentationBlockMany1(
                 Control.EOLWhitespace,
                 ConditionHead("if"),
@@ -150,7 +140,7 @@ namespace PythonParser.Parser
         private static readonly Parser<Suite, char> Else =
             Indentation.IndentationBlockMany1(
                 Control.EOLWhitespace,
-                from _ in Control.Keyword("else") from __ in Control.Colon(Control.Lexeme) select None.Instance,
+                Control.Keyword("else").Then(Control.Colon(Control.Lexeme)).Void(),
                 Statement,
                 (_, stmts) => new Suite(new List<Stmt>(stmts))
             );
@@ -160,9 +150,9 @@ namespace PythonParser.Parser
             from @if in If
             from elifs in Elif.Many()
             from @else in Else.Optional()
-            select new If(@if.Item1, @if.Item2, elifs, @else);
+            select new If(@if.cond, @if.body, elifs, @else);
 
-        private static readonly Parser<(Expr, Suite), char> While =
+        private static readonly Parser<(Expr cond, Suite body), char> While =
             Indentation.IndentationBlockMany1(
                 Control.EOLWhitespace,
                 ConditionHead("while"),
@@ -174,42 +164,41 @@ namespace PythonParser.Parser
         private static readonly Parser<While, char> WhileStatement =
             from @while in While
             from @else in Else.Optional()
-            select new While(@while.Item1, @while.Item2, @else);
+            select new While(@while.cond, @while.body, @else);
 
-        private static readonly Parser<(IReadOnlyList<Expr>, IReadOnlyList<Expr>), char> ForHead =
-            from _ in Control.Keyword("for")
-            from targets in TargetList
-            from __ in Control.Keyword("in")
-            from exprs in Expressions.ExpressionList(Control.Lexeme)
-            from ___ in Control.Colon(Control.Lexeme)
+        private static readonly Parser<(IReadOnlyList<Expr> targets, IReadOnlyList<Expr> exprs), char> ForHead =
+            from targets in Parsers.Between(Control.Keyword("for"), TargetList, Control.Keyword("in"))
+            from exprs in Expressions.ExpressionList(Control.Lexeme).FollowedBy(Control.Colon(Control.Lexeme))
             select (targets, exprs);
 
-        private static readonly Parser<(IReadOnlyList<Expr>, IReadOnlyList<Expr>, Suite), char> For =
-            Indentation.IndentationBlockMany1(
-                Control.EOLWhitespace,
-                ForHead,
-                Statement,
-                (head, stmts) => (head.Item1, head.Item2, new Suite(new List<Stmt>(stmts)))
-            );
+        private static readonly 
+            Parser<(IReadOnlyList<Expr> targets, IReadOnlyList<Expr> exprs, Suite body), char> For =
+                Indentation.IndentationBlockMany1(
+                    Control.EOLWhitespace,
+                    ForHead,
+                    Statement,
+                    (head, stmts) => (head.targets, head.exprs, new Suite(new List<Stmt>(stmts)))
+                );
 
         private static readonly Parser<For, char> ForStatement =
             from @for in For
             from @else in Else.Optional()
-            select new For(@for.Item1, @for.Item2, @for.Item3, @else);
+            select new For(@for.targets, @for.exprs, @for.body, @else);
 
         private static readonly Parser<IReadOnlyList<IdentifierLiteral>, char> ParameterList =
             Parsers.SepBy(Literals.Identifier(Control.EOLLexeme), Control.Comma(Control.EOLLexeme));
 
-        private static readonly Parser<(IdentifierLiteral, IReadOnlyList<IdentifierLiteral>), char> FuncHead =
-            from _ in Control.Keyword("def")
-            from funcname in Literals.Identifier(Control.Lexeme)
-            from parameterList in Parsers.Between(
-                Control.OpenParan(Control.EOLLexeme),
-                ParameterList,
-                Control.CloseParan(Control.Lexeme)
-            )
-            from __ in Control.Colon(Control.Lexeme)
-            select (funcname, parameterList);
+        private static readonly 
+            Parser<(IdentifierLiteral name, IReadOnlyList<IdentifierLiteral> parameters), char> FuncHead =
+                from _ in Control.Keyword("def")
+                from funcname in Literals.Identifier(Control.Lexeme)
+                from parameterList in Parsers.Between(
+                    Control.OpenParan(Control.EOLLexeme),
+                    ParameterList,
+                    Control.CloseParan(Control.Lexeme)
+                )
+                from __ in Control.Colon(Control.Lexeme)
+                select (funcname, parameterList);
 
         private static readonly Parser<Function, char> FuncDefStatement =
             Indentation.IndentationBlockMany1(
@@ -217,8 +206,8 @@ namespace PythonParser.Parser
                 FuncHead,
                 Statement,
                 (head, body) => new Function(
-                    head.Item1,
-                    head.Item2,
+                    head.name,
+                    head.parameters,
                     Array.Empty<(IdentifierLiteral, Expr)>(), new Suite(new List<Stmt>(body))
                 )
             );

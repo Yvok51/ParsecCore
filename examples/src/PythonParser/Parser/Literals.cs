@@ -32,7 +32,7 @@ namespace PythonParser.Parser
             "hexadecimal digit"
         );
         private static readonly Parser<char, char> bit16HexEncoded =
-            from __ in Parsers.Char('u')
+            from _ in Parsers.Char('u')
             from first in hexadecimalDigit
             from second in hexadecimalDigit
             from third in hexadecimalDigit
@@ -42,7 +42,7 @@ namespace PythonParser.Parser
                 NumberStyles.AllowHexSpecifier
             );
         private static readonly Parser<char, char> bit8HexEncoded =
-            from __ in Parsers.Char('x')
+            from _ in Parsers.Char('x')
             from first in hexadecimalDigit
             from second in hexadecimalDigit
             select (char)int.Parse(
@@ -70,9 +70,7 @@ namespace PythonParser.Parser
             select toEscaped[escapedChar];
 
         private static readonly Parser<char, char> escaped =
-            from _ in escape
-            from escaped in Parsers.Choice(escapedChar, bit8HexEncoded, bit16HexEncoded)
-            select escaped;
+            escape.Then(Parsers.Choice(escapedChar, bit8HexEncoded, bit16HexEncoded));
 
         private static readonly Parser<char, char> insideDoubleQuoteShortStringChar =
             Parsers.Satisfy(
@@ -84,15 +82,6 @@ namespace PythonParser.Parser
                 c => c != '\'' && c != '\n' && c != '\r' && c != '\\',
                 "non-quote/non-CRLF/non-escape character"
             );
-        //private static readonly Parser<char, char> insideLongStringChar =
-        //    Parsers.Satisfy(
-        //        c => c != '\\',
-        //        "non-escape character"
-        //    );
-
-        //private static readonly Parser<char, char> insideLongDoubleQuoteStringChar =
-        //    from _ in Parsers.String("\"\"\"").Try()
-
 
         private static readonly Parser<char, char> doubleQuote = Parsers.Char('\"');
         private static readonly Parser<char, char> singleQuote = Parsers.Char('\'');
@@ -102,13 +91,6 @@ namespace PythonParser.Parser
                 Parsers.Between(singleQuote, insideSingleQuoteShortStringChar.Or(escaped).Many()),
                 Parsers.Between(doubleQuote, insideDoubleQuoteShortStringChar.Or(escaped).Many())
             );
-
-        //private static readonly Parser<string, char> longString =
-        //    Combinators.Choice(
-        //        (from tripleQuote in Parsers.String("\"\"\"")
-        //         from 
-        //        )
-        //    );
 
         internal static Parser<StringLiteral, char> String =
             from prefix in stringPrefix.Option("")

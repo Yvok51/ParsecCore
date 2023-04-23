@@ -84,9 +84,7 @@ namespace PythonParser.Parser
             from lower in Expression(Control.EOLLexeme).Optional()
             from colon in Control.Colon(Control.EOLLexeme)
             from upper in Expression(Control.EOLLexeme).Optional()
-            from stride in (from _ in Control.Colon(Control.EOLLexeme)
-                            from stride in Expression(Control.EOLLexeme)
-                            select stride).Optional()
+            from stride in Control.Colon(Control.EOLLexeme).Then(Expression(Control.EOLLexeme)).Optional()
             select new SliceItem(lower, upper, stride);
 
         internal static readonly Parser<IReadOnlyList<Expr>, char> SliceList =
@@ -105,18 +103,14 @@ namespace PythonParser.Parser
             Parsers.SepBy1(Expression(Control.EOLLexeme), Control.Comma(Control.EOLLexeme));
 
         private static Parser<Maybe<T>, char> OptionalArgument<T>(Parser<T, char> p) =>
-            (from _ in Control.Comma(Control.EOLLexeme)
-             from parsed in p
-             select parsed).Try().Optional();
+            Control.Comma(Control.EOLLexeme).Then(p).Try().Optional();
 
         private static readonly Parser<Maybe<Expr>, char> OptionalSequenceArg =
-            OptionalArgument(from sa in Control.Asterisk(Control.EOLLexeme)
-                             from seq in Expression(Control.EOLLexeme)
-                             select seq);
+            OptionalArgument(Control.Asterisk(Control.EOLLexeme).Then(Expression(Control.EOLLexeme)));
+
         private static readonly Parser<Maybe<Expr>, char> OptionalMappingArg =
-            OptionalArgument(from da in Control.DoubleAsterisk(Control.EOLLexeme)
-                             from map in Expression(Control.EOLLexeme)
-                             select map);
+            OptionalArgument(Control.DoubleAsterisk(Control.EOLLexeme).Then(Expression(Control.EOLLexeme)));
+
         private static readonly Parser<Maybe<IReadOnlyList<KeywordArgument>>, char> OptionalKeywords =
             OptionalArgument(KeywordArguments);
 

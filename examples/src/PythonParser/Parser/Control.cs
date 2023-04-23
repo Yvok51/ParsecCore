@@ -9,9 +9,7 @@ namespace PythonParser.Parser
         public static readonly Parser<char, char> EOL = Parsers.EOL;
 
         public static readonly Parser<char, char> Comment =
-            from start in Parsers.Char('#')
-            from content in Parsers.NoneOf('\n', '\r').Many()
-            select ' ';
+            Parsers.Char('#').Then(Parsers.NoneOf('\n', '\r').Many()).MapConstant(' ');
 
         private static readonly Parser<char, char> WhitespaceChar =
             Parsers.Satisfy(c => c == ' ' || c == '\t' || c == '\f', "whitespace")
@@ -35,6 +33,10 @@ namespace PythonParser.Parser
             "break", "except", "in", "raise"
         };
 
+        /// <summary>
+        /// Creates a lexeme - consumes a string and any whitespace after it and returns the parsed string
+        /// Interface for multiple different implementations of Tokens without needing to pass a space consumer.
+        /// </summary>
         public interface LexemeFactory
         {
             public Parser<T, char> Create<T>(Parser<T, char> parser);
@@ -47,7 +49,7 @@ namespace PythonParser.Parser
             }
 
             public Parser<T, char> Create<T>(Parser<T, char> parser)
-                => from parsed in parser from _ in _spaceConsumer select parsed;
+                => Parsers.Token(parser, _spaceConsumer);
 
             private Parser<None, char> _spaceConsumer;
         }
@@ -93,9 +95,9 @@ namespace PythonParser.Parser
 
         public static Parser<string, char> Keyword(string keyword, LexemeFactory lexeme)
             => lexeme.Create(
-                from word in Parsers.String(keyword)
-                from _ in Parsers.NotFollowedBy(Literals.IdentifierContinue, $"keyword {keyword} expected")
-                select word
+                Parsers.String(keyword).FollowedBy(
+                    Parsers.NotFollowedBy(Literals.IdentifierContinue, $"keyword {keyword} expected")
+                )
                ).Try();
 
         public static Parser<string, char> Not(LexemeFactory lexeme) => Keyword("not", lexeme).Try();
@@ -103,16 +105,12 @@ namespace PythonParser.Parser
         public static Parser<BinaryOperator, char> Is(LexemeFactory lexeme)
             => Keyword("is", lexeme).Try().Map(_ => BinaryOperator.Is);
         public static Parser<BinaryOperator, char> IsNot(LexemeFactory lexeme)
-            => (from _ in Is(lexeme)
-                from not in Not(lexeme)
-                select BinaryOperator.IsNot).Try();
+            => Is(lexeme).Then(Not(lexeme)).MapConstant(BinaryOperator.IsNot).Try();
 
         public static Parser<BinaryOperator, char> In(LexemeFactory lexeme)
             => Keyword("in", lexeme).Try().Map(_ => BinaryOperator.Is);
         public static Parser<BinaryOperator, char> NotIn(LexemeFactory lexeme)
-            => (from not in Not(lexeme)
-                from _ in In(lexeme)
-                select BinaryOperator.NotIn).Try();
+            => Not(lexeme).Then(In(lexeme)).MapConstant(BinaryOperator.NotIn).Try();
 
         public static Parser<string, char> And(LexemeFactory lexeme) => Keyword("and", lexeme).Try();
         public static Parser<string, char> Or(LexemeFactory lexeme) => Keyword("or", lexeme).Try();

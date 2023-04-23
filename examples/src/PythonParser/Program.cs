@@ -59,7 +59,7 @@ namespace PythonParser
 
         private class PrintVisitor : ExprVisitor<string, int>, StmtVisitor<string, int>
         {
-            public PrintVisitor(int indentationPerLevel = 2)
+            public PrintVisitor(int indentationPerLevel = 4)
             {
                 m_indentationPerLevel = indentationPerLevel;
             }
@@ -107,7 +107,6 @@ namespace PythonParser
             public string VisitAssignment(Assignment assignment, int indentation)
             {
                 var builder = new StringBuilder();
-                builder.Append(GetIndentation(indentation));
                 foreach (var targets in assignment.TargetList)
                 {
                     builder.Append(ListExprs(targets, indentation));
@@ -169,7 +168,7 @@ namespace PythonParser
 
             public string VisitContinue(Continue @continue, int indentation)
             {
-                return GetIndentation(indentation) + "continue";
+                return "continue";
             }
 
             public string VisitDictDisplay(DictDisplay keyDisplay, int indentation)
@@ -191,8 +190,7 @@ namespace PythonParser
             {
                 var indent = GetIndentation(indentation);
 
-                return indent
-                    + "for "
+                return "for "
                     + ListExprs(forStatement.Targets, indentation)
                     + " in "
                     + ListExprs(forStatement.Expressions, indentation)
@@ -206,8 +204,7 @@ namespace PythonParser
 
             public string VisitFunction(Function function, int indentation)
             {
-                return GetIndentation(indentation)
-                    + "def "
+                return "def "
                     + function.Name
                     + '('
                     + ListExprs(function.Parameters, indentation)
@@ -239,8 +236,7 @@ namespace PythonParser
                     elifsBuilder.AppendLine(":");
                     elifsBuilder.Append(body.Accept(this, indentation + 1));
                 }
-                return indent
-                    + "if "
+                return "if "
                     + ifStatement.Test.Accept(this, indentation)
                     + ":\n"
                     + ifStatement.ThenBranch.Accept(this, indentation + 1)
@@ -307,13 +303,12 @@ namespace PythonParser
 
             public string VisitPass(Pass pass, int indentation)
             {
-                return GetIndentation(indentation) + "pass";
+                return "pass";
             }
 
             public string VisitReturn(Return @return, int indentation)
             {
-                return GetIndentation(indentation)
-                    + "return"
+                return "return"
                     + @return.Expressions.Match(
                         just: exprs => ' ' + ListExprs(exprs, indentation),
                         nothing: () => string.Empty
@@ -371,8 +366,7 @@ namespace PythonParser
             {
                 var indent = GetIndentation(indentation);
 
-                return indent
-                    + "while "
+                return "while "
                     + whileStatement.Test.Accept(this, indentation)
                     + ":\n"
                     + whileStatement.Body.Accept(this, indentation + 1)
