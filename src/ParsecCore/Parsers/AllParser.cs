@@ -39,20 +39,22 @@ namespace ParsecCore.ParsersHelp
             Func<IResult<T, TInputToken>, T> map = res => res.Result;
             return (input) =>
             {
-                List<IResult<T, TInputToken>> results = new(capacity);
+                List<IResult<T, TInputToken>> parseResults = new(capacity);
+                List<T> results = new(capacity);
 
                 foreach (var parser in parsers)
                 {
                     var parsedResult = parser(input);
                     input = parsedResult.UnconsumedInput;
-                    results.Add(parsedResult);
+                    parseResults.Add(parsedResult);
                     if (parsedResult.IsError)
                     {
-                        return Result.Failure<IReadOnlyList<T>, T, TInputToken>(results);
+                        return Result.Failure<IReadOnlyList<T>, T, TInputToken>(parseResults);
                     }
+                    results.Add(parsedResult.Result);
                 }
 
-                return Result.Success(results.Map(map), results, input);
+                return Result.Success(results, parseResults, input);
             };
         }
     }
