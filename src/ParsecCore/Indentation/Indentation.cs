@@ -223,8 +223,7 @@ namespace ParsecCore.Indentation
             Parser<TItem, char> itemParser
         )
         {
-            var lineBeginningParser = from _ in spaceConsumer
-                                      from position in IndentationLevel<char>()
+            var lineBeginningParser = from position in spaceConsumer.Then(IndentationLevel<char>())
                                       from end in Parsers.IsEOF<char>()
                                       select (position, end);
 

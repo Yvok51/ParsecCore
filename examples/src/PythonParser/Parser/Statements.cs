@@ -113,7 +113,7 @@ namespace PythonParser.Parser
         public static readonly Parser<Stmt, char> Statement =
             Parsers.Indirect(() => CompoundStatement!).Try().Or(
                 from list in StatementList
-                from eol in Control.EOL.Or(Parsers.EOF<char>().Map(_ => '\n'))
+                from eol in Control.EOL.Or(Parsers.EOF<char>().MapConstant('\n'))
                 let stmt = list.Count == 1 ? list[0] : new Suite(list)
                 select stmt
             );
