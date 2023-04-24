@@ -8,11 +8,11 @@ namespace ParsecCore.Indentation
     {
         /// <summary>
         /// Returns the position in the stream in a parser.
-        /// Useful for use in the context of LINQ
+        /// Does not consume any input and cannot fail.
         /// </summary>
         /// <typeparam name="TInput"> The type of the input stream </typeparam>
         /// <returns> The position in the stream in a parser wrapper </returns>
-        public static Parser<IndentLevel, TInput> IndentationLevel<TInput>()
+        public static Parser<IndentLevel, TInput> Level<TInput>()
             => from pos in Parsers.Position<TInput>()
                select (IndentLevel)pos;
 
@@ -31,7 +31,7 @@ namespace ParsecCore.Indentation
         /// or a parser that fails with incorrect indentation message
         /// </returns>
         /// <exception cref="ArgumentNullException"> If any of the arguments are null </exception>
-        public static Parser<IndentLevel, TInput> IndentationGuard<TSpace, TInput>(
+        public static Parser<IndentLevel, TInput> Guard<TSpace, TInput>(
             Parser<TSpace, TInput> spaceConsumer,
             Relation relation,
             IndentLevel reference
@@ -40,7 +40,7 @@ namespace ParsecCore.Indentation
             if (spaceConsumer is null) throw new ArgumentNullException(nameof(spaceConsumer));
 
             return spaceConsumer.Then(
-                IndentationLevel<TInput>().Assert(
+                Level<TInput>().Assert(
                     indent => relation.Satisfies(reference, indent),
                     (indent, pos) => new CustomError(
                             pos,
@@ -68,7 +68,7 @@ namespace ParsecCore.Indentation
             if (spaceConsumer is null) throw new ArgumentNullException(nameof(spaceConsumer));
             if (parser is null) throw new ArgumentNullException(nameof(parser));
 
-            return IndentationGuard(spaceConsumer, Relation.EQ, IndentLevel.FirstPosition).Then(parser);
+            return Guard(spaceConsumer, Relation.EQ, IndentLevel.FirstPosition).Then(parser);
         }
 
         /// <summary>
@@ -92,8 +92,8 @@ namespace ParsecCore.Indentation
         )
         {
             return spaceConsumer.Then(
-                   from indentLvl in IndentationLevel<TInput>()
-                   from res in linefoldParser(IndentationGuard(spaceConsumer, Relation.GT, indentLvl).Try())
+                   from indentLvl in Level<TInput>()
+                   from res in linefoldParser(Guard(spaceConsumer, Relation.GT, indentLvl).Try())
                    select res);
         }
 
@@ -109,6 +109,7 @@ namespace ParsecCore.Indentation
         /// <typeparam name="TItem"> Type returned by the <paramref name="itemParser"/> </typeparam>
         /// <typeparam name="TReference"> Type returned by the parser of the reference item </typeparam>
         /// <typeparam name="TResult"> The return type of the parser </typeparam>
+        /// <typeparam name="TInput"> The input type of the parsers </typeparam>
         /// <param name="spaceConsumer"> Parser consuming whitespace </param>
         /// <param name="headParser"> Parser for the reference head item </param>
         /// <param name="itemParser"> Parser for individual items </param>
@@ -117,10 +118,10 @@ namespace ParsecCore.Indentation
         /// </param>
         /// <returns> Parser which parses a head and zero or more subsequent items at a greater indentation </returns>
         /// <exception cref="ArgumentNullException"> If any of the parameters are null </exception>
-        public static Parser<TResult, char> IndentationBlockMany<TSpace, TItem, TReference, TResult>(
-            Parser<TSpace, char> spaceConsumer,
-            Parser<TReference, char> headParser,
-            Parser<TItem, char> itemParser,
+        public static Parser<TResult, TInput> BlockMany<TSpace, TItem, TReference, TResult, TInput>(
+            Parser<TSpace, TInput> spaceConsumer,
+            Parser<TReference, TInput> headParser,
+            Parser<TItem, TInput> itemParser,
             Func<TReference, IList<TItem>, TResult> transform
         )
         {
@@ -130,24 +131,24 @@ namespace ParsecCore.Indentation
             if (itemParser is null) throw new ArgumentNullException(nameof(itemParser));
 
             return spaceConsumer.Then(
-                   from referenceLvl in IndentationLevel<char>()
+                   from referenceLvl in Level<TInput>()
                    from referenceItem in headParser // parse the head/reference item
-                   from currLvl in IndentationGuard(spaceConsumer, Relation.GT, referenceLvl)
+                   from currLvl in Guard(spaceConsumer, Relation.GT, referenceLvl)
                         .Try().Optional() // check for any items
-                   from eof in Parsers.IsEOF<char>()
+                   from eof in Parsers.IsEOF<TInput>()
                    from res in ParseItems(
                        eof, referenceLvl, referenceItem, currLvl, spaceConsumer, transform, itemParser
                        )
                    select res);
 
-            static Parser<TResult, char> ParseItems(
+            static Parser<TResult, TInput> ParseItems(
                 bool eof,
                 IndentLevel reference,
                 TReference referenceItem,
                 Maybe<IndentLevel> current,
-                Parser<TSpace, char> spaceConsumer,
+                Parser<TSpace, TInput> spaceConsumer,
                 Func<TReference, IList<TItem>, TResult> transform,
-                Parser<TItem, char> itemParser
+                Parser<TItem, TInput> itemParser
             )
             {
                 if (!eof && !current.IsEmpty) // an item found
@@ -173,6 +174,7 @@ namespace ParsecCore.Indentation
         /// <typeparam name="TItem"> Type returned by the <paramref name="itemParser"/> </typeparam>
         /// <typeparam name="TReference"> Type returned by the parser of the reference item </typeparam>
         /// <typeparam name="TResult"> The return type of the parser </typeparam>
+        /// <typeparam name="TInput"> The input type of the parsers </typeparam>
         /// <param name="spaceConsumer"> Parser consuming whitespace </param>
         /// <param name="headParser"> Parser for the reference head item </param>
         /// <param name="itemParser"> Parser for individual items </param>
@@ -181,10 +183,10 @@ namespace ParsecCore.Indentation
         /// </param>
         /// <returns> Parser which parses a head and one or more subsequent items at a greater indentation </returns>
         /// <exception cref="ArgumentNullException"> If any of the parameters are null </exception>
-        public static Parser<TResult, char> IndentationBlockMany1<TSpace, TItem, TResult, TReference>(
-            Parser<TSpace, char> spaceConsumer,
-            Parser<TReference, char> headParser,
-            Parser<TItem, char> itemParser,
+        public static Parser<TResult, TInput> BlockMany1<TSpace, TItem, TResult, TReference, TInput>(
+            Parser<TSpace, TInput> spaceConsumer,
+            Parser<TReference, TInput> headParser,
+            Parser<TItem, TInput> itemParser,
             Func<TReference, IList<TItem>, TResult> transform
         )
         {
@@ -194,13 +196,160 @@ namespace ParsecCore.Indentation
             if (itemParser is null) throw new ArgumentNullException(nameof(itemParser));
 
             return spaceConsumer.Then(
-                   from referenceLvl in IndentationLevel<char>()
-                   from referenceItem in headParser
-                   from currPosition in IndentationGuard(spaceConsumer, Relation.GT, referenceLvl)
-                   from _ in IndentationGuard(spaceConsumer, Relation.EQ, currPosition)
+                   from referenceLvl in Level<TInput>()
+                   from head in headParser
+                   from currPosition in Guard(spaceConsumer, Relation.GT, referenceLvl)
+                   from _ in Guard(spaceConsumer, Relation.EQ, currPosition)
                    from firstItem in itemParser
                    from items in BlockItems(referenceLvl, currPosition, spaceConsumer, itemParser)
-                   select transform(referenceItem, items.Prepend(firstItem)));
+                   select transform(head, items.Prepend(firstItem)));
+        }
+
+        /// <summary>
+        /// Returns a parser which parses many indented items in a row.
+        /// All of the items must follow the same relation compared to the <paramref name="reference"/> indentation.
+        /// </summary>
+        /// <typeparam name="TItem"> The type of the parsed items </typeparam>
+        /// <typeparam name="TSpace"> The parsed whitespace type </typeparam>
+        /// <typeparam name="TInput"> The input type of the parser </typeparam>
+        /// <param name="reference"> The reference indentation level to compare against </param>
+        /// <param name="relation">
+        /// The relation the identation of the items must hold when compared to the <paramref name="reference"/>
+        /// </param>
+        /// <param name="spaceConsumer"> Parser to consume whitespace </param>
+        /// <param name="itemParser"> Parser for the individual items </param>
+        /// <returns> Parser which parses many items whose indentation satisfies the given relation </returns>
+        public static Parser<IReadOnlyList<TItem>, TInput> Many<TItem, TSpace, TInput>(
+            IndentLevel reference,
+            Relation relation,
+            Parser<TSpace, TInput> spaceConsumer,
+            Parser<TItem, TInput> itemParser
+        )
+        {
+            var lineBeginningParser = from position in spaceConsumer.Then(Level<TInput>())
+                                      from end in Parsers.IsEOF<TInput>()
+                                      select (position, end);
+            var optItemParser = itemParser.Optional();
+
+            return (input) =>
+            {
+                List<TItem> items = new();
+                List<IResult<Maybe<TItem>, TInput>> results = new();
+
+                while (true)
+                {
+                    var res = lineBeginningParser(input);
+                    input = res.UnconsumedInput;
+                    if (res.IsError)
+                    {
+                        return Result.Failure<List<TItem>, Maybe<TItem>, (IndentLevel, bool), TInput>(
+                            results, res, input
+                        );
+                    }
+                    var (position, end) = res.Result;
+
+                    if (end) // end of input
+                    {
+                        return Result.Success(items, results, input);
+                    }
+
+                    var itemRes = optItemParser(input);
+                    input = itemRes.UnconsumedInput;
+                    results.Add(itemRes);
+                    if (itemRes.IsError)
+                    {
+                        return Result.Failure<List<TItem>, Maybe<TItem>, TInput>(results);
+                    }
+                    else if (itemRes.Result.IsEmpty)
+                    {
+                        return Result.Success(items, results, input);
+                    }
+                    else if (!relation.Satisfies(reference, position))
+                    {
+                        return Result.Failure<List<TItem>, Maybe<TItem>, TInput>(
+                            results,
+                            new CustomError(input.Position, new IndentationError(relation, reference, position)),
+                            input
+                        );
+                    }
+                    items.Add(itemRes.Result.Value);
+                }
+            };
+        }
+
+        /// <summary>
+        /// Returns a parser which parses many indented items in a row.
+        /// All of the items must follow the same relation compared to the <paramref name="reference"/> indentation.
+        /// At least one item has to be parsed.
+        /// </summary>
+        /// <typeparam name="TItem"> The type of the parsed items </typeparam>
+        /// <typeparam name="TSpace"> The parsed whitespace type </typeparam>
+        /// <typeparam name="TInput"> The input type of the parser </typeparam>
+        /// <param name="reference"> The reference indentation level to compare against </param>
+        /// <param name="relation">
+        /// The relation the identation of the items must hold when compared to the <paramref name="reference"/>
+        /// </param>
+        /// <param name="spaceConsumer"> Parser to consume whitespace </param>
+        /// <param name="itemParser"> Parser for the individual items </param>
+        /// <returns> Parser which parses many items whose indentation satisfies the given relation </returns>
+        public static Parser<IReadOnlyList<TItem>, TInput> Many1<TItem, TSpace, TInput>(
+            IndentLevel reference,
+            Relation relation,
+            Parser<TSpace, TInput> spaceConsumer,
+            Parser<TItem, TInput> itemParser
+        )
+        {
+            return from _ in Guard(spaceConsumer, relation, reference)
+                   from first in itemParser
+                   from rest in Many(reference, relation, spaceConsumer, itemParser)
+                   select rest.Prepend(first);
+        }
+
+        /// <summary>
+        /// Optionally applies a parser with indentation checking.
+        /// Tries to apply <paramref name="parser"/>.
+        /// If it succeeds then check that its indentation follows the given 
+        /// <paramref name="relation"/> compared to <paramref name="reference"/>.
+        /// If the <paramref name="parser"/> fails but does not consume input,
+        /// then this parser succeeds and returns empty <see cref="Maybe{T}"/>.
+        /// If it fails and consumes input, then this entire parser fails.
+        /// </summary>
+        /// <typeparam name="T"> The output type of <paramref name="parser"/> </typeparam>
+        /// <typeparam name="TInput"> The input type of <paramref name="parser"/> </typeparam>
+        /// <param name="reference"> The reference indentation to compare against </param>
+        /// <param name="relation"> The relation to hold when compared to <paramref name="reference"/> </param>
+        /// <param name="parser"> The parser to try to apply </param>
+        /// <returns>
+        /// Parser which optionally applies <paramref name="parser"/> and also checks its indentation
+        /// </returns>
+        public static Parser<Maybe<T>, TInput> Optional<T, TInput>(
+            IndentLevel reference,
+            Relation relation,
+            Parser<T, TInput> parser
+        )
+        {
+            return (input) =>
+            {
+                var indentation = Level<TInput>()(input).Result;
+                var result = parser(input);
+                if (result.IsResult && relation.Satisfies(reference, indentation))
+                {
+                    return Result.Success(Maybe.FromValue(result.Result), result);
+                }
+                if (result.IsError)
+                {
+                    if (input.Equals(result.UnconsumedInput))
+                    {
+                        return Result.Success(Maybe.Nothing<T>(), result);
+                    }
+
+                    return Result.RetypeError<T, Maybe<T>, TInput>(result);
+                }
+                return Result.Failure<Maybe<T>, TInput>(
+                    new CustomError(input.Position, new IndentationError(relation, reference, indentation)),
+                    result.UnconsumedInput
+                );
+            };
         }
 
         /// <summary>
@@ -211,25 +360,27 @@ namespace ParsecCore.Indentation
         /// </summary>
         /// <typeparam name="TSpace"> Type returned by the <paramref name="spaceConsumer"/> </typeparam>
         /// <typeparam name="TItem"> Type returned by the <paramref name="itemParser"/> </typeparam>
+        /// <typeparam name="TInput"> The input type of the parsers </typeparam>
         /// <param name="reference"> Reference indentation level of the head of the block </param>
         /// <param name="required"> The required indentation of the items </param>
         /// <param name="spaceConsumer"> Parser consuming whitespace </param>
         /// <param name="itemParser"> Parser for individual items </param>
         /// <returns> Parser which parsers a list of items all of which are on the same indentation </returns>
-        private static Parser<List<TItem>, char> BlockItems<TSpace, TItem>(
+        private static Parser<List<TItem>, TInput> BlockItems<TSpace, TItem, TInput>(
             IndentLevel reference,
             IndentLevel required,
-            Parser<TSpace, char> spaceConsumer,
-            Parser<TItem, char> itemParser
+            Parser<TSpace, TInput> spaceConsumer,
+            Parser<TItem, TInput> itemParser
         )
         {
-            var lineBeginningParser = from position in spaceConsumer.Then(IndentationLevel<char>())
-                                      from end in Parsers.IsEOF<char>()
+            var lineBeginningParser = from position in spaceConsumer.Then(Level<TInput>())
+                                      from end in Parsers.IsEOF<TInput>()
                                       select (position, end);
 
             return (input) =>
             {
                 List<TItem> items = new();
+                List<IResult<TItem, TInput>> results = new();
 
                 while (true)
                 {
@@ -237,28 +388,30 @@ namespace ParsecCore.Indentation
                     input = res.UnconsumedInput;
                     if (res.IsError)
                     {
-                        return Result.RetypeError<(IndentLevel, bool), List<TItem>, char>(res);
+                        return Result.Failure<List<TItem>, TItem, (IndentLevel, bool), TInput>(results, res, input);
                     }
                     var (position, end) = res.Result;
 
                     if (end || position <= reference) // item is not indented
                     {
-                        return Result.Success(items, res);
+                        return Result.Success(items, results, input);
                     }
                     else if (position == required)
                     {
                         var itemRes = itemParser(input);
                         input = itemRes.UnconsumedInput;
+                        results.Add(itemRes);
                         if (itemRes.IsError)
                         {
-                            return Result.RetypeError<TItem, List<TItem>, char>(itemRes);
+                            return Result.Failure<List<TItem>, TItem, TInput>(results);
                         }
 
                         items.Add(itemRes.Result);
                     }
                     else
                     {
-                        return Result.Failure<List<TItem>, char>(
+                        return Result.Failure<List<TItem>, TItem, TInput>(
+                            results,
                             new CustomError(input.Position, new IndentationError(Relation.EQ, required, position)),
                             input
                         );

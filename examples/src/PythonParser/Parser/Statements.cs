@@ -122,7 +122,7 @@ namespace PythonParser.Parser
             Parsers.Between(Control.Keyword(keyword), Expressions.Expression(Control.Lexeme), Control.Colon(Control.Lexeme));
 
         private static readonly Parser<(Expr cond, Suite body), char> If =
-            Indentation.IndentationBlockMany1(
+            Indentation.BlockMany1(
                 Control.EOLWhitespace,
                 ConditionHead("if"),
                 Statement,
@@ -130,7 +130,7 @@ namespace PythonParser.Parser
             );
 
         private static readonly Parser<(Expr, Suite), char> Elif =
-            Indentation.IndentationBlockMany1(
+            Indentation.BlockMany1(
                 Control.EOLWhitespace,
                 ConditionHead("elif"),
                 Statement,
@@ -138,7 +138,7 @@ namespace PythonParser.Parser
             );
 
         private static readonly Parser<Suite, char> Else =
-            Indentation.IndentationBlockMany1(
+            Indentation.BlockMany1(
                 Control.EOLWhitespace,
                 Control.Keyword("else").Then(Control.Colon(Control.Lexeme)).Void(),
                 Statement,
@@ -147,13 +147,14 @@ namespace PythonParser.Parser
 
         // TODO: add support for If on one line
         private static readonly Parser<If, char> IfStatement =
+            from referenceLvl in Indentation.Level<char>()
             from @if in If
-            from elifs in Elif.Many()
-            from @else in Else.Optional()
+            from elifs in Indentation.Many(referenceLvl, Relation.EQ, Control.EOLWhitespace, Elif)
+            from @else in Indentation.Optional(referenceLvl, Relation.EQ, Else)
             select new If(@if.cond, @if.body, elifs, @else);
 
         private static readonly Parser<(Expr cond, Suite body), char> While =
-            Indentation.IndentationBlockMany1(
+            Indentation.BlockMany1(
                 Control.EOLWhitespace,
                 ConditionHead("while"),
                 Statement,
@@ -162,8 +163,9 @@ namespace PythonParser.Parser
 
         // TODO: add support for While on one line
         private static readonly Parser<While, char> WhileStatement =
+            from referenceLvl in Indentation.Level<char>()
             from @while in While
-            from @else in Else.Optional()
+            from @else in Indentation.Optional(referenceLvl, Relation.EQ, Else)
             select new While(@while.cond, @while.body, @else);
 
         private static readonly Parser<(IReadOnlyList<Expr> targets, IReadOnlyList<Expr> exprs), char> ForHead =
@@ -173,7 +175,7 @@ namespace PythonParser.Parser
 
         private static readonly 
             Parser<(IReadOnlyList<Expr> targets, IReadOnlyList<Expr> exprs, Suite body), char> For =
-                Indentation.IndentationBlockMany1(
+                Indentation.BlockMany1(
                     Control.EOLWhitespace,
                     ForHead,
                     Statement,
@@ -181,8 +183,9 @@ namespace PythonParser.Parser
                 );
 
         private static readonly Parser<For, char> ForStatement =
+            from referenceLvl in Indentation.Level<char>()
             from @for in For
-            from @else in Else.Optional()
+            from @else in Indentation.Optional(referenceLvl, Relation.EQ, Else)
             select new For(@for.targets, @for.exprs, @for.body, @else);
 
         private static readonly Parser<IReadOnlyList<IdentifierLiteral>, char> ParameterList =
@@ -201,7 +204,7 @@ namespace PythonParser.Parser
                 select (funcname, parameterList);
 
         private static readonly Parser<Function, char> FuncDefStatement =
-            Indentation.IndentationBlockMany1(
+            Indentation.BlockMany1(
                 Control.EOLWhitespace,
                 FuncHead,
                 Statement,

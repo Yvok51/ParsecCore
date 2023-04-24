@@ -62,9 +62,9 @@ namespace PythonParser.Parser
 
         public static Parser<Expr, char> Atom(Control.LexemeFactory lexeme)
             => Parsers.Choice(
-                Control.Keyword("True", lexeme).Map(_ => new BooleanLiteral(true)).Try(),
-                Control.Keyword("False", lexeme).Map(_ => new BooleanLiteral(false)).Try(),
-                Control.Keyword("None", lexeme).Map(_ => new NoneLiteral()).Try(),
+                Control.Keyword("True", lexeme).MapConstant(new BooleanLiteral(true)).Try(),
+                Control.Keyword("False", lexeme).MapConstant(new BooleanLiteral(false)).Try(),
+                Control.Keyword("None", lexeme).MapConstant(new NoneLiteral()).Try(),
                 Literals.Identifier(lexeme),
                 Literals.Literal(lexeme),
                 Enclosure(lexeme)
@@ -185,18 +185,15 @@ namespace PythonParser.Parser
         private static Parser<Expr, char> UExpr(Control.LexemeFactory lexeme)
             => Parsers.Choice<Expr, char>(
                 Power(lexeme),
-                from op in Control.Minus(lexeme)
-                from expr in Parsers.Indirect(() => UExpr(lexeme))
+                from expr in Control.Minus(lexeme).Then(Parsers.Indirect(() => UExpr(lexeme)))
                 select new Unary(expr, UnaryOperator.Minus),
-                from op in Control.Plus(lexeme)
-                from expr in Parsers.Indirect(() => UExpr(lexeme))
+                from expr in Control.Plus(lexeme).Then(Parsers.Indirect(() => UExpr(lexeme)))
                 select new Unary(expr, UnaryOperator.Plus)
             );
 
         private static Parser<Func<Expr, Expr>, char> RightBinary<Op>(Parser<Expr, char> right, Parser<Op, char> operatorParser, BinaryOperator op)
         {
-            return from _ in operatorParser
-                   from rightExpr in right
+            return from rightExpr in operatorParser.Then(right)
                    select new Func<Expr, Expr>(left => new Binary(left, op, rightExpr));
         }
 
@@ -240,23 +237,25 @@ namespace PythonParser.Parser
 
         private static Parser<Expr, char> NotTest(Control.LexemeFactory lexeme)
             => Comparison(lexeme).Or(
-                from not in Control.Not(lexeme)
-                from comp in Parsers.Indirect(() => NotTest(lexeme))
-                select new Unary(comp, UnaryOperator.Not)
+                Control.Not(lexeme)
+                    .Then(Parsers.Indirect(() => NotTest(lexeme)))
+                    .Map(comparison => new Unary(comparison, UnaryOperator.Not))
             );
 
         private static Parser<Expr, char> AndTest(Control.LexemeFactory lexeme)
             => Parsers.ChainL1(
                 NotTest(lexeme),
-                from op in Control.And(lexeme)
-                select new Func<Expr, Expr, Expr>((left, right) => new Binary(left, BinaryOperator.And, right))
+                Control.And(lexeme).MapConstant(
+                    new Func<Expr, Expr, Expr>((left, right) => new Binary(left, BinaryOperator.And, right))
+                )
             );
 
         private static Parser<Expr, char> OrTest(Control.LexemeFactory lexeme)
             => Parsers.ChainL1(
                 AndTest(lexeme),
-                from op in Control.Or(lexeme)
-                select new Func<Expr, Expr, Expr>((left, right) => new Binary(left, BinaryOperator.Or, right))
+                Control.Or(lexeme).MapConstant(
+                    new Func<Expr, Expr, Expr>((left, right) => new Binary(left, BinaryOperator.Or, right))
+                )
             );
 
         // Does not have conditional expression and lambdas

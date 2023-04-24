@@ -160,6 +160,30 @@ namespace ParsecCore
             return new Failure<T, TInput>(AggregateErrors(results)!, results[results.Count - 1].UnconsumedInput);
         }
 
+        public static IResult<T, TInput> Failure<T, R, S, TInput>(
+            IReadOnlyList<IResult<R, TInput>> results,
+            IResult<S, TInput> extra,
+            IParserInput<TInput> unconsummedInput
+        )
+        {
+            return new Failure<T, TInput>(
+                ParseError.CombineErrors(extra.Error, AggregateErrors(results))!,
+                unconsummedInput
+            );
+        }
+
+        public static IResult<T, TInput> Failure<T, R, TInput>(
+            IReadOnlyList<IResult<R, TInput>> results,
+            ParseError extra,
+            IParserInput<TInput> unconsummedInput
+        )
+        {
+            return new Failure<T, TInput>(
+                ParseError.CombineErrors(extra, AggregateErrors(results))!,
+                unconsummedInput
+            );
+        }
+
         private static ParseError? AggregateErrors<T, TInput>(IReadOnlyList<IResult<T, TInput>> results)
         {
             ParseError? error = null;

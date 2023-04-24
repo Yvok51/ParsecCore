@@ -43,7 +43,8 @@ namespace ParsecCore
         }
 
         /// <summary>
-        /// Parser which returns the current position of the input
+        /// Parser which returns the current position of the input.
+        /// Does not consume any input and cannot fail.
         /// </summary>
         /// <typeparam name="TInputToken"> The input type of the parser </typeparam>
         /// <returns></returns>

@@ -19,7 +19,7 @@ namespace ParsecCoreTests.Indentation
         {
             var items = Array.Empty<string>();
             var input = ParserInput.Create(inputStr);
-            var parser = from list in ParsecCore.Indentation.Indentation.IndentationBlockMany(
+            var parser = from list in ParsecCore.Indentation.Indentation.BlockMany(
                 Parsers.Spaces, Parsers.String("def"), Word, (head, list) => list)
                          select list;
             var res = parser(input);
@@ -35,7 +35,7 @@ namespace ParsecCoreTests.Indentation
         public void ManyIndentBlockRejectsNoHead(string inputStr)
         {
             var input = ParserInput.Create(inputStr);
-            var parser = from list in ParsecCore.Indentation.Indentation.IndentationBlockMany(
+            var parser = from list in ParsecCore.Indentation.Indentation.BlockMany(
                 Parsers.Spaces, Parsers.String("def"), Word, (head, list) => list)
                          select list;
             var res = parser(input);
@@ -52,7 +52,7 @@ namespace ParsecCoreTests.Indentation
         {
             var items = parsedItems.Split(' ');
             var input = ParserInput.Create(inputStr);
-            var parser = from list in ParsecCore.Indentation.Indentation.IndentationBlockMany(
+            var parser = from list in ParsecCore.Indentation.Indentation.BlockMany(
                 Parsers.Spaces, Parsers.String("def"), Word, (head, list) => list)
                          select list;
             var res = parser(input);
@@ -68,7 +68,7 @@ namespace ParsecCoreTests.Indentation
         public void ManyIndentBlockRejectsDifferentlyIndentedItems(string inputStr)
         {
             var input = ParserInput.Create(inputStr);
-            var parser = from list in ParsecCore.Indentation.Indentation.IndentationBlockMany(
+            var parser = from list in ParsecCore.Indentation.Indentation.BlockMany(
                 Parsers.Spaces, Parsers.String("def"), Word, (head, list) => list)
                          select list;
             var res = parser(input);

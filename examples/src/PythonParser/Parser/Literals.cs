@@ -200,14 +200,12 @@ namespace PythonParser.Parser
         public static Parser<IdentifierLiteral, char> Identifier(Control.LexemeFactory lexeme)
         {
             var isKeyword = (string id) => Control.Keywords.Contains(id);
-            var keywordGuard = (string id) => isKeyword(id)
-                ? Parsers.Fail<None, char>("Identifier expected, got keyword")
-                : Parsers.Return<None, char>(None.Instance);
             return lexeme.Create(
                 from start in IdentifierStart
                 from rest in IdentifierContinue.Many()
-                from _ in keywordGuard(start + rest)
-                select new IdentifierLiteral(start + rest)
+                from id in Parsers.Return<string, char>(start.ToString() + rest)
+                    .Assert(id => !isKeyword(id), "Identifier expected, got keyword")
+                select new IdentifierLiteral(id)
             );
         }
 

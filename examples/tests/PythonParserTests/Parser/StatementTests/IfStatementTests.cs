@@ -6,13 +6,15 @@ namespace PythonParserTests.Parser.StatementTests
 {
     public class IfStatementTests
     {
+        Parser<Stmt, char> stmtParser = Control.EOLWhitespace.Then(Statements.Statement);
+
         [Theory]
         [InlineData("if x:\n  pass\n\n")]
         [InlineData("if x:\n  pass\n")]
         public void SimpleIfStatement(string inputString)
         {
             var input = ParserInput.Create(inputString);
-            var result = Statements.Statement(input);
+            var result = stmtParser(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(
@@ -35,7 +37,7 @@ namespace PythonParserTests.Parser.StatementTests
         public void MultipleStatementsInThenBlock(string inputString)
         {
             var input = ParserInput.Create(inputString);
-            var result = Statements.Statement(input);
+            var result = stmtParser(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(
@@ -68,7 +70,7 @@ namespace PythonParserTests.Parser.StatementTests
         public void LongerCondition()
         {
             var input = ParserInput.Create("if x and y:\n  pass\n");
-            var result = Statements.Statement(input);
+            var result = stmtParser(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(
@@ -89,7 +91,7 @@ namespace PythonParserTests.Parser.StatementTests
         public void ElseBranch()
         {
             var input = ParserInput.Create("if x:\n  pass\nelse:\n  pass");
-            var result = Statements.Statement(input);
+            var result = stmtParser(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(
@@ -115,7 +117,7 @@ namespace PythonParserTests.Parser.StatementTests
         public void ElifBranch()
         {
             var input = ParserInput.Create("if x:\n  pass\nelif y:\n  pass");
-            var result = Statements.Statement(input);
+            var result = stmtParser(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(
@@ -142,7 +144,7 @@ namespace PythonParserTests.Parser.StatementTests
         public void MultipleElifBranch()
         {
             var input = ParserInput.Create("if x:\n  pass\nelif y:\n  pass\nelif z:\n  pass");
-            var result = Statements.Statement(input);
+            var result = stmtParser(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(
@@ -173,7 +175,7 @@ namespace PythonParserTests.Parser.StatementTests
         public void ElifAndElseBranch()
         {
             var input = ParserInput.Create("if x:\n  pass\nelif y:\n  pass\nelse:\n  pass");
-            var result = Statements.Statement(input);
+            var result = stmtParser(input);
 
             Assert.True(result.IsResult);
             Assert.Equal(
@@ -204,11 +206,12 @@ namespace PythonParserTests.Parser.StatementTests
         [Theory]
         [InlineData("if x:\n  pass\n  elif y:\n  pass")]
         [InlineData("if x:\n  pass\n elif y:\n  pass")]
-        [InlineData("  if x:\n  pass\nelif y:\n  pass")]
+        [InlineData("  if x:\n    pass\nelif y:\n  pass")]
+        [InlineData("if True:\n  if x:\n    pass\n elif y:\n    pass")]
         public void ElifBranchAtDifferentIndentationFails(string inputString)
         {
             var input = ParserInput.Create(inputString);
-            var result = Statements.Statement(input);
+            var result = stmtParser(input);
 
             Assert.True(result.IsError);
         }
@@ -220,7 +223,7 @@ namespace PythonParserTests.Parser.StatementTests
         public void ElseBranchAtDifferentIndentationFails(string inputString)
         {
             var input = ParserInput.Create(inputString);
-            var result = Statements.Statement(input);
+            var result = stmtParser(input);
 
             Assert.True(result.IsError);
         }

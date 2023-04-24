@@ -12,7 +12,7 @@ namespace ParsecCoreTests.Indentation
         public void BeginningPositionCorrect()
         {
             var input = ParserInput.Create("input");
-            var parser = from pos in ParsecCore.Indentation.Indentation.IndentationLevel<char>()
+            var parser = from pos in ParsecCore.Indentation.Indentation.Level<char>()
                          from word in Word
                          select pos;
             var res = parser(input);
@@ -27,7 +27,7 @@ namespace ParsecCoreTests.Indentation
         {
             var input = ParserInput.Create("input");
             var parser = from word in Word
-                         from pos in ParsecCore.Indentation.Indentation.IndentationLevel<char>()
+                         from pos in ParsecCore.Indentation.Indentation.Level<char>()
                          select pos;
             var res = parser(input);
 
@@ -40,7 +40,7 @@ namespace ParsecCoreTests.Indentation
         {
             var input = ParserInput.Create("input   ");
             var parser = from word in Word
-                         from pos in ParsecCore.Indentation.Indentation.IndentationLevel<char>()
+                         from pos in ParsecCore.Indentation.Indentation.Level<char>()
                          select pos;
             var res = parser(input);
 
@@ -54,7 +54,7 @@ namespace ParsecCoreTests.Indentation
             var input = ParserInput.Create("input\nasd");
             var parser = from word in Word
                          from _ in Parsers.EOL
-                         from pos in ParsecCore.Indentation.Indentation.IndentationLevel<char>()
+                         from pos in ParsecCore.Indentation.Indentation.Level<char>()
                          select pos;
             var res = parser(input);
 

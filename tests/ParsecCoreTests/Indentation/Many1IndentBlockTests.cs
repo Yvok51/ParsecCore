@@ -1,6 +1,4 @@
 ﻿using ParsecCore;
-using ParsecCore.Indentation;
-using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -15,10 +13,10 @@ namespace ParsecCoreTests.Indentation
         [InlineData("def   ")]
         [InlineData("def \t  ")]
         [InlineData("def\n  \n  ")]
-        public void SomeIndentBlockRejectsZeroItems(string inputStr)
+        public void Many1IndentBlockRejectsZeroItems(string inputStr)
         {
             var input = ParserInput.Create(inputStr);
-            var parser = from list in ParsecCore.Indentation.Indentation.IndentationBlockMany1(
+            var parser = from list in ParsecCore.Indentation.Indentation.BlockMany1(
                 Parsers.Spaces, Parsers.String("def"), Word, (head, list) => list)
                          select list;
             var res = parser(input);
@@ -30,10 +28,10 @@ namespace ParsecCoreTests.Indentation
         [InlineData("")]
         [InlineData("   ")]
         [InlineData("\n  hey\n  hello\n  hi")]
-        public void SomeIndentBlockRejectsNoHead(string inputStr)
+        public void Many1IndentBlockRejectsNoHead(string inputStr)
         {
             var input = ParserInput.Create(inputStr);
-            var parser = from list in ParsecCore.Indentation.Indentation.IndentationBlockMany1(
+            var parser = from list in ParsecCore.Indentation.Indentation.BlockMany1(
                 Parsers.Spaces, Parsers.String("def"), Word, (head, list) => list)
                          select list;
             var res = parser(input);
@@ -46,11 +44,11 @@ namespace ParsecCoreTests.Indentation
         [InlineData("def\n  hey\n  hello\n  hi", "hey hello hi")]
         [InlineData(" def\n  hey\n  hello\n  hi", "hey hello hi")]
         [InlineData("def\n\they\n\thello\n\thi", "hey hello hi")]
-        public void SomeIndentBlockParsesSameIndentedItems(string inputStr, string parsedItems)
+        public void Many1IndentBlockParsesSameIndentedItems(string inputStr, string parsedItems)
         {
             var items = parsedItems.Split(' ');
             var input = ParserInput.Create(inputStr);
-            var parser = from list in ParsecCore.Indentation.Indentation.IndentationBlockMany1(
+            var parser = from list in ParsecCore.Indentation.Indentation.BlockMany1(
                 Parsers.Spaces, Parsers.String("def"), Word, (head, list) => list)
                          select list;
             var res = parser(input);
@@ -63,10 +61,10 @@ namespace ParsecCoreTests.Indentation
         [InlineData("def\n hey\n hello\n  hi")]
         [InlineData("def\n  hey\n  hello\n hi")]
         [InlineData("def\n\they\n\thello\n\t hi")]
-        public void SomeIndentBlockRejectsDifferentlyIndentedItems(string inputStr)
+        public void Many1IndentBlockRejectsDifferentlyIndentedItems(string inputStr)
         {
             var input = ParserInput.Create(inputStr);
-            var parser = from list in ParsecCore.Indentation.Indentation.IndentationBlockMany1(
+            var parser = from list in ParsecCore.Indentation.Indentation.BlockMany1(
                 Parsers.Spaces, Parsers.String("def"), Word, (head, list) => list)
                          select list;
             var res = parser(input);
