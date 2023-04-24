@@ -38,7 +38,7 @@ namespace ParsecCore
         {
             return (input) =>
             {
-                return Result.Success(value, input);
+                return Result.Success(value, null, input);
             };
         }
 
@@ -51,7 +51,7 @@ namespace ParsecCore
         {
             return (input) =>
             {
-                return Result.Success(input.Position, input);
+                return Result.Success(input.Position, null, input);
             };
         }
 

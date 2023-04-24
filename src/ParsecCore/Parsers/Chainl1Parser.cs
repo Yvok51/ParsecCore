@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ParsecCore.ParsersHelp
 {
@@ -28,20 +29,24 @@ namespace ParsecCore.ParsersHelp
                     return leftValue;
                 }
 
+                List<IResult<Maybe<(Func<T, T, T> op, T right)>, TInputToken>> results = new();
+
                 T accum = leftValue.Result;
                 var rightSideResult = opParser(leftValue.UnconsumedInput);
+                results.Add(rightSideResult);
                 while (rightSideResult.IsResult && rightSideResult.Result.HasValue)
                 {
                     accum = rightSideResult.Result.Value.op(accum, rightSideResult.Result.Value.right);
                     rightSideResult = opParser(rightSideResult.UnconsumedInput);
+                    results.Add(rightSideResult);
                 }
 
                 if (rightSideResult.IsError)
                 {
-                    return Result.RetypeError<Maybe<(Func<T, T, T>, T)>, T, TInputToken>(rightSideResult);
+                    return Result.Failure<T, Maybe<(Func<T, T, T>, T)>, TInputToken>(results);
                 }
 
-                return Result.Success(accum, rightSideResult.UnconsumedInput);
+                return Result.Success(accum, results, leftValue, rightSideResult.UnconsumedInput);
             };
         }
     }

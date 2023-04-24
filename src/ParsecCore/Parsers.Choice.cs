@@ -45,7 +45,7 @@ namespace ParsecCore
                     return firstResult.CombineErrors(secondResult);
                 }
 
-                return secondResult;
+                return Result.Success(secondResult.Result, firstResult, secondResult);
             };
         }
 

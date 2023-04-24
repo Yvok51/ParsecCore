@@ -34,7 +34,7 @@ namespace ParsecCore
                 }
                 else
                 {
-                    return Result.Success(projection(result.Result), result.UnconsumedInput);
+                    return Result.Success(projection(result.Result), result);
                 }
             };
         }
@@ -77,13 +77,10 @@ namespace ParsecCore
                 var secondResult = getSecond(firstResult.Result)(firstResult.UnconsumedInput);
                 if (secondResult.IsError)
                 {
-                    return Result.RetypeError<TSecond, TResult, TInputToken>(secondResult);
+                    return Result.Failure<TResult, TFirst, TSecond, TInputToken>(firstResult, secondResult);
                 }
 
-                return Result.Success(
-                    getResult(firstResult.Result, secondResult.Result),
-                    secondResult.UnconsumedInput
-                );
+                return Result.Success(getResult(firstResult.Result, secondResult.Result), firstResult, secondResult);
             };
         }
 

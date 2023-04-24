@@ -74,7 +74,7 @@ namespace ParsecCore
                 }
 
                 return Result.Failure<T, TInputToken>(
-                    result.Error.Accept(FailWithVisitor.Instance, newExpectedMessage),
+                    result.Error!.Accept(FailWithVisitor.Instance, newExpectedMessage),
                     result.UnconsumedInput
                 );
             };

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ParsecCore.Help;
+using System;
 using System.Collections.Generic;
 
 namespace ParsecCore.ParsersHelp
@@ -22,22 +23,24 @@ namespace ParsecCore.ParsersHelp
             }
             return (input) =>
             {
-                T[] result = new T[count];
+                List<IResult<T, TInputToken>> results = new(count);
 
-                int i = 0;
-                do
+                var parseResult = parser(input);
+                if (parseResult.IsError)
                 {
-                    var parseResult = parser(input);
-                    input = parseResult.UnconsumedInput;
+                    return Result.RetypeError<T, IReadOnlyList<T>, TInputToken>(parseResult);
+                }
+                results.Add(parseResult);
+                for (int i = 1; i < count; i++)
+                {
+                    parseResult = parser(parseResult.UnconsumedInput);
+                    results.Add(parseResult);
                     if (parseResult.IsError)
                     {
-                        return Result.RetypeError<T, IReadOnlyList<T>, TInputToken>(parseResult);
+                        return Result.Failure<IReadOnlyList<T>, T, TInputToken>(results);
                     }
-                    result[i] = parseResult.Result;
-                    i++;
-                } while (i < count);
-
-                return Result.Success(result, input);
+                }
+                return Result.Success(results.Map(res => res.Result), results, parseResult.UnconsumedInput);
             };
         }
     }

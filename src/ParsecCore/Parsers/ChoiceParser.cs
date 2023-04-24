@@ -29,7 +29,7 @@ namespace ParsecCore.ParsersHelp
                     parseResults.Add(currentParseResult);
                     if (currentParseResult.IsResult)
                     {
-                        return currentParseResult;
+                        return Result.Success(currentParseResult.Result, parseResults);
                     }
                     if (!input.Equals(currentParseResult.UnconsumedInput))
                     {

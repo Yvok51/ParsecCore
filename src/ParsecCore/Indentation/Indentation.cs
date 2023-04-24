@@ -243,7 +243,7 @@ namespace ParsecCore.Indentation
 
                     if (end || position <= reference) // item is not indented
                     {
-                        return Result.Success(items, input);
+                        return Result.Success(items, res);
                     }
                     else if (position == required)
                     {

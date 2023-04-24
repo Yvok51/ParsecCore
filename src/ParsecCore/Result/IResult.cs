@@ -19,7 +19,7 @@ namespace ParsecCore
         /// Returns the error value if the <see cref="IResult{T, TInput}"/> is holding it.
         /// Otherwise throws <see cref="InvalidOperationException"/>
         /// </summary>
-        public ParseError Error { get; }
+        public ParseError? Error { get; }
         /// <summary>
         /// Returns the result value if the <see cref="IResult{T, TInput}"/> is holding it.
         /// Otherwise throws <see cref="InvalidOperationException"/>

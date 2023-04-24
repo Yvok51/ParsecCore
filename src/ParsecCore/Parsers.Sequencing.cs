@@ -42,7 +42,12 @@ namespace ParsecCore
                 {
                     return Result.RetypeError<T, R, TInput>(discardedResult);
                 }
-                return secondParser(discardedResult.UnconsumedInput);
+                var result = secondParser(discardedResult.UnconsumedInput);
+                if (result.IsError)
+                {
+                    return Result.Failure<R, T, R, TInput>(discardedResult, result);
+                }
+                return Result.Success(result.Result, discardedResult, result);
             };
         }
 
@@ -86,10 +91,10 @@ namespace ParsecCore
                 var discardedResult = secondParser(result.UnconsumedInput);
                 if (discardedResult.IsError)
                 {
-                    return Result.RetypeError<R, T, TInput>(discardedResult);
+                    return Result.Failure<T, T, R, TInput>(result, discardedResult);
                 }
 
-                return Result.Success(result.Result, discardedResult.UnconsumedInput);
+                return Result.Success(result.Result, result, discardedResult);
             };
         }
 

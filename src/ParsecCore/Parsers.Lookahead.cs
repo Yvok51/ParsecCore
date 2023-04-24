@@ -27,7 +27,7 @@ namespace ParsecCore
                     return result;
                 }
 
-                return Result.Failure<T, TInputToken>(result.Error, input);
+                return Result.Failure<T, TInputToken>(result.Error!, input);
             };
         }
 
@@ -53,7 +53,7 @@ namespace ParsecCore
                 var result = parser(input);
                 if (result.IsResult)
                 {
-                    Result.Success(result.Result, input);
+                    Result.Success(result.Result, result.Error, input);
                 }
 
                 return result;

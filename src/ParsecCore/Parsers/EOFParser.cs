@@ -12,7 +12,7 @@
             {
                 if (input.EndOfInput)
                 {
-                    return Result.Success(None.Instance, input);
+                    return Result.Success(None.Instance, null, input);
                 }
 
                 return Result.Failure<None, TInputToken>(

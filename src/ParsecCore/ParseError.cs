@@ -24,6 +24,16 @@ namespace ParsecCore
         // ParseError is its own visitor used for merging two ParseErrors together
         public abstract ParseError Visit(StandardError error, None _);
         public abstract ParseError Visit(CustomError error, None _);
+
+        public static ParseError? CombineErrors(ParseError? left, ParseError? right)
+        {
+            if (left is null && right is null) return null;
+            if (left is null) return right;
+            if (right is null) return left;
+            if (left.Position > right.Position) return left;
+            if (left.Position < right.Position) return right;
+            return left.Accept(right, None.Instance);
+        }
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using ParsecCore.Help;
+using System.Collections.Generic;
 
 namespace ParsecCore.ParsersHelp
 {
@@ -8,32 +9,31 @@ namespace ParsecCore.ParsersHelp
     /// </summary>
     internal class ManyTillParser
     {
-        public static Parser<IReadOnlyList<T>, TInputToken> Parser<T, TEnd, TInputToken>(Parser<T, TInputToken> many, Parser<TEnd, TInputToken> till)
+        public static Parser<IReadOnlyList<T>, TInputToken> Parser<T, TEnd, TInputToken>(
+            Parser<T, TInputToken> many,
+            Parser<TEnd, TInputToken> till
+        )
         {
             Parser<TEnd, TInputToken> tryTill = till.Try();
             return (input) =>
             {
-                List<T> result = new List<T>();
+                List<IResult<T, TInputToken>> results = new();
 
                 var tillResult = tryTill(input);
                 while (tillResult.IsError)
                 {
-                    if (!input.Equals(tillResult.UnconsumedInput))
-                    {
-                        return Result.RetypeError<TEnd, IReadOnlyList<T>, TInputToken>(tillResult);
-                    }
-                    var manyResult = many(input);
-                    input = manyResult.UnconsumedInput;
+                    // tryTill cannot consume input -> no need to check if it does
+                    var manyResult = many(tillResult.UnconsumedInput);
+                    results.Add(manyResult);
                     if (manyResult.IsError)
                     {
-                        return Result.RetypeError<T, IReadOnlyList<T>, TInputToken>(manyResult);
+                        return Result.Failure<IReadOnlyList<T>, T, TInputToken>(results);
                     }
-                    result.Add(manyResult.Result);
 
-                    tillResult = tryTill(input);
+                    tillResult = tryTill(manyResult.UnconsumedInput);
                 }
 
-                return Result.Success(result, tillResult.UnconsumedInput);
+                return Result.Success(results.Map(res => res.Result), results, tillResult, tillResult.UnconsumedInput);
             };
         }
     }

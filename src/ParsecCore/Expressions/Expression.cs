@@ -262,14 +262,11 @@ namespace ParsecCore.Expressions
 
                 if (parsedResults.Count == 0)
                 {
-                    return Result.Success(value, rightSideResult.UnconsumedInput);
+                    return Result.Success(value, rightSideResult);
                 }
                 else if (parsedResults.Count == 1)
                 {
-                    return Result.Success(
-                        parsedResults[0].op(value, parsedResults[0].value),
-                        rightSideResult.UnconsumedInput
-                    );
+                    return Result.Success(parsedResults[0].op(value, parsedResults[0].value), rightSideResult);
                 }
 
                 T accum = parsedResults[parsedResults.Count - 1].op(
@@ -281,7 +278,7 @@ namespace ParsecCore.Expressions
                     accum = parsedResults[i].op(parsedResults[i - 1].value, accum);
                 }
 
-                return Result.Success(parsedResults[0].op(value, accum), rightSideResult.UnconsumedInput);
+                return Result.Success(parsedResults[0].op(value, accum), rightSideResult);
             };
 
             return parser.Or(ambiguousLeft).Or(ambiguousNone);
@@ -341,7 +338,7 @@ namespace ParsecCore.Expressions
                     return Result.RetypeError<Maybe<(Func<T, T, T>, T)>, T, TInput>(rightSideResult);
                 }
 
-                return Result.Success(accum, rightSideResult.UnconsumedInput);
+                return Result.Success(accum, rightSideResult);
             };
 
             return parser.Or(ambiguousRight).Or(ambiguousNone);

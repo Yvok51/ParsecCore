@@ -73,7 +73,7 @@ namespace ParsecCore
                 var res = parser(input);
                 if (res.IsResult)
                 {
-                    return Result.Success(value, res.UnconsumedInput);
+                    return Result.Success(value, res);
                 }
                 else
                 {

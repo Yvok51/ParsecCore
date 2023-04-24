@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using ParsecCore.Help;
+using System.Collections.Generic;
 
 namespace ParsecCore.ParsersHelp
 {
@@ -13,21 +14,28 @@ namespace ParsecCore.ParsersHelp
             Parser<Maybe<T>, TInputToken> optParser = parser.Optional();
             return (input) =>
             {
-                List<T> result = new List<T>();
+                List<IResult<Maybe<T>, TInputToken>> results = new();
 
                 var parseResult = optParser(input);
+                results.Add(parseResult);
                 while (parseResult.IsResult && !parseResult.Result.IsEmpty)
                 {
-                    result.Add(parseResult.Result.Value);
                     parseResult = optParser(parseResult.UnconsumedInput);
+                    results.Add(parseResult);
                 }
 
                 if (parseResult.IsError)
                 {
-                    return Result.RetypeError<Maybe<T>, IReadOnlyList<T>, TInputToken>(parseResult);
+                    return Result.Failure<IReadOnlyList<T>, Maybe<T>, TInputToken>(results);
                 }
 
-                return Result.Success(result, parseResult.UnconsumedInput);
+                results.RemoveAt(results.Count - 1);
+                return Result.Success(
+                    results.Map(res => res.Result.Value),
+                    results,
+                    parseResult,
+                    parseResult.UnconsumedInput
+                );
             };
         }
     }

@@ -54,7 +54,7 @@ namespace ParsecCore.ParsersHelp
                     return Error(input, readChar, description);
                 }
 
-                return Result.Success(read, input.Advance());
+                return Result.Success(read, null, input.Advance());
             };
         }
 
@@ -76,7 +76,7 @@ namespace ParsecCore.ParsersHelp
                     return Error(input, readChar, description);
                 }
 
-                return Result.Success(read, input.Advance());
+                return Result.Success(read, null, input.Advance());
             };
         }
 
@@ -100,7 +100,7 @@ namespace ParsecCore.ParsersHelp
                     return Error(input, new SingleToken<TInputToken>(read), description);
                 }
 
-                return Result.Success(read, input.Advance());
+                return Result.Success(read, null, input.Advance());
             };
         }
 
@@ -124,7 +124,7 @@ namespace ParsecCore.ParsersHelp
                     return Error(input, new SingleToken<TInputToken>(read), description);
                 }
 
-                return Result.Success(read, input.Advance());
+                return Result.Success(read, null, input.Advance());
             };
         }
     }

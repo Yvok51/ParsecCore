@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using ParsecCore.Help;
+using System;
+using System.Collections.Generic;
 
 namespace ParsecCore.ParsersHelp
 {
@@ -19,47 +21,38 @@ namespace ParsecCore.ParsersHelp
             IEnumerable<Parser<T, TInputToken>> parsers
         )
         {
-            return (input) =>
-            {
-                List<T> result = new List<T>();
-
-                foreach (var parser in parsers)
-                {
-                    var parsedResult = parser(input);
-                    input = parsedResult.UnconsumedInput;
-                    if (parsedResult.IsError)
-                    {
-                        return Result.RetypeError<T, IReadOnlyList<T>, TInputToken>(parsedResult);
-                    }
-
-                    result.Add(parsedResult.Result);
-                }
-
-                return Result.Success(result, input);
-            };
+            return Parser(parsers, 8);
         }
 
         public static Parser<IReadOnlyList<T>, TInputToken> Parser<T, TInputToken>(
             IReadOnlyList<Parser<T, TInputToken>> parsers
         )
         {
+            return Parser(parsers, parsers.Count);
+        }
+
+        private static Parser<IReadOnlyList<T>, TInputToken> Parser<T, TInputToken>(
+            IEnumerable<Parser<T, TInputToken>> parsers,
+            int capacity
+        )
+        {
+            Func<IResult<T, TInputToken>, T> map = res => res.Result;
             return (input) =>
             {
-                T[] result = new T[parsers.Count];
+                List<IResult<T, TInputToken>> results = new(capacity);
 
-                for (int i = 0; i < result.Length; i++)
+                foreach (var parser in parsers)
                 {
-                    var parsedResult = parsers[i](input);
+                    var parsedResult = parser(input);
                     input = parsedResult.UnconsumedInput;
+                    results.Add(parsedResult);
                     if (parsedResult.IsError)
                     {
-                        return Result.RetypeError<T, IReadOnlyList<T>, TInputToken>(parsedResult);
+                        return Result.Failure<IReadOnlyList<T>, T, TInputToken>(results);
                     }
-
-                    result[i] = parsedResult.Result;
                 }
 
-                return Result.Success(result, input);
+                return Result.Success(results.Map(map), results, input);
             };
         }
     }
