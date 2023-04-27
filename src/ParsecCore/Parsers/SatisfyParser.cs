@@ -10,15 +10,19 @@ namespace ParsecCore.ParsersHelp
     /// </summary>
     internal class SatisfyParser
     {
-        private static readonly Dictionary<char, string> escapedChars = new Dictionary<char, string>()
+        private static ErrorItem EncounteredCharError(char c)
         {
-            { '\n', "\\n" },
-            { '\b', "\\b" },
-            { '\f', "\\f" },
-            { '\r', "\\r" },
-            { '\t', "\\t" },
-            { '\v', "\\v" },
-        };
+            return c switch
+            {
+                '\n' => new StringToken("\\n"),
+                '\b' => new StringToken("\\b"),
+                '\f' => new StringToken("\\f"),
+                '\r' => new StringToken("\\r"),
+                '\t' => new StringToken("\\t"),
+                '\v' => new StringToken("\\v"),
+                _    => new CharToken(c)
+            };
+        }
 
         private static IResult<T, T> Error<T>(
             IParserInput<T> input,
@@ -50,7 +54,7 @@ namespace ParsecCore.ParsersHelp
 
                 if (!predicate(read))
                 {
-                    ErrorItem readChar = escapedChars.ContainsKey(read) ? new StringToken(escapedChars[read]) : new CharToken(read);
+                    ErrorItem readChar = EncounteredCharError(read);
                     return Error(input, readChar, description);
                 }
 
@@ -72,7 +76,7 @@ namespace ParsecCore.ParsersHelp
 
                 if (read != expected)
                 {
-                    ErrorItem readChar = escapedChars.ContainsKey(read) ? new StringToken(escapedChars[read]) : new CharToken(read);
+                    ErrorItem readChar = EncounteredCharError(read);
                     return Error(input, readChar, description);
                 }
 
