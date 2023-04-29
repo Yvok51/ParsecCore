@@ -31,7 +31,7 @@ namespace ParsecCore
         public bool EndOfInput { get; }
 
         /// <summary>
-        /// The current position, see <see cref="Input.Position"/>
+        /// The current position, see <see cref="ParsecCore.Position"/>
         /// </summary>
         public Position Position { get; }
 

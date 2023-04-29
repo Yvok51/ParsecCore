@@ -2,6 +2,11 @@
 
 namespace ParsecCore
 {
+    /// <summary>
+    /// The implementation of the failed parse case of the <see cref="IResult{T, TInput}"/> interface.
+    /// </summary>
+    /// <typeparam name="T"> The output type of the result </typeparam>
+    /// <typeparam name="TInput"> The input symbol type </typeparam>
     internal class Failure<T, TInput> : IResult<T, TInput>
     {
         public Failure(ParseError error, IParserInput<TInput> unconsumedInput)

@@ -2,6 +2,9 @@
 
 namespace ParsecCore.Input
 {
+    /// <summary>
+    /// Implementation of a parser input (<see cref="IParserInput{T}"/>) for in memory strings.
+    /// </summary>
     internal sealed class StringParserInput : IParserInput<char>
     {
         public StringParserInput(string input, Position position, Func<char, Position, Position> updatePosition)
@@ -28,6 +31,13 @@ namespace ParsecCore.Input
             EndOfInput = offset >= _input.Length; // we can cache result, since input is immutable
         }
 
+        /// <summary>
+        /// The default update position used if none is provided.
+        /// </summary>
+        /// <param name="tabSize">
+        /// The size of the tab to use in <see cref="ParsecCore.Position.WithTab(int)"/>
+        /// </param>
+        /// <returns> Function for updating the position</returns>
         private static Func<char, Position, Position> DefaultUpdatePosition(int tabSize)
         {
             return (readChar, position) =>

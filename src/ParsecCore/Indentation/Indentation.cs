@@ -17,7 +17,9 @@ namespace ParsecCore.Indentation
                select (IndentLevel)pos;
 
         /// <summary>
-        /// Guard to check whether the indentation is how we want it
+        /// Guard to check whether the indentation is how we want it.
+        /// The current indentation is checked and compared to the <paramref name="reference"/> indentation.
+        /// The comparsion is done according to <paramref name="relation"/>
         /// </summary>
         /// <typeparam name="TSpace"> The type that the space consumer returns </typeparam>
         /// <typeparam name="TInput"> The type of the input stream </typeparam>
@@ -51,7 +53,7 @@ namespace ParsecCore.Indentation
         }
 
         /// <summary>
-        /// Signify a parser that should not be indented (it should start on the first column)
+        /// Designate a parser that should not be indented (it should start on the first column)
         /// </summary>
         /// <typeparam name="TSpace"> The type that the space consumer returns </typeparam>
         /// <typeparam name="T"> The type the parser returns </typeparam>
@@ -74,7 +76,9 @@ namespace ParsecCore.Indentation
         /// <summary>
         /// Parser for line folding. The user creates a parser which receives a space consumer. 
         /// This space consumer consumes whitespace between parts of the linefold.
-        /// User further manually specifies how the statement can be folded.
+        /// It also checks if at the end of the whitespace we are at a greater indentation than at the start.
+        /// If not, it fails without consuming input.
+        /// User further manually specifies how the statement can be folded using <paramref name="linefoldParser"/>.
         /// </summary>
         /// <typeparam name="T"> The return type of the line fold parser </typeparam>
         /// <typeparam name="TSpace"> Type returned by the space consumer </typeparam>
@@ -166,7 +170,7 @@ namespace ParsecCore.Indentation
         /// Returns a parser which parses head of a statement and
         /// one or more further indented items in subsequent lines.
         /// All of the items must start on the same indentation.
-        /// The indentation is given by the first parsed item
+        /// The indentation is given by the first parsed item.
         /// <paramref name="spaceConsumer"/> is used to consume whitespace between lines and as such should consume
         /// newlines.
         /// </summary>

@@ -55,11 +55,9 @@ namespace ParsecCore
         }
 
         /// <summary>
-        /// An extension method used in LINQ expressions for a single `from ... in ...` statement
+        /// An extension method used in LINQ expressions for a single <c>from ... in ...</c> statement
         /// In context of <see cref="Maybe{T}"/> we use it to simulate 
         /// the list comprehension notation (weaker do notation) of Haskell.
-        /// Inspired by the paper "Encoding monadic computations in C# using iterators" by Tomáš Petříček
-        /// and <see href="https://tyrrrz.me/blog/monadic-comprehension-via-linq">this</see> blog post 
         /// </summary>
         /// <typeparam name="TSource"></typeparam>
         /// <typeparam name="TResult"></typeparam>
@@ -75,11 +73,10 @@ namespace ParsecCore
         }
 
         /// <summary>
-        /// Select many is an extension method used in LINQ expressions to chain multiple `from ... in ...` statements together
+        /// Select many is an extension method used in
+        /// LINQ expressions to chain multiple <c>from ... in ...</c> statements together.
         /// In context of <see cref="Maybe{T}"/> we use it to simulate 
         /// the list comprehension notation (weaker do notation) of Haskell.
-        /// Inspired by the paper "Encoding monadic computations in C# using iterators" by Tomáš Petříček
-        /// and <see href="https://tyrrrz.me/blog/monadic-comprehension-via-linq">this</see> blog post 
         /// </summary>
         /// <typeparam name="TFirst"></typeparam>
         /// <typeparam name="TSecond"></typeparam>

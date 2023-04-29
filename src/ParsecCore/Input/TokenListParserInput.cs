@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace ParsecCore.Input
 {
+    /// <summary>
+    /// Implementation of a parser input (<see cref="IParserInput{T}"/>) for in lists of any symbols.
+    /// </summary>
     internal sealed class TokenListParserInput<T> : IParserInput<T>
     {
         public TokenListParserInput(IReadOnlyList<T> input, Position position, Func<T, Position, Position> updatePosition)

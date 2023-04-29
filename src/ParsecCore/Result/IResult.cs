@@ -2,6 +2,13 @@
 
 namespace ParsecCore
 {
+    /// <summary>
+    /// The result of a parse.
+    /// Could be either a failed parse and contain an error or a successful and contain an output.
+    /// The successful parse can also contain the most specific error that ever occured during the parsing
+    /// </summary>
+    /// <typeparam name="T"> The output type of the result </typeparam>
+    /// <typeparam name="TInput"> The input symbol type </typeparam>
     public interface IResult<out T, TInput>
     {
         IParserInput<TInput> UnconsumedInput { get; }

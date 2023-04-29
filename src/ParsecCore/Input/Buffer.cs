@@ -3,6 +3,9 @@ using System.Text;
 
 namespace ParsecCore.Input
 {
+    /// <summary>
+    /// Buffer over an input stream
+    /// </summary>
     internal class Buffer
     {
         public Buffer(StreamReader reader)
@@ -17,6 +20,12 @@ namespace ParsecCore.Input
         {
         }
 
+        /// <summary>
+        /// Read a character at a specified offset.
+        /// If the offset is not in the buffer, new data is buffered starting in the read position.
+        /// </summary>
+        /// <param name="offset"> The offset to read the character from </param>
+        /// <returns> The read character </returns>
         public char Read(long offset)
         {
             if (offset >= _offsetOfFirstChar && offset < _offsetOfFirstChar + _lastReadChars)
@@ -41,6 +50,11 @@ namespace ParsecCore.Input
             _lastReadChars = _reader.Read(_buffer, 0, BUFFER_SIZE);
         }
 
+        /// <summary>
+        /// Answers whether the given <paramref name="offset"/> is beyond the input stream.
+        /// </summary>
+        /// <param name="offset"></param>
+        /// <returns></returns>
         public bool EndOfStream(long offset)
         {
             // presumes that we only advance forward by max one position at a time

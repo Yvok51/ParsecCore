@@ -39,7 +39,7 @@ namespace ParsecCore
         /// For example, if we are at column 1 and the <paramref name="tabSize"/> is 4, then the final column is 5.
         /// However, if we are at column 3 and the <paramref name="tabSize"/> is again 4, the the final column is again 5.
         /// </summary>
-        /// <param name="columnIncrease"> By how many characters to move forward </param>
+        /// <param name="tabSize"> How large is the size of the tab </param>
         /// <returns> The forwarded position </returns>
         public Position WithTab(int tabSize)
         {
@@ -80,16 +80,5 @@ namespace ParsecCore
 
         public static bool operator >(Position left, Position right) =>
             left.Line > right.Line || (left.Line == right.Line && left.Column > right.Column);
-
-        /// <summary>
-        /// Returns the minimum position based on the offset number
-        /// </summary>
-        /// <param name="left"> The first position to consider </param>
-        /// <param name="right"> The second position to consider </param>
-        /// <returns> The minimum of the two positions </returns>
-        public static Position Min(Position left, Position right)
-        {
-            return right < left ? right : left;
-        }
     }
 }

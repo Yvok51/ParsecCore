@@ -6,13 +6,14 @@ namespace ParsecCore
 {
     /// <summary>
     /// Represents a value that may not exist.
-    /// Wrapper over a type that represents an optional value.
+    /// Wrapper over a type. Represents an optional value.
     /// </summary>
     /// <typeparam name="T"> The type of value that we are wrapping </typeparam>
     public struct Maybe<T> : IEquatable<Maybe<T>>
     {
         /// <summary>
-        /// Creates a <see cref="Maybe{T}"/> that contains a value
+        /// Creates a <see cref="Maybe{T}"/> that contains a value.
+        /// Please use <see cref="Maybe.FromValue{T}(T)"/> instead of this constructor.
         /// </summary>
         /// <param name="value"> value to wrap over </param>
         internal Maybe(T value)
