@@ -153,9 +153,8 @@ namespace JSONtoXML
         ////////// VALUE //////////
 
         /** 
-         * Create a wrapper parser as a hack to circumnavigate the issue
-         * with JsonValue and ArrayValue/ObjectValue being dependent on each
-         * other.
+         * Create a wrapper parser to circumnavigate the issue with JsonValue
+         * and ArrayValue/ObjectValue being dependent on each other.
          * With the wrapper lambda the variables ArrayValue and ObjectValue 
          * are captured and their value is added later on -> when the parser
          * is invoked the values are correct and not null

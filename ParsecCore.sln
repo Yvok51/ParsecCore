@@ -21,13 +21,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PythonParser", "examples\sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSONtoXML", "examples\src\JSONParser\JSONtoXML.csproj", "{8E517C99-1931-4386-841B-1C27F69DD922}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSONtoXMLTests", "examples\tests\JSONtoXMLTests\JSONtoXMLTests.csproj", "{6B925728-D418-4B0D-8299-CB93D5811EDA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JSONtoXML.Tests", "examples\tests\JSONtoXMLTests\JSONtoXML.Tests.csproj", "{6B925728-D418-4B0D-8299-CB93D5811EDA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParsecCore", "src\ParsecCore\ParsecCore.csproj", "{B61832AF-ED85-479B-A39F-415A85F90150}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParsecCoreTests", "tests\ParsecCoreTests\ParsecCoreTests.csproj", "{49442A15-9792-4F74-8B3F-2BF7F291CB14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParsecCore.Tests", "tests\ParsecCoreTests\ParsecCore.Tests.csproj", "{49442A15-9792-4F74-8B3F-2BF7F291CB14}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PythonParserTests", "examples\tests\PythonParserTests\PythonParserTests.csproj", "{2BCEAA5A-E083-453D-B224-4A71B21A8535}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PythonParser.Tests", "examples\tests\PythonParserTests\PythonParser.Tests.csproj", "{2BCEAA5A-E083-453D-B224-4A71B21A8535}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

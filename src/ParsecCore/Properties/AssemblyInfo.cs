@@ -1,3 +1,3 @@
 ﻿using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("ParsecCoreTests")]
+[assembly: InternalsVisibleTo("ParsecCore.Tests")]

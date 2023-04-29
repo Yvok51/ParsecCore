@@ -1,4 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("JSONtoXMLTests")]
+[assembly: InternalsVisibleTo("JSONtoXML.Tests")]
 [assembly: InternalsVisibleTo("JSONtoXML.Benchmarks")]
