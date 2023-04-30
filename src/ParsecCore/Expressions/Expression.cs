@@ -247,26 +247,38 @@ namespace ParsecCore.Expressions
                     return Result.RetypeError<(Func<T, T, T>, T), T, TInput>(firstResult);
                 }
                 List<(Func<T, T, T> op, T value)> parsedResults = new() { firstResult.Result };
+                List<IResult<Maybe<(Func<T, T, T>, T)>, TInput>> results = new();
 
                 var rightSideResult = opParserOptional(input);
+                results.Add(rightSideResult);
                 while (rightSideResult.IsResult && rightSideResult.Result.HasValue)
                 {
                     parsedResults.Add(rightSideResult.Result.Value);
                     rightSideResult = opParserOptional(rightSideResult.UnconsumedInput);
+                    results.Add(rightSideResult);
                 }
 
                 if (rightSideResult.IsError)
                 {
-                    return Result.RetypeError<Maybe<(Func<T, T, T>, T)>, T, TInput>(rightSideResult);
+                    return Result.Failure<T, Maybe<(Func<T, T, T>, T)>, (Func<T, T, T>, T), TInput>(
+                        results,
+                        firstResult,
+                        rightSideResult.UnconsumedInput
+                    );
                 }
 
                 if (parsedResults.Count == 0)
                 {
-                    return Result.Success(value, rightSideResult);
+                    return Result.Success(value, firstResult, rightSideResult);
                 }
                 else if (parsedResults.Count == 1)
                 {
-                    return Result.Success(parsedResults[0].op(value, parsedResults[0].value), rightSideResult);
+                    return Result.Success(
+                        parsedResults[0].op(value, parsedResults[0].value),
+                        results,
+                        firstResult,
+                        rightSideResult.UnconsumedInput
+                    );
                 }
 
                 T accum = parsedResults[parsedResults.Count - 1].op(
@@ -278,7 +290,12 @@ namespace ParsecCore.Expressions
                     accum = parsedResults[i].op(parsedResults[i - 1].value, accum);
                 }
 
-                return Result.Success(parsedResults[0].op(value, accum), rightSideResult);
+                return Result.Success(
+                    parsedResults[0].op(value, accum),
+                    results,
+                    firstResult,
+                    rightSideResult.UnconsumedInput
+                );
             };
 
             return parser.Or(ambiguousLeft).Or(ambiguousNone);
@@ -325,20 +342,28 @@ namespace ParsecCore.Expressions
                 {
                     return Result.RetypeError<(Func<T, T, T> op, T right), T, TInput>(firstResult);
                 }
+                List<IResult<Maybe<(Func<T, T, T>, T)>, TInput>> results = new();
                 T accum = firstResult.Result.op(value, firstResult.Result.right);
+
                 var rightSideResult = opParserOptional(firstResult.UnconsumedInput);
+                results.Add(rightSideResult);
                 while (rightSideResult.IsResult && rightSideResult.Result.HasValue)
                 {
                     accum = rightSideResult.Result.Value.op(accum, rightSideResult.Result.Value.right);
                     rightSideResult = opParserOptional(rightSideResult.UnconsumedInput);
+                    results.Add(rightSideResult);
                 }
 
                 if (rightSideResult.IsError)
                 {
-                    return Result.RetypeError<Maybe<(Func<T, T, T>, T)>, T, TInput>(rightSideResult);
+                    return Result.Failure<T, Maybe<(Func<T, T, T>, T)>, (Func<T, T, T>, T) , TInput>(
+                        results,
+                        firstResult,
+                        rightSideResult.UnconsumedInput
+                    );
                 }
 
-                return Result.Success(accum, rightSideResult);
+                return Result.Success(accum, results, firstResult, rightSideResult.UnconsumedInput);
             };
 
             return parser.Or(ambiguousRight).Or(ambiguousNone);
@@ -375,12 +400,12 @@ namespace ParsecCore.Expressions
             Parser<T, TInput> ambiguousRight
         )
         {
-
+            var ambiguous = Parsers.Choice(
+                ambiguousRight, ambiguousLeft, ambiguousNone
+            );
             var parser = from f in noAssocParser
                          from y in termParser
-                         from res in Parsers.Choice(
-                             ambiguousRight, ambiguousLeft, ambiguousNone, Parsers.Return<T, TInput>(f(value, y))
-                         )
+                         from res in ambiguous.Or(Parsers.Return<T, TInput>(f(value, y)))
                          select res;
 
             return parser;
