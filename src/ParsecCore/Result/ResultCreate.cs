@@ -142,11 +142,32 @@ namespace ParsecCore
             );
         }
 
+        /// <summary>
+        /// Create a failed parse result.
+        /// </summary>
+        /// <typeparam name="T"> The result output type </typeparam>
+        /// <typeparam name="TInput"> The input symbol type </typeparam>
+        /// <param name="error"> The error to return </param>
+        /// <param name="unconsumedInput"> Unconsummed input </param>
+        /// <returns> Result of a parse signifying a failure </returns>
         public static IResult<T, TInput> Failure<T, TInput>(ParseError error, IParserInput<TInput> unconsumedInput)
         {
             return new Failure<T, TInput>(error, unconsumedInput);
         }
 
+        /// <summary>
+        /// Create a failed error out of two previous results
+        /// We first parsed <paramref name="first"/> and afterward <paramref name="second"/>.
+        /// Now we create a failed result with the errors taken from these previous two results and combined.
+        /// At least one of the results shall be failed result.
+        /// </summary>
+        /// <typeparam name="T"> The output type of the result </typeparam>
+        /// <typeparam name="R"> The output type of the first previous result </typeparam>
+        /// <typeparam name="S"> The output type of the second previous result </typeparam>
+        /// <typeparam name="TInput"> The input symbol type of the parser </typeparam>
+        /// <param name="first"> The first result to combine </param>
+        /// <param name="second"> The second result to combine </param>
+        /// <returns> A failed result with the errors combined </returns>
         public static IResult<T, TInput> Failure<T, R, S, TInput>(IResult<R, TInput> first, IResult<S, TInput> second)
         {
             return new Failure<T, TInput>(
@@ -155,11 +176,33 @@ namespace ParsecCore
             );
         }
 
+        /// <summary>
+        /// Create a failed error out of previous results
+        /// Now we create a failed result with the errors taken from these previous results and combined.
+        /// At least one of the results shall be a failed result.
+        /// </summary>
+        /// <typeparam name="T"> The output type of the result </typeparam>
+        /// <typeparam name="R"> The output type of the previous results </typeparam>
+        /// <typeparam name="TInput"> The input symbol type of the parser </typeparam>
+        /// <param name="results"> The previous results whose errors to combine </param>
+        /// <returns> A failed result with the errors combined </returns>
         public static IResult<T, TInput> Failure<T, R, TInput>(IReadOnlyList<IResult<R, TInput>> results)
         {
             return new Failure<T, TInput>(AggregateErrors(results)!, results[results.Count - 1].UnconsumedInput);
         }
 
+        /// <summary>
+        /// Same as <see cref="Failure{T, R, TInput}(IReadOnlyList{IResult{R, TInput}})"/>
+        /// but we add one extra result. We also specify which <paramref name="unconsummedInput"/> to use.
+        /// </summary>
+        /// <typeparam name="T"> The output type of the result </typeparam>
+        /// <typeparam name="R"> The output type of the previous results </typeparam>
+        /// <typeparam name="S"> The output type of the extra result </typeparam>
+        /// <typeparam name="TInput"> The input symbol type of the parser </typeparam>
+        /// <param name="results"> The previous results whose errors to combine </param>
+        /// <param name="extra"> The extra result to combine also </param>
+        /// <param name="unconsummedInput"> The unconsummed input to report </param>
+        /// <returns> A failed result with the errors combined </returns>
         public static IResult<T, TInput> Failure<T, R, S, TInput>(
             IReadOnlyList<IResult<R, TInput>> results,
             IResult<S, TInput> extra,
@@ -172,6 +215,18 @@ namespace ParsecCore
             );
         }
 
+        /// <summary>
+        /// Same as <see cref=
+        /// "Failure{T, R, S, TInput}(IReadOnlyList{IResult{R, TInput}}, IResult{S, TInput}, IParserInput{TInput})"
+        /// /> but instead of a result we add an extra error.
+        /// </summary>
+        /// <typeparam name="T"> The output type of the result </typeparam>
+        /// <typeparam name="R"> The output type of the previous results </typeparam>
+        /// <typeparam name="TInput"> The input symbol type of the parser </typeparam>
+        /// <param name="results"> The previous results whose errors to combine </param>
+        /// <param name="extra"> The extra error to combine also </param>
+        /// <param name="unconsummedInput"> The unconsummed input to report </param>
+        /// <returns> A failed result with the errors combined </returns>
         public static IResult<T, TInput> Failure<T, R, TInput>(
             IReadOnlyList<IResult<R, TInput>> results,
             ParseError extra,

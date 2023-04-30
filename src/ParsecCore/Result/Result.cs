@@ -5,6 +5,15 @@ namespace ParsecCore
     public static partial class Result
     {
 
+        /// <summary>
+        /// Change the output type of the error.
+        /// Presumes the <paramref name="result"/> is an error.
+        /// </summary>
+        /// <typeparam name="T"> The original output type </typeparam>
+        /// <typeparam name="TNew"> The new output type </typeparam>
+        /// <typeparam name="TInput"> The type of the input symbols </typeparam>
+        /// <param name="result"> The error result whose type to change </param>
+        /// <returns> The retyped error result </returns>
         public static IResult<TNew, TInput> RetypeError<T, TNew, TInput>(
             IResult<T, TInput> result
         )
