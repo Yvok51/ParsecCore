@@ -1,6 +1,7 @@
 # ParsecCore
 
 ParsecCore is a parser combinator library inspired by [Parsec](https://hackage.haskell.org/package/parsec).
+For a thorough tutorial for ParsecCore see [tutorial.md](tutorial.md)
 
 ## Example projects
 
