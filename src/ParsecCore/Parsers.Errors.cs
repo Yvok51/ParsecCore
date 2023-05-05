@@ -97,7 +97,7 @@ namespace ParsecCore
 
             public ParseError Visit(CustomError error, string msg)
             {
-                return new CustomError(error.Position, error.Customs.Append(new FailError(msg)));
+                return new CustomError(error.Position, error.Customs.Append(new FailError("Expected " + msg)));
             }
         }
 
