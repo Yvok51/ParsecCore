@@ -98,7 +98,7 @@ namespace PythonParser.Parser
                 Parsers.String(keyword).FollowedBy(
                     Parsers.NotFollowedBy(Literals.IdentifierContinue, $"keyword {keyword} expected")
                 )
-               ).Try();
+               ).Try().FailWith(keyword);
 
         public static Parser<string, char> Not(LexemeFactory lexeme) => Keyword("not", lexeme).Try();
 

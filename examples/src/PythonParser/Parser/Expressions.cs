@@ -8,9 +8,19 @@ namespace PythonParser.Parser
         public static Parser<Expr, char> Expression(Control.LexemeFactory lexeme)
             => lexeme.Create(Parsers.Indirect(() => OrTest(lexeme)));
 
+        /// <summary>
+        /// Parses a list of expressions seperated by a comma
+        /// </summary>
+        /// <param name="lexeme"> How to consume whitespace </param>
+        /// <returns></returns>
         public static Parser<IReadOnlyList<Expr>, char> ExpressionList(Control.LexemeFactory lexeme)
             => Parsers.SepEndBy1(Expression(lexeme), Control.Comma(lexeme));
 
+        /// <summary>
+        /// Parses a list of expressions in parentheses 
+        /// </summary>
+        /// <param name="lexeme"> How to consume whitespace </param>
+        /// <returns></returns>
         private static Parser<ParenthForm, char> ParenthForm(Control.LexemeFactory lexeme)
             => Parsers.Between(
                 Control.OpenParan(Control.EOLLexeme),
@@ -20,6 +30,11 @@ namespace PythonParser.Parser
 
         // Does not include comprehensions
 
+        /// <summary>
+        /// Parses a list of expressions in branckets. Used for list literals
+        /// </summary>
+        /// <param name="lexeme"> How to consume whitespace </param>
+        /// <returns></returns>
         private static Parser<ListDisplay, char> ListDisplay(Control.LexemeFactory lexeme)
             => Parsers.Between(
                 Control.OpenBracket(Control.EOLLexeme),
@@ -27,6 +42,11 @@ namespace PythonParser.Parser
                 Control.CloseBracket(lexeme)
             ).Map(list => new ListDisplay(list));
 
+        /// <summary>
+        /// Parses a list of expressions in braces. Used for set literals
+        /// </summary>
+        /// <param name="lexeme"> How to consume whitespace </param>
+        /// <returns></returns>
         private static Parser<SetDisplay, char> SetDisplay(Control.LexemeFactory lexeme)
             => Parsers.Between(
                 Control.OpenBrace(Control.EOLLexeme),
@@ -43,6 +63,11 @@ namespace PythonParser.Parser
         private static Parser<IReadOnlyList<KeyDatum>, char> KeyDatumList(Control.LexemeFactory lexeme)
             => Parsers.SepEndBy1(KeyDatum(lexeme), Control.Comma(lexeme));
 
+        /// <summary>
+        /// Parses a list of key value pairs in braces. Used for dictionary literals
+        /// </summary>
+        /// <param name="lexeme"> How to consume whitespace </param>
+        /// <returns></returns>
         private static Parser<DictDisplay, char> DictDisplay(Control.LexemeFactory lexeme)
             => Parsers.Between(
                 Control.OpenBrace(Control.EOLLexeme),
@@ -80,6 +105,9 @@ namespace PythonParser.Parser
             return curr;
         }
 
+        /// <summary>
+        /// Slices used in array access. For example <c>arr[0:10]</c>
+        /// </summary>
         private static readonly Parser<SliceItem, char> ProperSlice =
             from lower in Expression(Control.EOLLexeme).Optional()
             from colon in Control.Colon(Control.EOLLexeme)
@@ -87,6 +115,9 @@ namespace PythonParser.Parser
             from stride in Control.Colon(Control.EOLLexeme).Then(Expression(Control.EOLLexeme)).Optional()
             select new SliceItem(lower, upper, stride);
 
+        /// <summary>
+        /// List of array slices seperated by commas
+        /// </summary>
         internal static readonly Parser<IReadOnlyList<Expr>, char> SliceList =
             Parsers.SepEndBy1(ProperSlice.Try().Or(Expression(Control.EOLLexeme)), Control.Comma(Control.EOLLexeme));
 
@@ -96,9 +127,15 @@ namespace PythonParser.Parser
             from exp in Expression(Control.EOLLexeme)
             select new KeywordArgument(id, exp);
 
+        /// <summary>
+        /// Keyword arguments used in the parameters for function definition
+        /// </summary>
         private static readonly Parser<IReadOnlyList<KeywordArgument>, char> KeywordArguments =
             Parsers.SepBy1(keywordItem, Control.Comma(Control.EOLLexeme));
 
+        /// <summary>
+        /// Positional arguments used as the parameters for funtion definition
+        /// </summary>
         private static readonly Parser<IReadOnlyList<Expr>, char> PositionalArguments =
             Parsers.SepBy1(Expression(Control.EOLLexeme), Control.Comma(Control.EOLLexeme));
 
@@ -114,6 +151,9 @@ namespace PythonParser.Parser
         private static readonly Parser<Maybe<IReadOnlyList<KeywordArgument>>, char> OptionalKeywords =
             OptionalArgument(KeywordArguments);
 
+        /// <summary>
+        /// Parser for function parameters. So far parses only positional arguments.
+        /// </summary>
         private static readonly Parser<
             (
                 Maybe<IReadOnlyList<Expr>>,
@@ -142,9 +182,11 @@ namespace PythonParser.Parser
             => from atom in Atom(lexeme)
                from rest in Parsers.Choice<Func<Expr, Expr>, char>
                (
-                   from dot in Control.Dot(lexeme)
+                   // attribute access
+                   from dot in Control.Dot(lexeme) 
                    from id in Literals.Identifier(lexeme)
                    select new Func<Expr, Expr>((Expr expr) => new AttributeRef(expr, id)),
+                   // subscript
                    (from subscript in Parsers.Between(
                        Control.OpenBracket(Control.EOLLexeme),
                        ExpressionList(Control.EOLLexeme),
@@ -152,12 +194,14 @@ namespace PythonParser.Parser
                    )
                     select new Func<Expr, Expr>((Expr expr) => new Subscription(expr, subscript))
                    ).Try(),
+                   // array slice
                    from slice in Parsers.Between(
                        Control.OpenBracket(Control.EOLLexeme),
                        SliceList,
                        Control.CloseBracket(lexeme)
                    )
                    select new Func<Expr, Expr>((Expr expr) => new Slice(expr, slice)),
+                   // function call
                    from args in Parsers.Between(
                        Control.OpenParan(Control.EOLLexeme),
                        ArgumentList.Option((
@@ -172,6 +216,11 @@ namespace PythonParser.Parser
                ).Many()
                select Foldl(rest, atom);
 
+        /// <summary>
+        /// Parses exponentiation
+        /// </summary>
+        /// <param name="lexeme"> How to consume whitespace </param>
+        /// <returns></returns>
         private static Parser<Expr, char> Power(Control.LexemeFactory lexeme)
             => from left in Primary(lexeme)
                from right in (from op in Control.DoubleAsterisk(lexeme)
@@ -182,6 +231,11 @@ namespace PythonParser.Parser
                    nothing: () => left
                );
 
+        /// <summary>
+        /// Parses unary operators '-' and '+'
+        /// </summary>
+        /// <param name="lexeme"> How to consume whitespace </param>
+        /// <returns></returns>
         private static Parser<Expr, char> UExpr(Control.LexemeFactory lexeme)
             => Parsers.Choice<Expr, char>(
                 Power(lexeme),
@@ -197,6 +251,11 @@ namespace PythonParser.Parser
                    select new Func<Expr, Expr>(left => new Binary(left, op, rightExpr));
         }
 
+        /// <summary>
+        /// Parses binary operators '*', '//', '/', '%'
+        /// </summary>
+        /// <param name="lexeme"> How to consume whitespace </param>
+        /// <returns></returns>
         private static Parser<Expr, char> MExpr(Control.LexemeFactory lexeme)
             => from unary in UExpr(lexeme)
                from rest in Parsers.Choice(
@@ -207,6 +266,11 @@ namespace PythonParser.Parser
                ).Many()
                select Foldl(rest, unary);
 
+        /// <summary>
+        /// Parses binary operators '+', '-'
+        /// </summary>
+        /// <param name="lexeme"> How to consume whitespace </param>
+        /// <returns></returns>
         private static Parser<Expr, char> AExpr(Control.LexemeFactory lexeme)
             => from multiplative in MExpr(lexeme)
                from rest in Parsers.Choice(
@@ -219,6 +283,11 @@ namespace PythonParser.Parser
 
         private static Parser<Expr, char> OrExpr(Control.LexemeFactory lexeme) => AExpr(lexeme);
 
+        /// <summary>
+        /// Parses comparison operators
+        /// </summary>
+        /// <param name="lexeme"> How to consume whitespace </param>
+        /// <returns></returns>
         private static Parser<Expr, char> Comparison(Control.LexemeFactory lexeme)
             => from or in OrExpr(lexeme)
                from rest in Parsers.Choice(
@@ -235,6 +304,11 @@ namespace PythonParser.Parser
                ).Many()
                select Foldl(rest, or);
 
+        /// <summary>
+        /// Parses 'not' boolean operator
+        /// </summary>
+        /// <param name="lexeme">How to consume whitespace </param>
+        /// <returns></returns>
         private static Parser<Expr, char> NotTest(Control.LexemeFactory lexeme)
             => Comparison(lexeme).Or(
                 Control.Not(lexeme)
@@ -242,6 +316,11 @@ namespace PythonParser.Parser
                     .Map(comparison => new Unary(comparison, UnaryOperator.Not))
             );
 
+        /// <summary>
+        /// Parses 'and' binary operator
+        /// </summary>
+        /// <param name="lexeme"> How to consume whitespace </param>
+        /// <returns></returns>
         private static Parser<Expr, char> AndTest(Control.LexemeFactory lexeme)
             => Parsers.ChainL1(
                 NotTest(lexeme),
@@ -250,6 +329,11 @@ namespace PythonParser.Parser
                 )
             );
 
+        /// <summary>
+        /// Parses 'or' binary operator
+        /// </summary>
+        /// <param name="lexeme"> How to consume whitespace </param>
+        /// <returns></returns>
         private static Parser<Expr, char> OrTest(Control.LexemeFactory lexeme)
             => Parsers.ChainL1(
                 AndTest(lexeme),

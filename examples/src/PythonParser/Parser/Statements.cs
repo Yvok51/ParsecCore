@@ -42,6 +42,9 @@ namespace PythonParser.Parser
         private static readonly Parser<IReadOnlyList<Expr>, char> TargetList =
             Parsers.SepEndBy1(Target, Control.Comma(Control.Lexeme));
 
+        /// <summary>
+        /// Parses assignment. Only one assignment per statement allowed
+        /// </summary>
         private static readonly Parser<Assignment, char> Assignment =
             from targets in TargetList
             from eq in Control.Assign(Control.Lexeme)
@@ -65,18 +68,27 @@ namespace PythonParser.Parser
         private static readonly Parser<IReadOnlyList<IdentifierLiteral>, char> ModulePath =
             Parsers.SepBy1(Literals.Identifier(Control.Lexeme), Control.Dot(Control.Lexeme));
 
+        /// <summary>
+        /// Import entire module. Example: <c>import numpy as np</c>
+        /// </summary>
         private static readonly Parser<ImportModule, char> ImportModule =
             from import in Control.Keyword("import")
             from modulePath in ModulePath
             from alias in Control.Keyword("as").Then(Literals.Identifier(Control.Lexeme)).Optional()
             select new ImportModule(modulePath, alias);
 
+        /// <summary>
+        /// Import specific part of module. Example <c>from numpy import array</c>
+        /// </summary>
         private static readonly Parser<ImportSpecific, char> ImportSpecific =
             from modulePath in Parsers.Between(Control.Keyword("from"), ModulePath, Control.Keyword("import"))
             from name in Literals.Identifier(Control.Lexeme)
             from alias in Control.Keyword("as").Then(Literals.Identifier(Control.Lexeme)).Optional()
             select new ImportSpecific(modulePath, name, alias);
 
+        /// <summary>
+        /// Import everything from a module. Example <c>from numpy import *</c>
+        /// </summary>
         private static readonly Parser<ImportSpecificAll, char> ImportSpecificAll =
             Parsers.Between(
                 Control.Keyword("from"),
@@ -93,7 +105,7 @@ namespace PythonParser.Parser
             );
 
         private static readonly Parser<Stmt, char> SimpleStatement =
-            Parsers.Choice<Stmt, char>(
+            Parsers.Choice(
                 Import.Try(),
                 Continue.Try(),
                 Break.Try(),
@@ -121,31 +133,42 @@ namespace PythonParser.Parser
         private static Parser<Expr, char> ConditionHead(string keyword) =>
             Parsers.Between(Control.Keyword(keyword), Expressions.Expression(Control.Lexeme), Control.Colon(Control.Lexeme));
 
+        /// <summary>
+        /// If branch. If branch on one line not supported.
+        /// </summary>
         private static readonly Parser<(Expr cond, Suite body), char> If =
             Indentation.BlockMany1(
                 Control.EOLWhitespace,
-                ConditionHead("if"),
+                ConditionHead("if").FailWith("If branch"),
                 Statement,
                 (test, stmts) => (test, new Suite(new List<Stmt>(stmts)))
             );
 
+        /// <summary>
+        /// Elif branch. Elif branch on one line not supported.
+        /// </summary>
         private static readonly Parser<(Expr, Suite), char> Elif =
             Indentation.BlockMany1(
                 Control.EOLWhitespace,
-                ConditionHead("elif"),
+                ConditionHead("elif").FailWith("Elif branch"),
                 Statement,
                 (test, stmts) => (test, new Suite(new List<Stmt>(stmts)))
             );
 
+        /// <summary>
+        /// Else branch. Else branch on one line not supported.
+        /// </summary>
         private static readonly Parser<Suite, char> Else =
             Indentation.BlockMany1(
                 Control.EOLWhitespace,
-                Control.Keyword("else").Then(Control.Colon(Control.Lexeme)).Void(),
+                Control.Keyword("else").Then(Control.Colon(Control.Lexeme)).FailWith("Else branch"),
                 Statement,
                 (_, stmts) => new Suite(new List<Stmt>(stmts))
             );
 
-        // TODO: add support for If on one line
+        /// <summary>
+        /// Entire If statement
+        /// </summary>
         private static readonly Parser<If, char> IfStatement =
             from referenceLvl in Indentation.Level<char>()
             from @if in If
@@ -153,15 +176,20 @@ namespace PythonParser.Parser
             from @else in Indentation.Optional(referenceLvl, Relation.EQ, Else)
             select new If(@if.cond, @if.body, elifs, @else);
 
+        /// <summary>
+        /// The while loop. While loop on one line not supported.
+        /// </summary>
         private static readonly Parser<(Expr cond, Suite body), char> While =
             Indentation.BlockMany1(
                 Control.EOLWhitespace,
-                ConditionHead("while"),
+                ConditionHead("while").FailWith("While loop head"),
                 Statement,
                 (test, stmts) => (test, new Suite(new List<Stmt>(stmts)))
             );
 
-        // TODO: add support for While on one line
+        /// <summary>
+        /// Entire while statement including else branch
+        /// </summary>
         private static readonly Parser<While, char> WhileStatement =
             from referenceLvl in Indentation.Level<char>()
             from @while in While
@@ -173,15 +201,21 @@ namespace PythonParser.Parser
             from exprs in Expressions.ExpressionList(Control.Lexeme).FollowedBy(Control.Colon(Control.Lexeme))
             select (targets, exprs);
 
+        /// <summary>
+        /// For loop. For loop on one line not currently supported.
+        /// </summary>
         private static readonly 
             Parser<(IReadOnlyList<Expr> targets, IReadOnlyList<Expr> exprs, Suite body), char> For =
                 Indentation.BlockMany1(
                     Control.EOLWhitespace,
-                    ForHead,
+                    ForHead.FailWith("For loop head"),
                     Statement,
                     (head, stmts) => (head.targets, head.exprs, new Suite(new List<Stmt>(stmts)))
                 );
 
+        /// <summary>
+        /// Entire for statement including else branch
+        /// </summary>
         private static readonly Parser<For, char> ForStatement =
             from referenceLvl in Indentation.Level<char>()
             from @for in For
@@ -191,6 +225,9 @@ namespace PythonParser.Parser
         private static readonly Parser<IReadOnlyList<IdentifierLiteral>, char> ParameterList =
             Parsers.SepBy(Literals.Identifier(Control.EOLLexeme), Control.Comma(Control.EOLLexeme));
 
+        /// <summary>
+        /// The head of the function definition. Function name and parameters.
+        /// </summary>
         private static readonly 
             Parser<(IdentifierLiteral name, IReadOnlyList<IdentifierLiteral> parameters), char> FuncHead =
                 from _ in Control.Keyword("def")
@@ -203,10 +240,13 @@ namespace PythonParser.Parser
                 from __ in Control.Colon(Control.Lexeme)
                 select (funcname, parameterList);
 
+        /// <summary>
+        /// Function definition
+        /// </summary>
         private static readonly Parser<Function, char> FuncDefStatement =
             Indentation.BlockMany1(
                 Control.EOLWhitespace,
-                FuncHead,
+                FuncHead.FailWith("Function definition"),
                 Statement,
                 (head, body) => new Function(
                     head.name,

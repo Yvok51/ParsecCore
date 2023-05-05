@@ -203,10 +203,11 @@ namespace PythonParser.Parser
             return lexeme.Create(
                 from start in IdentifierStart
                 from rest in IdentifierContinue.Many()
-                from id in Parsers.Return<string, char>(start.ToString() + rest)
-                    .Assert(id => !isKeyword(id), "Identifier expected, got keyword")
+                let id = start.ToString() + rest
+                from _ in Parsers.Return<None, char>(None.Instance)
+                    .Assert(_ => !isKeyword(id), $"Identifier expected, got keyword '{id}'")
                 select new IdentifierLiteral(id)
-            );
+            ).FailWith("Identifier");
         }
 
         #endregion
@@ -214,9 +215,9 @@ namespace PythonParser.Parser
         public static Parser<Expr, char> Literal(Control.LexemeFactory lexeme)
             => lexeme.Create(
                 Parsers.Choice<Expr, char>(
-                    String,
-                    Integer.Try(),
-                    Float
+                    String.FailWith("String"),
+                    Integer.Try().FailWith("Integer"),
+                    Float.FailWith("Floating point number")
                 )
             );
     }
