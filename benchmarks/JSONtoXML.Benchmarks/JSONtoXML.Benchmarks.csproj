@@ -45,5 +45,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  
+  <Import Project="..\..\tools\cleanup.targets"/>
 
 </Project>

@@ -24,4 +24,6 @@
     <ProjectReference Include="..\..\src\JSONParser\JSONtoXML.csproj" />
   </ItemGroup>
 
+  <Import Project="..\..\..\tools\cleanup.targets"/>
+
 </Project>

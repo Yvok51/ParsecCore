@@ -26,4 +26,6 @@
     <ProjectReference Include="..\..\src\PythonParser\PythonParser.csproj" />
   </ItemGroup>
 
+  <Import Project="..\..\..\tools\cleanup.targets"/>
+
 </Project>

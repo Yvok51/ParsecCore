@@ -13,4 +13,6 @@
     </PackageReference>
   </ItemGroup>
 
+  <Import Project="..\..\tools\cleanup.targets"/>
+
 </Project>

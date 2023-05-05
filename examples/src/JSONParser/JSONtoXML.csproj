@@ -36,4 +36,6 @@
     <ProjectReference Include="..\..\..\src\ParsecCore\ParsecCore.csproj" />
   </ItemGroup>
 
+  <Import Project="..\..\..\tools\cleanup.targets"/>
+
 </Project>
